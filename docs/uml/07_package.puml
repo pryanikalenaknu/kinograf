@@ -1,0 +1,51 @@
+@startuml
+!include common.iuml
+skinparam package {
+  BackgroundColor #F5F8FC
+  BorderColor #1F4E79
+}
+skinparam packageStyle folder
+skinparam nodesep 40
+skinparam ranksep 60
+title Діаграма пакетів КіноГраф
+package "frontend" {
+  package "src/pages" as pages {
+  }
+  package "src/components" as components {
+  }
+  package "src/api" as fapi {
+  }
+}
+package "backend" {
+  package "kinograf.api" as api {
+  }
+  package "kinograf.services" as services {
+  }
+  package "kinograf.repositories" as repos {
+  }
+  package "kinograf.rdf" as rdf {
+  }
+  package "kinograf.opendata" as opendata {
+  }
+  package "kinograf.models" as models {
+  }
+  package "kinograf.config" as config {
+  }
+  package "kinograf.update" as cli {
+  }
+}
+pages ..> components : <<import>>
+pages ..> fapi : <<use>>
+fapi ..> api : HTTP / JSON
+api ..> services : <<use>>
+cli ..> services : <<use>>
+services ..> repos : <<use>>
+services ..> rdf : <<use>>
+services ..> opendata : <<use>>
+services ..> models : <<import>>
+repos ..> models : <<import>>
+rdf ..> models : <<import>>
+opendata ..> models : <<import>>
+models -[hidden]right- config
+note bottom of config : імпортується всіма\nпакетами backend
+@enduml
