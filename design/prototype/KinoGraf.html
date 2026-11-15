@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-prototype>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{--color-primary:#1F3A5F;--color-primary-hover:#2A4C7A;--color-primary-pressed:#162B47;--color-primary-light:#3A6396;--color-primary-dark:#12243C;--color-accent:#F2C14E;--color-accent-hover:#E5B23C;--color-bg:#F7F8FA;--color-surface:#FFFFFF;--color-text:#1B1F24;--color-text-muted:#5B6573;--color-border:#E1E5EB;--color-hover:#EEF2F7;--color-pressed:#DFE6EF;--color-on-primary:#FFFFFF;--color-on-primary-muted:#D3DCE7;--color-success:#2E7D32;--color-success-bg:#E8F3E9;--color-error:#C62828;--color-error-bg:#FBEAEA;--color-skeleton:#E6E9EE;--color-role-director:#1F77B4;--color-role-writer:#9467BD;--color-role-composer:#2CA02C;--color-role-actor:#FF7F0E;--text-page:600 32px/40px 'Inter',sans-serif;--text-page-m:600 24px/32px 'Inter',sans-serif;--text-block:600 20px/28px 'Inter',sans-serif;--text-body:400 16px/24px 'Inter',sans-serif;--text-label:400 14px/20px 'Inter',sans-serif;--text-code:400 14px/22px 'JetBrains Mono',monospace}
+html,body{margin:0;background:#D5DAE1;color:var(--color-text);font:var(--text-body);-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:var(--color-primary)}a:hover{color:var(--color-primary-hover)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{white-space:nowrap}
+:focus-visible{outline:2px solid var(--color-primary);outline-offset:2px}
+@keyframes kgPulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes kgSpin{to{transform:rotate(360deg)}}
+</style>
+</helmet>
+<div style="min-height:{{ wrap.minH }};padding:{{ wrap.pad }};display:flex;flex-direction:column;align-items:center;gap:12px">
+
+<sc-if value="{{ showSvc }}" hint-placeholder-val="{{ true }}">
+<div data-name="Службове" style="position:fixed;top:12px;right:12px;z-index:100;display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px;max-width:calc(100vw - 24px);padding:8px 12px;background:#ECEEF1;border:1px dashed #8A94A3;border-radius:8px;font:var(--text-label);color:#3A424D">
+<span style="font-weight:600">Службове</span>
+<label style="display:flex;align-items:center;gap:6px">Перегляд як:
+<select value="{{ svc.role }}" onChange="{{ svc.onRole }}" style="height:32px;border:1px solid #B7BFCA;border-radius:6px;background:#F7F8FA;padding:0 8px">
+<option value="user">користувач</option>
+<option value="admin">адміністратор</option>
+</select></label>
+<div style="display:flex;border:1px solid #B7BFCA;border-radius:6px;overflow:hidden">
+<sc-for list="{{ svc.devices }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.on }}" data-link="{{ o.link }}" style="height:32px;padding:0 10px;border:none;background:{{ o.bg }};color:{{ o.fg }};cursor:pointer">{{ o.label }}</button></sc-for>
+</div>
+<label style="display:flex;align-items:center;gap:6px">Стан:
+<select value="{{ svc.ui }}" onChange="{{ svc.onUi }}" style="height:32px;border:1px solid #B7BFCA;border-radius:6px;background:#F7F8FA;padding:0 8px">
+<option value="normal">звичайний</option>
+<option value="loading">завантаження</option>
+<option value="empty">порожньо</option>
+<option value="error">помилка</option>
+</select></label>
+<span style="color:#5B6573">Ключ: <code style="font:var(--text-code)">kinograf-2026</code></span>
+</div>
+
+<div data-name="Службове / назва фрейму" style="width:100%;max-width:{{ frame.ow }}px;font:var(--text-label);color:#3A424D">{{ frame.name }}</div>
+
+</sc-if>
+<div ref="{{ stageRef }}" style="width:100%;display:flex;justify-content:center">
+<div style="width:{{ frame.ow }}px;height:{{ frame.oh }}px;flex:none">
+<div style="transform:scale({{ frame.s }});transform-origin:top left;width:{{ frame.bw }}px;padding:{{ frame.bez }}px;background:{{ frame.bezBg }};border-radius:{{ frame.bezR }}px;box-shadow:{{ frame.shadow }}">
+<div data-name="{{ frame.name }}" data-screen-label="{{ frame.name }}" data-applied="{{ applied }}" style="position:relative;width:{{ frame.fw }}px;height:{{ frame.fh }}px;background:var(--color-bg);border-radius:{{ frame.innerR }}px;overflow:hidden;display:flex;flex-direction:column">
+
+<sc-if value="{{ D }}" hint-placeholder-val="{{ true }}">
+<header data-name="Верхня панель" style="flex:none;height:64px;background:var(--color-primary);display:flex;align-items:center;gap:32px;padding:0 80px">
+<div role="button" tabindex="0" onClick="{{ goCatalog }}" data-link="{{ lk.catalog }}" style="display:flex;align-items:center;gap:8px;color:var(--color-on-primary);font:600 20px/28px 'Inter',sans-serif;cursor:pointer">
+<svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:var(--color-accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M7 3v18M17 3v18M3 7.5h4M3 12h18M3 16.5h4M17 7.5h4M17 16.5h4"></path></svg>КіноГраф</div>
+<nav style="display:flex;align-items:stretch;height:64px;gap:4px">
+<sc-for list="{{ nav }}" as="n" hint-placeholder-count="5"><div role="button" tabindex="0" onClick="{{ n.go }}" data-link="{{ n.link }}" style="display:flex;align-items:center;white-space:nowrap;padding:0 16px;color:{{ n.color }};border-bottom:3px solid {{ n.bar }};border-top:3px solid transparent;font:500 16px/24px 'Inter',sans-serif;cursor:pointer" style-hover="background:rgba(255,255,255,.08)">{{ n.label }}</div></sc-for>
+</nav>
+<div style="margin-left:auto;display:flex;align-items:center;gap:16px">
+<sc-if value="{{ isUser }}" hint-placeholder-val="{{ true }}"><div role="button" tabindex="0" onClick="{{ goLogin }}" data-link="{{ lk.login }}" style="font:var(--text-label);color:var(--color-on-primary-muted);cursor:pointer;padding:12px 0" style-hover="color:var(--color-on-primary);text-decoration:underline">Вхід для адміністратора</div></sc-if>
+<sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+<span style="padding:4px 10px;border-radius:6px;background:var(--color-accent);color:var(--color-text);font:500 14px/20px 'Inter',sans-serif">Адміністратор</span>
+<button onClick="{{ logout }}" data-link="{{ lk.catalog }}" style="display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;border:1px solid rgba(255,255,255,.3);border-radius:6px;background:transparent;color:var(--color-on-primary);cursor:pointer;font:var(--text-label)" style-hover="background:rgba(255,255,255,.1)"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg>Вийти</button>
+</sc-if>
+</div>
+</header>
+</sc-if>
+<sc-if value="{{ P }}" hint-placeholder-val="{{ false }}">
+<header data-name="Верхня панель" style="flex:none;height:56px;background:var(--color-primary);display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 16px">
+<div role="button" tabindex="0" onClick="{{ goCatalog }}" data-link="{{ lk.catalog }}" style="display:flex;align-items:center;gap:8px;color:var(--color-on-primary);font:600 18px/24px 'Inter',sans-serif;cursor:pointer">
+<svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:var(--color-accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M7 3v18M17 3v18M3 7.5h4M3 12h18M3 16.5h4M17 7.5h4M17 16.5h4"></path></svg>КіноГраф</div>
+<div style="display:flex;align-items:center;gap:4px">
+<sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}"><span style="padding:2px 8px;border-radius:6px;background:var(--color-accent);color:var(--color-text);font:500 13px/20px 'Inter',sans-serif">Адміністратор</span></sc-if>
+<button aria-label="Відкрити меню" onClick="{{ openMenu }}" data-link="{{ lk.menu }}" style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--color-on-primary);border-radius:6px"><svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+</div>
+</header>
+</sc-if>
+
+<main ref="{{ mainRef }}" data-name="Вміст" style="flex:1;min-height:0;overflow:auto;position:relative">
+
+<sc-if value="{{ gen.loading }}" hint-placeholder-val="{{ false }}">
+<div data-name="Стан / завантаження" aria-busy="true" style="padding:{{ gen.pad }};display:flex;flex-direction:column;gap:24px">
+<div style="width:40%;height:40px;border-radius:8px;background:var(--color-skeleton);animation:kgPulse 1.4s ease-in-out infinite"></div>
+<div style="width:70%;height:20px;border-radius:8px;background:var(--color-skeleton);animation:kgPulse 1.4s ease-in-out infinite"></div>
+<div style="height:240px;border-radius:8px;background:var(--color-skeleton);animation:kgPulse 1.4s ease-in-out infinite"></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:24px"><div style="height:120px;border-radius:8px;background:var(--color-skeleton);animation:kgPulse 1.4s ease-in-out infinite"></div><div style="height:120px;border-radius:8px;background:var(--color-skeleton);animation:kgPulse 1.4s ease-in-out infinite"></div><div style="height:120px;border-radius:8px;background:var(--color-skeleton);animation:kgPulse 1.4s ease-in-out infinite"></div></div>
+<span style="font:var(--text-label);color:var(--color-text-muted)">Завантаження даних…</span>
+</div>
+</sc-if>
+<sc-if value="{{ gen.empty }}" hint-placeholder-val="{{ false }}">
+<div data-name="Стан / порожньо" style="padding:{{ gen.pad }};display:flex;justify-content:center">
+<div style="margin-top:64px;max-width:440px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;padding:40px 32px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px">
+<svg viewBox="0 0 24 24" style="width:40px;height:40px;fill:none;stroke:var(--color-text-muted);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+<div style="font:var(--text-block)">Немає даних</div>
+<div style="font:var(--text-body);color:var(--color-text-muted);text-wrap:pretty">{{ gen.emptyText }}</div>
+<button onClick="{{ goCatalog }}" data-link="{{ lk.catalog }}" style="min-height:44px;padding:0 20px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-hover)" style-active="background:var(--color-pressed)">Повернутися до каталогу</button>
+</div></div>
+</sc-if>
+<sc-if value="{{ gen.error }}" hint-placeholder-val="{{ false }}">
+<div data-name="Стан / помилка" style="padding:{{ gen.pad }};display:flex;justify-content:center">
+<div role="alert" style="margin-top:64px;max-width:440px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;padding:40px 32px;background:var(--color-surface);border:1px solid var(--color-error);border-radius:8px">
+<svg viewBox="0 0 24 24" style="width:40px;height:40px;fill:none;stroke:var(--color-error);stroke-width:1.5;stroke-linecap:round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>
+<div style="font:var(--text-block)">Не вдалося завантажити дані</div>
+<div style="font:var(--text-body);color:var(--color-text-muted);text-wrap:pretty">Сервер Wikidata не відповідає. Спробуйте ще раз за хвилину.</div>
+<button onClick="{{ gen.retry }}" data-link="{{ lk.self }}" style="min-height:44px;padding:0 20px;border-radius:6px;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-on-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-primary-hover)" style-active="background:var(--color-primary-pressed)">Спробувати ще раз</button>
+</div></div>
+</sc-if>
+
+<sc-if value="{{ v.catalog }}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{ D }}" hint-placeholder-val="{{ true }}">
+<div data-name="4.1 Каталог" style="padding:32px 80px 48px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;align-items:start">
+<aside data-name="Панель фільтрів" style="grid-column:span 3;position:sticky;top:32px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:24px">
+<h2 style="margin:0;font:var(--text-block)">Фільтри</h2>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;font:var(--text-label)"><span style="color:var(--color-text-muted)">Роки</span><span style="font-weight:600">{{ cat.yText }}</span></div>
+<label style="display:flex;align-items:center;gap:8px;font:var(--text-label);color:var(--color-text-muted)"><span style="width:24px">від</span><input type="range" min="1991" max="2026" value="{{ cat.yFrom }}" onChange="{{ cat.onYFrom }}" data-link="{{ lk.filtered }}" aria-label="Рік від" style="flex:1;height:44px;accent-color:var(--color-primary)"></label>
+<label style="display:flex;align-items:center;gap:8px;font:var(--text-label);color:var(--color-text-muted)"><span style="width:24px">до</span><input type="range" min="1991" max="2026" value="{{ cat.yTo }}" onChange="{{ cat.onYTo }}" data-link="{{ lk.filtered }}" aria-label="Рік до" style="flex:1;height:44px;accent-color:var(--color-primary)"></label>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<span style="font:var(--text-label);color:var(--color-text-muted)">Період</span>
+<div style="display:flex;gap:8px">
+<sc-for list="{{ cat.periods }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.on }}" data-link="{{ o.link }}" aria-pressed="{{ o.pressed }}" style="flex:1;min-height:44px;padding:0 8px;border-radius:6px;border:1px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};font:500 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="border-color:var(--color-primary)">{{ o.label }}</button></sc-for>
+</div></div>
+<label style="display:flex;flex-direction:column;gap:8px;font:var(--text-label);color:var(--color-text-muted)">Жанр
+<select value="{{ cat.genre }}" onChange="{{ cat.onGenre }}" data-link="{{ lk.filtered }}" style="height:44px;padding:0 12px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface);color:var(--color-text);font:var(--text-body)">
+<option value="">Усі жанри</option><option value="драма">драма</option><option value="документальний">документальний</option><option value="комедія">комедія</option><option value="воєнний">воєнний</option><option value="історичний">історичний</option><option value="трилер">трилер</option>
+</select></label>
+<label style="display:flex;flex-direction:column;gap:8px;font:var(--text-label);color:var(--color-text-muted)">Режисер
+<select value="{{ cat.director }}" onChange="{{ cat.onDirector }}" data-link="{{ lk.filtered }}" style="height:44px;padding:0 12px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface);color:var(--color-text);font:var(--text-body)">
+<option value="">Усі режисери</option><option value="vasyan">Валентин Васянович</option><option value="sanin">Олесь Санін</option><option value="seitab">Ахтем Сеітаблаєв</option><option value="slabosh">Мирослав Слабошпицький</option><option value="lukich">Антоніо Лукіч</option><option value="aliev">Нариман Алієв</option><option value="tsilyk">Ірина Цілик</option><option value="sukhol">Дмитро Сухолиткий-Собчук</option><option value="gorbach">Марина Ер Горбач</option><option value="chernov">Мстислав Чернов</option>
+</select></label>
+<label style="display:flex;align-items:center;gap:12px;min-height:44px;font:var(--text-body);cursor:pointer"><input type="checkbox" checked="{{ cat.withActors }}" onChange="{{ cat.onWithActors }}" data-link="{{ lk.filtered }}" style="width:20px;height:20px;accent-color:var(--color-primary)">Лише з акторами</label>
+<button onClick="{{ cat.reset }}" data-link="{{ lk.catalog }}" style="min-height:44px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-hover)" style-active="background:var(--color-pressed)">Скинути фільтри</button>
+</aside>
+<section style="grid-column:span 9;display:flex;flex-direction:column;gap:24px;min-width:0">
+<div style="display:flex;flex-direction:column;gap:4px"><h1 style="margin:0;font:var(--text-page)">Каталог фільмів</h1><p style="margin:0;font:var(--text-body);color:var(--color-text-muted)">Українські фільми від 1991 року за відкритими даними Wikidata</p></div>
+<div style="display:flex;align-items:center;gap:8px;height:48px;padding:0 8px 0 16px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px">
+<svg viewBox="0 0 24 24" style="width:20px;height:20px;flex:none;fill:none;stroke:var(--color-text-muted);stroke-width:2;stroke-linecap:round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+<input value="{{ cat.q }}" onChange="{{ cat.onQ }}" data-link="{{ lk.search }}" placeholder="Пошук за назвою фільму" aria-label="Пошук за назвою фільму" style="flex:1;height:44px;border:none;outline:none;background:transparent;font:var(--text-body)">
+<sc-if value="{{ cat.hasQ }}" hint-placeholder-val="{{ false }}"><button aria-label="Очистити пошук" onClick="{{ cat.clearQ }}" data-link="{{ lk.catalog }}" style="width:36px;height:36px;border:none;border-radius:6px;background:transparent;color:var(--color-text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:var(--color-hover)"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></sc-if>
+</div>
+<div style="display:flex;align-items:center;gap:16px">
+<span style="font:600 16px/24px 'Inter',sans-serif;white-space:nowrap" aria-live="polite">{{ cat.countText }}</span>
+<div style="margin-left:auto;display:flex;align-items:center;gap:8px"><span style="font:var(--text-label);color:var(--color-text-muted)">Сортування:</span>
+<div style="display:flex;gap:4px;padding:2px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface)">
+<sc-for list="{{ cat.sorts }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.on }}" data-link="{{ o.link }}" aria-pressed="{{ o.pressed }}" style="height:36px;padding:0 12px;border:none;border-radius:6px;background:{{ o.bg }};color:{{ o.fg }};font:500 14px/20px 'Inter',sans-serif;cursor:pointer">{{ o.label }}</button></sc-for>
+</div></div>
+<button onClick="{{ cat.exportOpen }}" data-link="{{ lk.catExport }}" style="display:flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-hover)" style-active="background:var(--color-pressed)"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>Експорт</button>
+</div>
+<sc-if value="{{ cat.loading }}" hint-placeholder-val="{{ false }}">
+<div aria-busy="true" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px">
+<sc-for list="{{ cat.skel }}" as="k" hint-placeholder-count="8"><div style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;overflow:hidden"><div style="aspect-ratio:2/3;background:var(--color-skeleton);animation:kgPulse 1.4s ease-in-out infinite"></div><div style="padding:16px;display:flex;flex-direction:column;gap:8px"><div style="height:16px;width:80%;border-radius:4px;background:var(--color-skeleton)"></div><div style="height:12px;width:60%;border-radius:4px;background:var(--color-skeleton)"></div></div></div></sc-for>
+</div></sc-if>
+<sc-if value="{{ cat.has }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px">
+<sc-for list="{{ cat.cards }}" as="c" hint-placeholder-count="8">
+<div data-name="Картка фільму" role="link" tabindex="0" onClick="{{ c.open }}" data-link="{{ c.link }}" style="display:flex;flex-direction:column;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;overflow:hidden;cursor:pointer;transition:box-shadow .15s,border-color .15s" style-hover="border-color:var(--color-primary);box-shadow:0 6px 18px rgba(31,58,95,.14)" style-active="box-shadow:none;border-color:var(--color-primary-pressed)">
+<div role="img" aria-label="{{ c.aria }}" style="aspect-ratio:2/3;background:{{ c.bg }};display:flex;flex-direction:column;justify-content:flex-end;padding:16px;gap:4px"><span style="font:600 18px/24px 'Inter',sans-serif;color:var(--color-on-primary);text-wrap:balance">{{ c.t }}</span><span style="font:var(--text-label);color:var(--color-on-primary-muted)">{{ c.y }}</span></div>
+<div style="padding:16px;display:flex;flex-direction:column;gap:8px">
+<div style="font:600 16px/24px 'Inter',sans-serif">{{ c.t }}</div>
+<div style="font:var(--text-label);color:var(--color-text-muted)">{{ c.meta }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:4px"><sc-for list="{{ c.genres }}" as="gn" hint-placeholder-count="2"><span style="padding:2px 8px;border-radius:4px;background:var(--color-hover);color:var(--color-primary);font:var(--text-label)">{{ gn }}</span></sc-for></div>
+</div></div>
+</sc-for>
+</div>
+<sc-if value="{{ cat.multi }}" hint-placeholder-val="{{ true }}">
+<nav aria-label="Пагінація" style="display:flex;justify-content:center;gap:8px">
+<button aria-label="Попередня сторінка" onClick="{{ cat.prev }}" data-link="{{ lk.self }}" style="width:44px;height:44px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-text);opacity:{{ cat.prevOp }};cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:var(--color-hover)"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><path d="m15 18-6-6 6-6"></path></svg></button>
+<sc-for list="{{ cat.pages }}" as="pg" hint-placeholder-count="2"><button onClick="{{ pg.go }}" data-link="{{ lk.self }}" aria-current="{{ pg.cur }}" style="width:44px;height:44px;border-radius:6px;border:1px solid var(--color-border);background:{{ pg.bg }};color:{{ pg.fg }};font:600 14px/20px 'Inter',sans-serif;cursor:pointer">{{ pg.n }}</button></sc-for>
+<button aria-label="Наступна сторінка" onClick="{{ cat.next }}" data-link="{{ lk.self }}" style="width:44px;height:44px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-text);opacity:{{ cat.nextOp }};cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:var(--color-hover)"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><path d="m9 18 6-6-6-6"></path></svg></button>
+</nav></sc-if>
+</sc-if>
+<sc-if value="{{ cat.empty }}" hint-placeholder-val="{{ false }}">
+<div data-name="Повідомлення / порожньо" style="display:flex;flex-direction:column;align-items:center;gap:16px;padding:64px 32px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;text-align:center">
+<svg viewBox="0 0 24 24" style="width:40px;height:40px;fill:none;stroke:var(--color-text-muted);stroke-width:1.5;stroke-linecap:round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3M8 11h6"></path></svg>
+<div style="font:var(--text-block)">Нічого не знайдено</div>
+<div style="font:var(--text-body);color:var(--color-text-muted)">Спробуйте змінити запит або скинути фільтри.</div>
+<button onClick="{{ cat.reset }}" data-link="{{ lk.catalog }}" style="min-height:44px;padding:0 20px;border-radius:6px;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-on-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-primary-hover)" style-active="background:var(--color-primary-pressed)">Скинути фільтри та пошук</button>
+</div></sc-if>
+</section>
+</div>
+</sc-if>
+<sc-if value="{{ P }}" hint-placeholder-val="{{ false }}">
+<div data-name="4.1 Каталог" style="padding:16px 16px 32px;display:flex;flex-direction:column;gap:16px">
+<h1 style="margin:0;font:var(--text-page-m)">Каталог фільмів</h1>
+<div style="display:flex;align-items:center;gap:8px;height:48px;padding:0 4px 0 12px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px">
+<svg viewBox="0 0 24 24" style="width:20px;height:20px;flex:none;fill:none;stroke:var(--color-text-muted);stroke-width:2;stroke-linecap:round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+<input value="{{ cat.q }}" onChange="{{ cat.onQ }}" data-link="{{ lk.search }}" placeholder="Пошук за назвою" aria-label="Пошук за назвою фільму" style="flex:1;min-width:0;height:44px;border:none;outline:none;background:transparent;font:var(--text-body)">
+<sc-if value="{{ cat.hasQ }}" hint-placeholder-val="{{ false }}"><button aria-label="Очистити пошук" onClick="{{ cat.clearQ }}" data-link="{{ lk.catalog }}" style="width:44px;height:44px;border:none;background:transparent;color:var(--color-text-muted);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></sc-if>
+</div>
+<div style="display:flex;gap:8px">
+<button onClick="{{ cat.openFilters }}" data-link="{{ lk.filtersSheet }}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif" style-active="background:var(--color-pressed)"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"></path></svg>{{ cat.filtersLabel }}</button>
+<select value="{{ cat.sort }}" onChange="{{ cat.onSort }}" data-link="{{ lk.self }}" aria-label="Сортування" style="flex:1;min-height:44px;padding:0 8px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-surface);font:500 14px/20px 'Inter',sans-serif"><option value="year">За роком</option><option value="title">За назвою</option></select>
+<button aria-label="Експорт" onClick="{{ cat.exportOpen }}" data-link="{{ lk.catExport }}" style="width:44px;height:44px;flex:none;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);display:flex;align-items:center;justify-content:center" style-active="background:var(--color-pressed)"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg></button>
+</div>
+<span style="font:600 14px/20px 'Inter',sans-serif" aria-live="polite">{{ cat.countText }}</span>
+<sc-if value="{{ cat.loading }}" hint-placeholder-val="{{ false }}"><sc-for list="{{ cat.skelP }}" as="k" hint-placeholder-count="4"><div style="display:flex;gap:16px;padding:8px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px"><div style="width:88px;height:132px;border-radius:6px;background:var(--color-skeleton);animation:kgPulse 1.4s ease-in-out infinite"></div><div style="flex:1;display:flex;flex-direction:column;gap:8px;padding-top:8px"><div style="height:16px;width:70%;border-radius:4px;background:var(--color-skeleton)"></div><div style="height:12px;width:50%;border-radius:4px;background:var(--color-skeleton)"></div></div></div></sc-for></sc-if>
+<sc-if value="{{ cat.has }}" hint-placeholder-val="{{ false }}">
+<sc-for list="{{ cat.pcards }}" as="c" hint-placeholder-count="4">
+<div data-name="Картка фільму / горизонтальна" role="link" tabindex="0" onClick="{{ c.open }}" data-link="{{ c.link }}" style="display:flex;gap:16px;padding:8px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;cursor:pointer" style-active="border-color:var(--color-primary);background:var(--color-hover)">
+<div role="img" aria-label="{{ c.aria }}" style="width:88px;height:132px;flex:none;border-radius:6px;background:{{ c.bg }};display:flex;align-items:flex-end;padding:8px"><span style="font:600 12px/16px 'Inter',sans-serif;color:var(--color-on-primary)">{{ c.t }}</span></div>
+<div style="min-width:0;display:flex;flex-direction:column;gap:4px;padding:4px 0">
+<div style="font:600 16px/24px 'Inter',sans-serif">{{ c.t }}</div>
+<div style="font:var(--text-label);color:var(--color-text-muted)">{{ c.y }}</div>
+<div style="font:var(--text-label);color:var(--color-text-muted)">{{ c.dir }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px"><sc-for list="{{ c.genres }}" as="gn" hint-placeholder-count="2"><span style="padding:2px 8px;border-radius:4px;background:var(--color-hover);color:var(--color-primary);font:var(--text-label)">{{ gn }}</span></sc-for></div>
+</div></div>
+</sc-for>
+<sc-if value="{{ cat.hasMore }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cat.showMore }}" data-link="{{ lk.self }}" style="min-height:48px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif" style-active="background:var(--color-pressed)">Показати ще</button></sc-if>
+</sc-if>
+<sc-if value="{{ cat.empty }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding:40px 24px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;text-align:center">
+<div style="font:var(--text-block)">Нічого не знайдено</div>
+<div style="font:var(--text-label);color:var(--color-text-muted)">Спробуйте змінити запит або скинути фільтри.</div>
+<button onClick="{{ cat.reset }}" data-link="{{ lk.catalog }}" style="min-height:44px;padding:0 20px;border-radius:6px;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-on-primary);font:600 14px/20px 'Inter',sans-serif">Скинути фільтри</button>
+</div></sc-if>
+</div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ v.film }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ D }}" hint-placeholder-val="{{ true }}">
+<div data-name="4.2 Картка фільму" style="padding:24px 80px 48px;display:flex;flex-direction:column;gap:32px">
+<nav aria-label="Навігаційний шлях" style="display:flex;align-items:center;gap:8px;font:var(--text-label);color:var(--color-text-muted)"><a href="#" onClick="{{ goCatalog }}" data-link="{{ lk.catalog }}" style="color:var(--color-primary)">Каталог фільмів</a><span aria-hidden="true">→</span><span style="color:var(--color-text)">{{ film.t }}</span></nav>
+<div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;align-items:start">
+<div style="grid-column:span 3;display:flex;flex-direction:column;gap:16px">
+<div role="img" aria-label="{{ film.aria }}" style="aspect-ratio:2/3;border-radius:8px;background:{{ film.bg }};display:flex;flex-direction:column;justify-content:flex-end;padding:24px;gap:4px"><span style="font:600 24px/32px 'Inter',sans-serif;color:var(--color-on-primary);text-wrap:balance">{{ film.t }}</span><span style="font:var(--text-label);color:var(--color-on-primary-muted)">{{ film.y }}</span></div>
+<button onClick="{{ film.openGraph }}" data-link="{{ lk.graph }}" style="display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border-radius:6px;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-on-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-primary-hover)" style-active="background:var(--color-primary-pressed)"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"></path></svg>Граф зв'язків</button>
+<a href="{{ film.wiki }}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif;text-decoration:none" style-hover="background:var(--color-hover)">Запис у Wikidata<svg viewBox="0 0 24 24" aria-label="відкривається в новій вкладці" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg></a>
+</div>
+<div style="grid-column:span 9;display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:column;gap:8px">
+<h1 style="margin:0;font:var(--text-page)">{{ film.t }}</h1>
+<div style="font:var(--text-body);color:var(--color-text-muted)">{{ film.meta }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ film.genres }}" as="gn" hint-placeholder-count="2"><span style="padding:2px 8px;border-radius:4px;background:var(--color-hover);color:var(--color-primary);font:var(--text-label)">{{ gn }}</span></sc-for></div>
+</div>
+<sc-if value="{{ film.hasAwards }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:8px;padding:16px 24px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px"><h2 style="margin:0;font:var(--text-block)">Нагороди</h2><sc-for list="{{ film.awards }}" as="aw" hint-placeholder-count="1"><div style="display:flex;gap:8px;align-items:center;font:var(--text-body)"><span style="width:8px;height:8px;border-radius:50%;background:var(--color-accent);flex:none"></span>{{ aw }}</div></sc-for></div></sc-if>
+<div style="display:flex;flex-direction:column;gap:16px;padding:24px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px">
+<h2 style="margin:0;font:var(--text-block)">Учасники</h2>
+<sc-for list="{{ film.roles }}" as="r" hint-placeholder-count="3">
+<div style="display:grid;grid-template-columns:160px minmax(0,1fr);gap:16px;align-items:start;padding-top:16px;border-top:1px solid var(--color-border)">
+<span style="font:var(--text-label);color:var(--color-text-muted);padding-top:10px">{{ r.label }}</span>
+<div>
+<sc-if value="{{ r.has }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-wrap:wrap;gap:8px">
+<sc-for list="{{ r.people }}" as="p" hint-placeholder-count="1"><div role="link" tabindex="0" onClick="{{ p.open }}" data-link="{{ p.link }}" style="display:flex;align-items:center;gap:8px;min-height:44px;padding:4px 12px 4px 4px;border:1px solid var(--color-border);border-radius:22px;cursor:pointer" style-hover="background:var(--color-hover);border-color:var(--color-primary)" style-active="background:var(--color-pressed)"><span aria-hidden="true" style="width:36px;height:36px;border-radius:50%;border:2px solid {{ p.rc }};background:var(--color-bg);display:flex;align-items:center;justify-content:center;font:600 13px/16px 'Inter',sans-serif">{{ p.ini }}</span><span style="font:500 16px/24px 'Inter',sans-serif;color:var(--color-primary)">{{ p.name }}</span></div></sc-for>
+</div></sc-if>
+<sc-if value="{{ r.missing }}" hint-placeholder-val="{{ false }}"><div data-name="Позначка / не вказано" style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:8px;background:#EEF0F3;color:var(--color-text-muted);font:var(--text-label)"><span>У відкритих даних не вказано</span><a href="{{ r.fix }}" target="_blank" rel="noopener" style="color:var(--color-primary);font-weight:500">Доповнити у Wikidata ↗</a></div></sc-if>
+</div></div>
+</sc-for>
+</div>
+</div>
+</div>
+<section style="display:flex;flex-direction:column;gap:16px">
+<h2 style="margin:0;font:var(--text-block)">Пов'язані фільми</h2>
+<div style="display:flex;gap:24px;overflow-x:auto;padding-bottom:8px">
+<sc-for list="{{ film.related }}" as="rf" hint-placeholder-count="4">
+<div role="link" tabindex="0" onClick="{{ rf.open }}" data-link="{{ rf.link }}" style="flex:none;width:216px;display:flex;flex-direction:column;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;overflow:hidden;cursor:pointer" style-hover="border-color:var(--color-primary);box-shadow:0 6px 18px rgba(31,58,95,.14)">
+<div role="img" aria-label="{{ rf.aria }}" style="height:120px;background:{{ rf.bg }};display:flex;align-items:flex-end;padding:12px"><span style="font:600 16px/20px 'Inter',sans-serif;color:var(--color-on-primary)">{{ rf.t }}</span></div>
+<div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px;align-items:flex-start"><span style="font:var(--text-label);color:var(--color-text-muted)">{{ rf.y }}</span><span style="padding:2px 8px;border-radius:4px;background:{{ rf.noteBg }};color:var(--color-text);font:500 14px/20px 'Inter',sans-serif">{{ rf.note }}</span></div>
+</div></sc-for>
+</div></section>
+</div>
+</sc-if>
+<sc-if value="{{ P }}" hint-placeholder-val="{{ false }}">
+<div data-name="4.2 Картка фільму" style="display:flex;flex-direction:column;padding-bottom:96px">
+<div role="img" aria-label="{{ film.aria }}" style="height:220px;background:{{ film.bg }};display:flex;flex-direction:column;justify-content:flex-end;padding:16px;gap:4px"><span style="font:600 22px/28px 'Inter',sans-serif;color:var(--color-on-primary)">{{ film.t }}</span></div>
+<div style="padding:16px;display:flex;flex-direction:column;gap:16px">
+<nav aria-label="Навігаційний шлях" style="display:flex;gap:8px;font:var(--text-label);color:var(--color-text-muted)"><a href="#" onClick="{{ goCatalog }}" data-link="{{ lk.catalog }}" style="color:var(--color-primary)">Каталог фільмів</a><span>→</span><span style="color:var(--color-text)">{{ film.t }}</span></nav>
+<h1 style="margin:0;font:var(--text-page-m)">{{ film.t }}</h1>
+<div style="font:var(--text-body);color:var(--color-text-muted)">{{ film.meta }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ film.genres }}" as="gn" hint-placeholder-count="2"><span style="padding:2px 8px;border-radius:4px;background:var(--color-hover);color:var(--color-primary);font:var(--text-label)">{{ gn }}</span></sc-for></div>
+<sc-if value="{{ film.hasAwards }}" hint-placeholder-val="{{ false }}"><div style="padding:16px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:8px"><h2 style="margin:0;font:600 16px/24px 'Inter',sans-serif">Нагороди</h2><sc-for list="{{ film.awards }}" as="aw" hint-placeholder-count="1"><div style="font:var(--text-label)">{{ aw }}</div></sc-for></div></sc-if>
+<div style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;overflow:hidden">
+<sc-for list="{{ film.roles }}" as="r" hint-placeholder-count="3">
+<div style="border-bottom:1px solid var(--color-border)">
+<button onClick="{{ r.toggle }}" data-link="{{ lk.self }}" aria-expanded="{{ r.open }}" style="width:100%;min-height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border:none;background:transparent;font:600 16px/24px 'Inter',sans-serif;text-align:left">{{ r.label }}<span style="display:flex;align-items:center;gap:8px;color:var(--color-text-muted);font:var(--text-label)">{{ r.count }}<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;transform:{{ r.chev }}"><path d="m6 9 6 6 6-6"></path></svg></span></button>
+<sc-if value="{{ r.open }}" hint-placeholder-val="{{ false }}"><div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{ r.people }}" as="p" hint-placeholder-count="1"><div role="link" tabindex="0" onClick="{{ p.open }}" data-link="{{ p.link }}" style="display:flex;align-items:center;gap:12px;min-height:44px" style-active="background:var(--color-hover)"><span aria-hidden="true" style="width:36px;height:36px;border-radius:50%;border:2px solid {{ p.rc }};background:var(--color-bg);display:flex;align-items:center;justify-content:center;font:600 13px/16px 'Inter',sans-serif">{{ p.ini }}</span><span style="font:500 16px/24px 'Inter',sans-serif;color:var(--color-primary)">{{ p.name }}</span></div></sc-for>
+<sc-if value="{{ r.missing }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:8px;background:#EEF0F3;color:var(--color-text-muted);font:var(--text-label)">У відкритих даних не вказано<a href="{{ r.fix }}" target="_blank" rel="noopener" style="color:var(--color-primary);font-weight:500">Доповнити у Wikidata ↗</a></div></sc-if>
+</div></sc-if>
+</div></sc-for>
+</div>
+<h2 style="margin:8px 0 0;font:var(--text-block)">Пов'язані фільми</h2>
+<div style="display:flex;gap:12px;overflow-x:auto;margin:0 -16px;padding:0 16px 8px">
+<sc-for list="{{ film.related }}" as="rf" hint-placeholder-count="3"><div role="link" tabindex="0" onClick="{{ rf.open }}" data-link="{{ rf.link }}" style="flex:none;width:160px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;overflow:hidden" style-active="border-color:var(--color-primary)"><div role="img" aria-label="{{ rf.aria }}" style="height:96px;background:{{ rf.bg }};display:flex;align-items:flex-end;padding:8px"><span style="font:600 14px/18px 'Inter',sans-serif;color:var(--color-on-primary)">{{ rf.t }}</span></div><div style="padding:8px 12px;display:flex;flex-direction:column;gap:4px;align-items:flex-start"><span style="font:var(--text-label);color:var(--color-text-muted)">{{ rf.y }}</span><span style="padding:2px 6px;border-radius:4px;background:{{ rf.noteBg }};font:500 12px/16px 'Inter',sans-serif">{{ rf.note }}</span></div></div></sc-for>
+</div>
+</div></div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ v.person }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ D }}" hint-placeholder-val="{{ true }}">
+<div data-name="4.3 Сторінка персоналії" style="padding:24px 80px 48px;display:flex;flex-direction:column;gap:32px">
+<nav aria-label="Навігаційний шлях" style="display:flex;align-items:center;gap:8px;font:var(--text-label);color:var(--color-text-muted)"><a href="#" onClick="{{ goCatalog }}" data-link="{{ lk.catalog }}" style="color:var(--color-primary)">Каталог фільмів</a><span>→</span><sc-if value="{{ person.hasFrom }}" hint-placeholder-val="{{ false }}"><a href="#" onClick="{{ person.openFrom }}" data-link="{{ lk.fromFilm }}" style="color:var(--color-primary)">{{ person.fromT }}</a><span>→</span></sc-if><span style="color:var(--color-text)">{{ person.name }}</span></nav>
+<div style="display:flex;align-items:center;gap:24px">
+<span aria-hidden="true" style="width:88px;height:88px;border-radius:50%;background:var(--color-primary);color:var(--color-on-primary);display:flex;align-items:center;justify-content:center;font:600 28px/32px 'Inter',sans-serif">{{ person.ini }}</span>
+<div style="display:flex;flex-direction:column;gap:8px">
+<h1 style="margin:0;font:var(--text-page)">{{ person.name }}</h1>
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><sc-for list="{{ person.tags }}" as="t" hint-placeholder-count="1"><span data-name="Тег ролі" style="display:flex;align-items:center;gap:6px;padding:2px 8px;border-radius:4px;border:1px solid var(--color-border);font:var(--text-label)"><span style="width:8px;height:8px;border-radius:50%;background:{{ t.c }}"></span>{{ t.label }}</span></sc-for><span style="font:var(--text-label);color:var(--color-text-muted)">{{ person.count }}</span></div>
+</div>
+<a href="{{ person.wiki }}" target="_blank" rel="noopener" style="margin-left:auto;display:flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif;text-decoration:none" style-hover="background:var(--color-hover)">Запис у Wikidata<svg viewBox="0 0 24 24" aria-label="відкривається в новій вкладці" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg></a>
+</div>
+<section style="padding:24px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:16px">
+<h2 style="margin:0;font:var(--text-block)">Хронологія</h2>
+<div style="position:relative;height:120px;margin:0 48px">
+<div style="position:absolute;left:0;right:0;top:40px;height:2px;background:var(--color-border)"></div>
+<sc-for list="{{ person.axis }}" as="ax" hint-placeholder-count="4"><span style="position:absolute;left:{{ ax.x }}%;top:52px;transform:translateX(-50%);font:var(--text-label);color:var(--color-text-muted)">{{ ax.y }}</span></sc-for>
+<sc-for list="{{ person.timeline }}" as="tp" hint-placeholder-count="2"><div style="position:absolute;left:{{ tp.x }}%;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:4px">
+<sc-for list="{{ tp.films }}" as="tf" hint-placeholder-count="1"><button onClick="{{ tf.open }}" data-link="{{ tf.link }}" style="white-space:nowrap;padding:2px 8px;border:1px solid var(--color-primary);border-radius:6px;background:var(--color-surface);color:var(--color-primary);font:500 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-primary);color:var(--color-on-primary)">{{ tf.t }}, {{ tp.y }}</button></sc-for>
+<span style="width:14px;height:14px;border-radius:50%;background:var(--color-primary);border:3px solid var(--color-surface);box-shadow:0 0 0 1px var(--color-primary)"></span>
+</div></sc-for>
+</div>
+</section>
+<div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;align-items:start">
+<section style="grid-column:span 8;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;overflow:hidden">
+<h2 style="margin:0;padding:24px 24px 16px;font:var(--text-block)">Фільмографія</h2>
+<div role="table" aria-label="Фільмографія">
+<div role="row" style="display:grid;grid-template-columns:96px minmax(0,1fr) 200px;gap:16px;padding:8px 24px;background:var(--color-bg);border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border);font:500 14px/20px 'Inter',sans-serif;color:var(--color-text-muted)"><span role="columnheader">Рік</span><span role="columnheader">Назва</span><span role="columnheader">Роль</span></div>
+<sc-for list="{{ person.rows }}" as="rw" hint-placeholder-count="2"><div role="row" tabindex="0" onClick="{{ rw.open }}" data-link="{{ rw.link }}" style="display:grid;grid-template-columns:96px minmax(0,1fr) 200px;gap:16px;align-items:center;min-height:48px;padding:0 24px;border-bottom:1px solid var(--color-border);cursor:pointer" style-hover="background:var(--color-hover)"><span role="cell" style="color:var(--color-text-muted)">{{ rw.y }}</span><span role="cell" style="color:var(--color-primary);font-weight:500">{{ rw.t }}</span><span role="cell" style="font:var(--text-label)">{{ rw.role }}</span></div></sc-for>
+</div></section>
+<sc-if value="{{ person.hasCollabs }}" hint-placeholder-val="{{ true }}">
+<section style="grid-column:span 4;padding:24px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:12px">
+<h2 style="margin:0;font:var(--text-block)">Постійні співробітники</h2>
+<sc-for list="{{ person.collabs }}" as="cb" hint-placeholder-count="3"><div role="link" tabindex="0" onClick="{{ cb.open }}" data-link="{{ cb.link }}" style="display:flex;align-items:center;gap:12px;min-height:48px;padding:4px 8px;margin:0 -8px;border-radius:8px;cursor:pointer" style-hover="background:var(--color-hover)"><span aria-hidden="true" style="width:36px;height:36px;flex:none;border-radius:50%;background:var(--color-hover);display:flex;align-items:center;justify-content:center;font:600 13px/16px 'Inter',sans-serif;color:var(--color-primary)">{{ cb.ini }}</span><div style="display:flex;flex-direction:column"><span style="font:500 16px/24px 'Inter',sans-serif;color:var(--color-primary)">{{ cb.name }}</span><span style="font:var(--text-label);color:var(--color-text-muted)">{{ cb.n }}</span></div></div></sc-for>
+</section></sc-if>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ P }}" hint-placeholder-val="{{ false }}">
+<div data-name="4.3 Сторінка персоналії" style="padding:16px 16px 32px;display:flex;flex-direction:column;gap:16px">
+<nav aria-label="Навігаційний шлях" style="display:flex;flex-wrap:wrap;gap:8px;font:var(--text-label);color:var(--color-text-muted)"><a href="#" onClick="{{ goCatalog }}" data-link="{{ lk.catalog }}" style="color:var(--color-primary)">Каталог фільмів</a><span>→</span><sc-if value="{{ person.hasFrom }}" hint-placeholder-val="{{ false }}"><a href="#" onClick="{{ person.openFrom }}" data-link="{{ lk.fromFilm }}" style="color:var(--color-primary)">{{ person.fromT }}</a><span>→</span></sc-if><span style="color:var(--color-text)">{{ person.name }}</span></nav>
+<div style="display:flex;align-items:center;gap:16px"><span aria-hidden="true" style="width:64px;height:64px;flex:none;border-radius:50%;background:var(--color-primary);color:var(--color-on-primary);display:flex;align-items:center;justify-content:center;font:600 22px/28px 'Inter',sans-serif">{{ person.ini }}</span><div style="display:flex;flex-direction:column;gap:4px"><h1 style="margin:0;font:var(--text-page-m)">{{ person.name }}</h1><span style="font:var(--text-label);color:var(--color-text-muted)">{{ person.count }}</span></div></div>
+<div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ person.tags }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:6px;padding:2px 8px;border-radius:4px;border:1px solid var(--color-border);font:var(--text-label)"><span style="width:8px;height:8px;border-radius:50%;background:{{ t.c }}"></span>{{ t.label }}</span></sc-for></div>
+<a href="{{ person.wiki }}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif;text-decoration:none">Запис у Wikidata ↗</a>
+<h2 style="margin:8px 0 0;font:var(--text-block)">Хронологія</h2>
+<div style="display:flex;flex-direction:column;border-left:2px solid var(--color-border);margin-left:8px">
+<sc-for list="{{ person.timeline }}" as="tp" hint-placeholder-count="2"><div style="position:relative;padding:0 0 16px 20px"><span style="position:absolute;left:-8px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--color-primary);border:3px solid var(--color-bg)"></span><div style="font:600 14px/20px 'Inter',sans-serif;color:var(--color-text-muted)">{{ tp.y }}</div>
+<sc-for list="{{ tp.films }}" as="tf" hint-placeholder-count="1"><div role="link" tabindex="0" onClick="{{ tf.open }}" data-link="{{ tf.link }}" style="min-height:44px;display:flex;flex-direction:column;justify-content:center"><span style="font:500 16px/24px 'Inter',sans-serif;color:var(--color-primary)">{{ tf.t }}</span><span style="font:var(--text-label);color:var(--color-text-muted)">{{ tf.role }}</span></div></sc-for></div></sc-for>
+</div>
+<h2 style="margin:8px 0 0;font:var(--text-block)">Фільмографія</h2>
+<sc-for list="{{ person.rows }}" as="rw" hint-placeholder-count="2"><div role="link" tabindex="0" onClick="{{ rw.open }}" data-link="{{ rw.link }}" style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px" style-active="border-color:var(--color-primary)"><div style="display:flex;flex-direction:column"><span style="font:500 16px/24px 'Inter',sans-serif;color:var(--color-primary)">{{ rw.t }}</span><span style="font:var(--text-label);color:var(--color-text-muted)">{{ rw.role }}</span></div><span style="font:var(--text-label);color:var(--color-text-muted)">{{ rw.y }}</span></div></sc-for>
+<sc-if value="{{ person.hasCollabs }}" hint-placeholder-val="{{ true }}">
+<h2 style="margin:8px 0 0;font:var(--text-block)">Постійні співробітники</h2>
+<div style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;padding:4px 16px">
+<sc-for list="{{ person.collabs }}" as="cb" hint-placeholder-count="3"><div role="link" tabindex="0" onClick="{{ cb.open }}" data-link="{{ cb.link }}" style="display:flex;align-items:center;gap:12px;min-height:56px"><span aria-hidden="true" style="width:36px;height:36px;flex:none;border-radius:50%;background:var(--color-hover);display:flex;align-items:center;justify-content:center;font:600 13px/16px 'Inter',sans-serif;color:var(--color-primary)">{{ cb.ini }}</span><div style="display:flex;flex-direction:column"><span style="font:500 16px/24px 'Inter',sans-serif;color:var(--color-primary)">{{ cb.name }}</span><span style="font:var(--text-label);color:var(--color-text-muted)">{{ cb.n }}</span></div></div></sc-for>
+</div></sc-if>
+</div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ v.graph }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ D }}" hint-placeholder-val="{{ true }}">
+<div data-name="4.4 Граф зв'язків" style="padding:24px 80px 32px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px"><h1 style="margin:0;font:var(--text-page);white-space:nowrap">Граф зв'язків</h1><span style="font:var(--text-body);color:var(--color-text-muted);white-space:nowrap">Центр: «{{ graph.centerT }}» · {{ graph.stats }}</span></div>
+<div data-name="Панель інструментів графа" style="display:flex;align-items:center;gap:16px">
+<div style="position:relative;width:320px">
+<div style="display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px"><svg viewBox="0 0 24 24" style="width:18px;height:18px;flex:none;fill:none;stroke:var(--color-text-muted);stroke-width:2;stroke-linecap:round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg><input value="{{ graph.q }}" onChange="{{ graph.onQ }}" placeholder="Знайти вузол" aria-label="Знайти вузол" style="flex:1;border:none;outline:none;background:transparent;font:var(--text-label)"></div>
+<sc-if value="{{ graph.hasHits }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;top:48px;left:0;right:0;z-index:5;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;box-shadow:0 8px 24px rgba(27,31,36,.12);padding:4px"><sc-for list="{{ graph.hits }}" as="hh" hint-placeholder-count="2"><div role="option" onClick="{{ hh.pick }}" data-link="{{ lk.graphSel }}" style="display:flex;justify-content:space-between;min-height:40px;align-items:center;padding:0 12px;border-radius:6px;cursor:pointer;font:var(--text-label)" style-hover="background:var(--color-hover)"><span>{{ hh.label }}</span><span style="color:var(--color-text-muted)">{{ hh.kind }}</span></div></sc-for></div></sc-if>
+</div>
+<div style="display:flex;gap:4px;padding:2px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface)"><sc-for list="{{ graph.depths }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.on }}" data-link="{{ o.link }}" aria-pressed="{{ o.pressed }}" style="height:38px;padding:0 12px;border:none;border-radius:6px;background:{{ o.bg }};color:{{ o.fg }};font:500 14px/20px 'Inter',sans-serif;cursor:pointer">{{ o.label }}</button></sc-for></div>
+<div style="display:flex;align-items:center;gap:4px">
+<button aria-label="Зменшити" onClick="{{ graph.zout }}" data-link="{{ lk.self }}" style="width:44px;height:44px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-text);cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:var(--color-hover)"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3M8 11h6"></path></svg></button>
+<span style="width:48px;text-align:center;font:var(--text-label);color:var(--color-text-muted)">{{ graph.zoomText }}</span>
+<button aria-label="Збільшити" onClick="{{ graph.zin }}" data-link="{{ lk.self }}" style="width:44px;height:44px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-text);cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:var(--color-hover)"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3M11 8v6M8 11h6"></path></svg></button>
+<button aria-label="Вмістити граф" onClick="{{ graph.fit }}" data-link="{{ lk.self }}" style="width:44px;height:44px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-text);cursor:pointer;display:flex;align-items:center;justify-content:center" style-hover="background:var(--color-hover)"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"></path></svg></button>
+</div>
+<div data-name="Легенда" style="margin-left:auto;display:flex;gap:16px;flex-wrap:wrap"><sc-for list="{{ graph.legend }}" as="lg" hint-placeholder-count="6"><span style="display:flex;align-items:center;gap:6px;white-space:nowrap;font:var(--text-label);color:var(--color-text-muted)"><span style="width:14px;height:14px;border-radius:{{ lg.r }};background:{{ lg.c }}"></span>{{ lg.label }}</span></sc-for></div>
+</div>
+<div style="display:flex;gap:24px;align-items:stretch">
+<div data-name="Полотно графа" style="width:936px;height:600px;flex:none;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;overflow:hidden;background-image:radial-gradient(var(--color-border) 1px,transparent 1px);background-size:24px 24px">{{ graph.svg }}</div>
+<aside data-name="Панель вузла" style="flex:1;min-width:0;padding:24px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:16px">
+<sc-if value="{{ graph.sel.none }}" hint-placeholder-val="{{ true }}"><div style="display:flex;flex-direction:column;gap:8px"><h2 style="margin:0;font:var(--text-block)">Вузол не вибрано</h2><p style="margin:0;font:var(--text-label);color:var(--color-text-muted);text-wrap:pretty">Натисніть на фільм або персоналію, щоб побачити короткі дані. Вузли можна перетягувати, полотно — гортати й масштабувати коліщатком.</p></div></sc-if>
+<sc-if value="{{ graph.sel.has }}" hint-placeholder-val="{{ false }}">
+<span style="font:var(--text-label);color:var(--color-text-muted)">{{ graph.sel.kind }}</span>
+<h2 style="margin:0;font:var(--text-block)">{{ graph.sel.title }}</h2>
+<div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ graph.sel.tags }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:6px;padding:2px 8px;border-radius:4px;border:1px solid var(--color-border);font:var(--text-label)"><span style="width:8px;height:8px;border-radius:50%;background:{{ t.c }}"></span>{{ t.label }}</span></sc-for></div>
+<p style="margin:0;font:var(--text-label);color:var(--color-text-muted);text-wrap:pretty">{{ graph.sel.sub }}</p>
+<span style="font:var(--text-label)">{{ graph.sel.links }}</span>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:auto">
+<button onClick="{{ graph.sel.open }}" data-link="{{ graph.sel.link }}" style="min-height:44px;border-radius:6px;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-on-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-primary-hover)" style-active="background:var(--color-primary-pressed)">Відкрити сторінку</button>
+<sc-if value="{{ graph.sel.canCenter }}" hint-placeholder-val="{{ false }}"><button onClick="{{ graph.sel.center }}" data-link="{{ lk.graph }}" style="min-height:44px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-hover)">Зробити центром графа</button></sc-if>
+<button onClick="{{ graph.closeSel }}" data-link="{{ lk.graph }}" style="min-height:44px;border:none;background:transparent;color:var(--color-text-muted);font:500 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="color:var(--color-text)">Зняти вибір</button>
+</div>
+</sc-if>
+</aside>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ P }}" hint-placeholder-val="{{ false }}">
+<div data-name="4.4 Граф зв'язків" style="display:flex;flex-direction:column;height:100%">
+<div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px;background:var(--color-surface);border-bottom:1px solid var(--color-border)">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px"><h1 style="margin:0;font:600 20px/28px 'Inter',sans-serif">Граф зв'язків</h1><span style="font:var(--text-label);color:var(--color-text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">«{{ graph.centerT }}»</span></div>
+<div style="display:flex;gap:8px">
+<div style="position:relative;flex:1;min-width:0"><input value="{{ graph.q }}" onChange="{{ graph.onQ }}" placeholder="Знайти вузол" aria-label="Знайти вузол" style="width:100%;height:44px;padding:0 12px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-bg);font:var(--text-label)">
+<sc-if value="{{ graph.hasHits }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;top:48px;left:0;right:0;z-index:5;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;box-shadow:0 8px 24px rgba(27,31,36,.12);padding:4px"><sc-for list="{{ graph.hits }}" as="hh" hint-placeholder-count="2"><div role="option" onClick="{{ hh.pick }}" data-link="{{ lk.graphSel }}" style="min-height:44px;display:flex;align-items:center;padding:0 12px;font:var(--text-label)">{{ hh.label }}</div></sc-for></div></sc-if></div>
+<div style="display:flex;padding:2px;border:1px solid var(--color-border);border-radius:8px"><sc-for list="{{ graph.depths }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.on }}" data-link="{{ o.link }}" style="height:38px;padding:0 10px;border:none;border-radius:6px;background:{{ o.bg }};color:{{ o.fg }};font:500 13px/20px 'Inter',sans-serif">{{ o.label }}</button></sc-for></div>
+</div></div>
+<div data-name="Полотно графа" style="position:relative;height:600px;flex:none;background-image:radial-gradient(var(--color-border) 1px,transparent 1px);background-size:24px 24px;background-color:var(--color-surface)">{{ graph.svg }}
+<div style="position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:8px">
+<button aria-label="Збільшити" onClick="{{ graph.zin }}" data-link="{{ lk.self }}" style="width:44px;height:44px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);display:flex;align-items:center;justify-content:center;font:600 20px/1 'Inter',sans-serif">+</button>
+<button aria-label="Зменшити" onClick="{{ graph.zout }}" data-link="{{ lk.self }}" style="width:44px;height:44px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);display:flex;align-items:center;justify-content:center;font:600 20px/1 'Inter',sans-serif">−</button>
+<button aria-label="Вмістити граф" onClick="{{ graph.fit }}" data-link="{{ lk.self }}" style="width:44px;height:44px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"></path></svg></button>
+</div>
+<div style="position:absolute;left:12px;bottom:12px;display:flex;flex-wrap:wrap;gap:8px;max-width:260px;padding:8px;background:rgba(255,255,255,.92);border:1px solid var(--color-border);border-radius:8px"><sc-for list="{{ graph.legend }}" as="lg" hint-placeholder-count="6"><span style="display:flex;align-items:center;gap:4px;font:400 12px/16px 'Inter',sans-serif;color:var(--color-text-muted)"><span style="width:10px;height:10px;border-radius:{{ lg.r }};background:{{ lg.c }}"></span>{{ lg.label }}</span></sc-for></div>
+</div>
+</div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ v.stats }}" hint-placeholder-val="{{ false }}">
+<sc-if value="{{ D }}" hint-placeholder-val="{{ true }}">
+<div data-name="4.5 Статистика" style="padding:32px 80px 48px;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:24px;align-items:start">
+<h1 style="grid-column:span 12;margin:0;font:var(--text-page)">Статистика</h1>
+<section style="grid-column:span 12;padding:24px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;align-items:baseline"><h2 style="margin:0;font:var(--text-block)">Фільми за роками</h2><span style="font:var(--text-label);color:var(--color-text-muted)">1991–2026 · наведіть на стовпчик</span></div>
+<div onMouseLeave="{{ stats.leave }}" style="position:relative;height:240px;display:flex;align-items:flex-end;gap:4px;border-bottom:1px solid var(--color-border)" role="img" aria-label="Стовпчикова діаграма кількості фільмів за роками з 1991 по 2026">
+<sc-for list="{{ stats.bars }}" as="b" hint-placeholder-count="36"><div onMouseEnter="{{ b.enter }}" data-link="{{ lk.statsTip }}" style="flex:1;height:100%;display:flex;align-items:flex-end;cursor:pointer"><div style="width:100%;height:{{ b.h }}%;background:{{ b.bg }};border-radius:3px 3px 0 0"></div></div></sc-for>
+<sc-if value="{{ stats.tip }}" hint-placeholder-val="{{ false }}"><div role="tooltip" style="position:absolute;left:{{ stats.tipLeft }}%;bottom:{{ stats.tipBottom }}%;transform:translate(-50%,-8px);padding:6px 10px;border-radius:6px;background:var(--color-text);color:var(--color-surface);font:500 14px/20px 'Inter',sans-serif;white-space:nowrap;pointer-events:none">{{ stats.tipText }}</div></sc-if>
+</div>
+<div style="display:flex;gap:4px"><sc-for list="{{ stats.bars }}" as="b" hint-placeholder-count="36"><span style="flex:1;font:400 12px/16px 'Inter',sans-serif;color:var(--color-text-muted);white-space:nowrap">{{ b.lbl }}</span></sc-for></div>
+</section>
+<section style="grid-column:span 6;padding:24px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:16px">
+<h2 style="margin:0;font:var(--text-block)">Жанри у двох періодах</h2>
+<div style="display:flex;gap:16px;font:var(--text-label);color:var(--color-text-muted)"><span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:2px;background:var(--color-primary-light)"></span>1991–2013</span><span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:2px;background:var(--color-primary)"></span>2014 — дотепер</span></div>
+<div style="height:200px;display:flex;align-items:flex-end;gap:16px;border-bottom:1px solid var(--color-border)"><sc-for list="{{ stats.genres }}" as="gg" hint-placeholder-count="6"><div style="flex:1;height:100%;display:flex;align-items:flex-end;gap:4px"><div title="{{ gg.na }}" style="flex:1;height:{{ gg.a }}%;background:var(--color-primary-light);border-radius:3px 3px 0 0"></div><div title="{{ gg.nb }}" style="flex:1;height:{{ gg.b }}%;background:var(--color-primary);border-radius:3px 3px 0 0"></div></div></sc-for></div>
+<div style="display:flex;gap:16px"><sc-for list="{{ stats.genres }}" as="gg" hint-placeholder-count="6"><span style="flex:1;text-align:center;font:400 12px/16px 'Inter',sans-serif;color:var(--color-text-muted)">{{ gg.g }}<br>{{ gg.na }} / {{ gg.nb }}</span></sc-for></div>
+</section>
+<section style="grid-column:span 3;padding:24px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:8px">
+<h2 style="margin:0 0 8px;font:var(--text-block)">Топ-10 режисерів</h2>
+<sc-for list="{{ stats.topD }}" as="r" hint-placeholder-count="10"><div style="display:flex;flex-direction:column;gap:2px"><div style="display:flex;justify-content:space-between;gap:8px;font:var(--text-label)"><span>{{ r.i }}. {{ r.name }}</span><span style="color:var(--color-text-muted)">{{ r.n }}</span></div><div style="height:4px;border-radius:2px;background:var(--color-hover)"><div style="width:{{ r.w }}%;height:100%;border-radius:2px;background:var(--color-role-director)"></div></div></div></sc-for>
+</section>
+<section style="grid-column:span 3;padding:24px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:8px">
+<h2 style="margin:0 0 8px;font:var(--text-block)">Топ-10 акторів</h2>
+<sc-for list="{{ stats.topA }}" as="r" hint-placeholder-count="10"><div style="display:flex;flex-direction:column;gap:2px"><div style="display:flex;justify-content:space-between;gap:8px;font:var(--text-label)"><span>{{ r.i }}. {{ r.name }}</span><span style="color:var(--color-text-muted)">{{ r.n }}</span></div><div style="height:4px;border-radius:2px;background:var(--color-hover)"><div style="width:{{ r.w }}%;height:100%;border-radius:2px;background:var(--color-role-actor)"></div></div></div></sc-for>
+</section>
+</div>
+</sc-if>
+<sc-if value="{{ P }}" hint-placeholder-val="{{ false }}">
+<div data-name="4.5 Статистика" style="padding:16px 16px 32px;display:flex;flex-direction:column;gap:16px">
+<h1 style="margin:0;font:var(--text-page-m)">Статистика</h1>
+<section style="padding:16px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:12px">
+<h2 style="margin:0;font:600 18px/24px 'Inter',sans-serif">Фільми за роками</h2>
+<span style="font:var(--text-label);color:var(--color-text-muted)">Торкніться стовпчика · гортайте вбік</span>
+<div style="overflow-x:auto;margin:0 -16px;padding:0 16px"><div style="width:720px">
+<div style="position:relative;height:200px;display:flex;align-items:flex-end;gap:4px;border-bottom:1px solid var(--color-border);margin-top:32px"><sc-for list="{{ stats.bars }}" as="b" hint-placeholder-count="36"><div onClick="{{ b.enter }}" data-link="{{ lk.statsTip }}" style="flex:1;height:100%;display:flex;align-items:flex-end"><div style="width:100%;height:{{ b.h }}%;background:{{ b.bg }};border-radius:3px 3px 0 0"></div></div></sc-for>
+<sc-if value="{{ stats.tip }}" hint-placeholder-val="{{ false }}"><div role="tooltip" style="position:absolute;left:{{ stats.tipLeft }}%;bottom:{{ stats.tipBottom }}%;transform:translate(-50%,-8px);padding:4px 8px;border-radius:6px;background:var(--color-text);color:var(--color-surface);font:500 13px/18px 'Inter',sans-serif;white-space:nowrap">{{ stats.tipText }}</div></sc-if></div>
+<div style="display:flex;gap:4px"><sc-for list="{{ stats.bars }}" as="b" hint-placeholder-count="36"><span style="flex:1;font:400 12px/16px 'Inter',sans-serif;color:var(--color-text-muted);white-space:nowrap">{{ b.lbl }}</span></sc-for></div>
+</div></div></section>
+<section style="padding:16px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:12px">
+<h2 style="margin:0;font:600 18px/24px 'Inter',sans-serif">Жанри у двох періодах</h2>
+<div style="display:flex;gap:16px;font:var(--text-label);color:var(--color-text-muted)"><span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:2px;background:var(--color-primary-light)"></span>1991–2013</span><span style="display:flex;align-items:center;gap:6px"><span style="width:12px;height:12px;border-radius:2px;background:var(--color-primary)"></span>2014 — дотепер</span></div>
+<div style="overflow-x:auto;margin:0 -16px;padding:0 16px"><div style="width:520px">
+<div style="height:160px;display:flex;align-items:flex-end;gap:16px;border-bottom:1px solid var(--color-border)"><sc-for list="{{ stats.genres }}" as="gg" hint-placeholder-count="6"><div style="flex:1;height:100%;display:flex;align-items:flex-end;gap:4px"><div style="flex:1;height:{{ gg.a }}%;background:var(--color-primary-light);border-radius:3px 3px 0 0"></div><div style="flex:1;height:{{ gg.b }}%;background:var(--color-primary);border-radius:3px 3px 0 0"></div></div></sc-for></div>
+<div style="display:flex;gap:16px"><sc-for list="{{ stats.genres }}" as="gg" hint-placeholder-count="6"><span style="flex:1;text-align:center;font:400 12px/16px 'Inter',sans-serif;color:var(--color-text-muted)">{{ gg.g }}</span></sc-for></div>
+</div></div></section>
+<div role="tablist" style="display:flex;gap:4px;padding:2px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface)"><sc-for list="{{ stats.tabs }}" as="o" hint-placeholder-count="2"><button role="tab" onClick="{{ o.on }}" data-link="{{ o.link }}" aria-selected="{{ o.pressed }}" style="flex:1;height:44px;border:none;border-radius:6px;background:{{ o.bg }};color:{{ o.fg }};font:500 14px/20px 'Inter',sans-serif">{{ o.label }}</button></sc-for></div>
+<section style="padding:16px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:10px">
+<sc-if value="{{ stats.tabD }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ stats.topD }}" as="r" hint-placeholder-count="10"><div style="display:flex;flex-direction:column;gap:2px"><div style="display:flex;justify-content:space-between;font:var(--text-label)"><span>{{ r.i }}. {{ r.name }}</span><span style="color:var(--color-text-muted)">{{ r.n }}</span></div><div style="height:4px;border-radius:2px;background:var(--color-hover)"><div style="width:{{ r.w }}%;height:100%;border-radius:2px;background:var(--color-role-director)"></div></div></div></sc-for></sc-if>
+<sc-if value="{{ stats.tabA }}" hint-placeholder-val="{{ false }}"><sc-for list="{{ stats.topA }}" as="r" hint-placeholder-count="10"><div style="display:flex;flex-direction:column;gap:2px"><div style="display:flex;justify-content:space-between;font:var(--text-label)"><span>{{ r.i }}. {{ r.name }}</span><span style="color:var(--color-text-muted)">{{ r.n }}</span></div><div style="height:4px;border-radius:2px;background:var(--color-hover)"><div style="width:{{ r.w }}%;height:100%;border-radius:2px;background:var(--color-role-actor)"></div></div></div></sc-for></sc-if>
+</section>
+</div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ v.quality }}" hint-placeholder-val="{{ false }}">
+<div data-name="4.6 Якість даних" style="padding:{{ gen.pad }};display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 24px">
+<sc-if value="{{ D }}" hint-placeholder-val="{{ true }}"><h1 style="margin:0;font:var(--text-page)">Якість даних</h1></sc-if>
+<sc-if value="{{ P }}" hint-placeholder-val="{{ false }}"><h1 style="margin:0;font:var(--text-page-m)">Якість даних</h1></sc-if>
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;font:var(--text-label);color:var(--color-text-muted)"><span>{{ quality.updated }}</span><sc-if value="{{ quality.isAdmin }}" hint-placeholder-val="{{ false }}"><a href="#" onClick="{{ quality.openLog }}" data-link="{{ lk.admin }}" style="color:var(--color-primary);font-weight:500">Журнал оновлень →</a></sc-if></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat({{ qCols }},minmax(0,1fr));gap:{{ qGap }}px">
+<sc-for list="{{ quality.metrics }}" as="m" hint-placeholder-count="5"><div data-name="Картка-показник" style="padding:16px 20px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:8px"><span style="font:var(--text-label);color:var(--color-text-muted)">{{ m.label }}</span><span style="font:600 32px/40px 'Inter',sans-serif">{{ m.value }}</span><div style="height:6px;border-radius:3px;background:var(--color-hover)"><div style="width:{{ m.pct }}%;height:100%;border-radius:3px;background:var(--color-primary)"></div></div><span style="font:var(--text-label);color:var(--color-text-muted)">{{ m.sub }}</span></div></sc-for>
+</div>
+<section style="padding:24px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px"><h2 style="margin:0;font:var(--text-block)">Повнота даних за роками</h2><div style="display:flex;gap:16px;font:var(--text-label);color:var(--color-text-muted)"><span style="display:flex;align-items:center;gap:6px"><span style="width:16px;height:3px;background:var(--color-primary)"></span>з режисером</span><span style="display:flex;align-items:center;gap:6px"><span style="width:16px;height:3px;background:var(--color-role-actor)"></span>з акторами</span></div></div>
+<div style="display:flex;gap:8px">
+<div style="display:flex;flex-direction:column;justify-content:space-between;height:220px;font:400 12px/16px 'Inter',sans-serif;color:var(--color-text-muted);text-align:right;width:36px"><span>100%</span><span>50%</span><span>0%</span></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:4px">
+<svg viewBox="0 0 1000 200" preserveAspectRatio="none" role="img" aria-label="Лінійна діаграма: частка фільмів із режисером і з акторами за роками" style="width:100%;height:220px;display:block;overflow:visible">
+<line x1="0" y1="0" x2="1000" y2="0" style="stroke:var(--color-border);vector-effect:non-scaling-stroke"></line><line x1="0" y1="100" x2="1000" y2="100" style="stroke:var(--color-border);vector-effect:non-scaling-stroke"></line><line x1="0" y1="200" x2="1000" y2="200" style="stroke:var(--color-border);vector-effect:non-scaling-stroke"></line>
+<polyline points="{{ quality.pd }}" style="fill:none;stroke:var(--color-primary);stroke-width:3;vector-effect:non-scaling-stroke;stroke-linejoin:round"></polyline>
+<polyline points="{{ quality.pa }}" style="fill:none;stroke:var(--color-role-actor);stroke-width:3;vector-effect:non-scaling-stroke;stroke-linejoin:round"></polyline>
+</svg>
+<div style="position:relative;height:16px"><sc-for list="{{ quality.xl }}" as="x" hint-placeholder-count="8"><span style="position:absolute;left:{{ x.x }}%;transform:translateX(-50%);font:400 12px/16px 'Inter',sans-serif;color:var(--color-text-muted)">{{ x.y }}</span></sc-for></div>
+</div></div>
+</section>
+</div>
+</sc-if>
+
+<sc-if value="{{ v.sparql }}" hint-placeholder-val="{{ false }}">
+<div data-name="4.7 SPARQL-консоль" style="padding:{{ gen.pad }};display:grid;grid-template-columns:{{ spCols }};gap:24px;align-items:start">
+<div style="grid-column:1 / -1;display:flex;flex-direction:column;gap:4px">
+<sc-if value="{{ D }}" hint-placeholder-val="{{ true }}"><h1 style="margin:0;font:var(--text-page)">SPARQL-консоль</h1></sc-if>
+<sc-if value="{{ P }}" hint-placeholder-val="{{ false }}"><h1 style="margin:0;font:var(--text-page-m)">SPARQL-консоль</h1></sc-if>
+<p style="margin:0;font:var(--text-body);color:var(--color-text-muted)">Запити до відкритих даних Wikidata</p></div>
+<sc-if value="{{ D }}" hint-placeholder-val="{{ true }}">
+<aside style="display:flex;flex-direction:column;gap:8px">
+<span style="font:var(--text-label);color:var(--color-text-muted)">Готові приклади</span>
+<sc-for list="{{ sp.examples }}" as="e" hint-placeholder-count="3"><button onClick="{{ e.pick }}" data-link="{{ lk.self }}" style="text-align:left;min-height:56px;padding:12px 16px;border-radius:8px;border:1px solid {{ e.bd }};background:{{ e.bg }};font:500 14px/20px 'Inter',sans-serif;color:var(--color-text);cursor:pointer" style-hover="border-color:var(--color-primary)">{{ e.label }}</button></sc-for>
+</aside></sc-if>
+<div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+<sc-if value="{{ P }}" hint-placeholder-val="{{ false }}"><label style="display:flex;flex-direction:column;gap:8px;font:var(--text-label);color:var(--color-text-muted)">Готовий приклад<select value="{{ sp.ex }}" onChange="{{ sp.onEx }}" data-link="{{ lk.self }}" style="height:44px;padding:0 12px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface);color:var(--color-text);font:var(--text-body)"><option value="0">Фільми за жанром</option><option value="1">Режисери з найбільшою кількістю фільмів</option><option value="2">Фільми одного актора</option></select></label></sc-if>
+<section data-name="Редактор запиту" style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 8px 8px 16px;border-bottom:1px solid var(--color-border)"><span style="font:600 16px/24px 'Inter',sans-serif">Запит</span>
+<button onClick="{{ sp.run }}" data-link="{{ lk.self }}" style="display:flex;align-items:center;gap:8px;min-height:44px;padding:0 20px;border-radius:6px;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-on-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-primary-hover)" style-active="background:var(--color-primary-pressed)"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor;stroke:none"><path d="M6 3l14 9-14 9z"></path></svg>Виконати</button></div>
+<div style="display:flex;overflow-x:auto;max-height:{{ spMaxH }}px;overflow-y:auto">
+<div aria-hidden="true" style="flex:none;padding:12px 0;background:var(--color-bg);border-right:1px solid var(--color-border);font:var(--text-code);text-align:right;user-select:none"><sc-for list="{{ sp.lines }}" as="ln" hint-placeholder-count="12"><div style="padding:0 10px 0 12px;background:{{ ln.nbg }};color:{{ ln.nfg }}">{{ ln.n }}</div></sc-for></div>
+<div style="flex:1;display:grid;min-width:max-content">
+<pre aria-hidden="true" style="grid-area:1/1;margin:0;padding:12px 16px;font:var(--text-code);white-space:pre;pointer-events:none"><sc-for list="{{ sp.lines }}" as="ln" hint-placeholder-count="12"><div><sc-for list="{{ ln.toks }}" as="tk" hint-placeholder-count="3"><span style="color:{{ tk.c }};font-weight:{{ tk.w }}">{{ tk.t }}</span></sc-for></div></sc-for></pre>
+<textarea value="{{ sp.text }}" onChange="{{ sp.onText }}" spellcheck="false" wrap="off" aria-label="Текст SPARQL-запиту" style="grid-area:1/1;width:100%;height:{{ sp.h }}px;margin:0;padding:12px 16px;border:none;outline:none;resize:none;background:transparent;color:transparent;caret-color:var(--color-text);font:var(--text-code);white-space:pre;overflow:hidden"></textarea>
+</div></div>
+</section>
+<section data-name="Результати" style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;overflow:hidden">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 8px 8px 16px;border-bottom:1px solid var(--color-border);min-height:61px">
+<div style="display:flex;flex-direction:column"><span style="font:600 16px/24px 'Inter',sans-serif">Результати</span><sc-if value="{{ sp.done }}" hint-placeholder-val="{{ false }}"><span style="font:var(--text-label);color:var(--color-text-muted)">{{ sp.meta }}</span></sc-if></div>
+<sc-if value="{{ sp.hasRows }}" hint-placeholder-val="{{ false }}"><button onClick="{{ sp.exportOpen }}" data-link="{{ lk.spExport }}" style="display:flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-hover)"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path></svg>Експорт</button></sc-if>
+</div>
+<sc-if value="{{ sp.idle }}" hint-placeholder-val="{{ true }}"><div style="padding:32px 16px;font:var(--text-label);color:var(--color-text-muted);text-align:center">Оберіть приклад або напишіть запит і натисніть «Виконати».</div></sc-if>
+<sc-if value="{{ sp.running }}" hint-placeholder-val="{{ false }}"><div aria-busy="true" style="display:flex;align-items:center;justify-content:center;gap:12px;padding:32px 16px;font:var(--text-label);color:var(--color-text-muted)"><span style="width:20px;height:20px;border-radius:50%;border:2px solid var(--color-border);border-top-color:var(--color-primary);animation:kgSpin .8s linear infinite"></span>Виконання запиту…</div></sc-if>
+<sc-if value="{{ sp.isErr }}" hint-placeholder-val="{{ false }}"><div role="alert" style="margin:16px;display:flex;gap:12px;align-items:flex-start;padding:12px 16px;border-radius:8px;background:var(--color-error-bg);border:1px solid var(--color-error);color:var(--color-error);font:500 14px/20px 'Inter',sans-serif"><svg viewBox="0 0 24 24" style="width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>{{ sp.errText }}</div></sc-if>
+<sc-if value="{{ sp.empty }}" hint-placeholder-val="{{ false }}"><div style="padding:32px 16px;text-align:center;display:flex;flex-direction:column;gap:4px"><span style="font:600 16px/24px 'Inter',sans-serif">Порожній результат</span><span style="font:var(--text-label);color:var(--color-text-muted)">Запит виконано, але жоден запис не відповідає умовам.</span></div></sc-if>
+<sc-if value="{{ sp.hasRows }}" hint-placeholder-val="{{ false }}"><div style="overflow-x:auto"><div role="table" style="min-width:max-content">
+<div role="row" style="display:grid;grid-template-columns:{{ sp.gridCols }};background:var(--color-bg);border-bottom:1px solid var(--color-border)"><sc-for list="{{ sp.cols }}" as="cl" hint-placeholder-count="2"><span role="columnheader" style="padding:8px 16px;font:500 14px/20px 'JetBrains Mono',monospace;color:var(--color-text-muted)">{{ cl }}</span></sc-for></div>
+<sc-for list="{{ sp.rows }}" as="rw" hint-placeholder-count="5"><div role="row" style="display:grid;grid-template-columns:{{ sp.gridCols }};border-bottom:1px solid var(--color-border)" style-hover="background:var(--color-hover)"><sc-for list="{{ rw.cells }}" as="cv" hint-placeholder-count="2"><span role="cell" style="padding:12px 16px;font:var(--text-label)">{{ cv }}</span></sc-for></div></sc-for>
+</div></div></sc-if>
+</section>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ v.login }}" hint-placeholder-val="{{ false }}">
+<div data-name="4.8 Вхід адміністратора" style="min-height:100%;display:flex;align-items:center;justify-content:center;padding:{{ gen.pad }}">
+<form onSubmit="{{ login.submit }}" style="width:100%;max-width:400px;padding:32px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;box-shadow:0 8px 24px rgba(27,31,36,.06);display:flex;flex-direction:column;gap:24px">
+<div style="display:flex;flex-direction:column;gap:8px"><h1 style="margin:0;font:var(--text-page-m)">Вхід для адміністратора</h1><p style="margin:0;font:var(--text-label);color:var(--color-text-muted);text-wrap:pretty">Введіть ключ доступу, щоб керувати оновленням даних.</p></div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<label for="kg-key" style="font:500 14px/20px 'Inter',sans-serif">Ключ доступу</label>
+<div style="display:flex;align-items:center;height:48px;padding:0 4px 0 12px;border:1px solid {{ login.bd }};border-radius:8px;background:var(--color-surface)">
+<input id="kg-key" type="{{ login.type }}" value="{{ login.key }}" onChange="{{ login.onKey }}" autocomplete="off" aria-invalid="{{ login.err }}" style="flex:1;min-width:0;height:44px;border:none;outline:none;background:transparent;font:var(--text-body)">
+<button type="button" onClick="{{ login.toggle }}" data-link="{{ lk.showKey }}" style="display:flex;align-items:center;gap:6px;height:40px;padding:0 10px;border:none;border-radius:6px;background:transparent;color:var(--color-primary);font:500 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-hover)"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>{{ login.showLabel }}</button>
+</div>
+<sc-if value="{{ login.err }}" hint-placeholder-val="{{ false }}"><span role="alert" style="display:flex;align-items:center;gap:6px;font:500 14px/20px 'Inter',sans-serif;color:var(--color-error)"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4M12 16h.01"></path></svg>Неправильний ключ доступу</span></sc-if>
+</div>
+<button type="submit" data-link="{{ lk.admin }}" style="min-height:48px;border-radius:6px;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-on-primary);font:600 16px/24px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-primary-hover)" style-active="background:var(--color-primary-pressed)">Увійти</button>
+<a href="#" onClick="{{ goCatalog }}" data-link="{{ lk.catalog }}" style="align-self:center;font:500 14px/20px 'Inter',sans-serif;padding:12px">Повернутися до каталогу</a>
+</form>
+</div>
+</sc-if>
+
+<sc-if value="{{ v.admin }}" hint-placeholder-val="{{ false }}">
+<div data-name="4.9 Панель адміністрування" style="padding:{{ gen.pad }};display:flex;flex-direction:column;gap:24px">
+<sc-if value="{{ D }}" hint-placeholder-val="{{ true }}"><h1 style="margin:0;font:var(--text-page)">Адміністрування</h1></sc-if>
+<sc-if value="{{ P }}" hint-placeholder-val="{{ false }}"><h1 style="margin:0;font:var(--text-page-m)">Адміністрування</h1></sc-if>
+<section data-name="Стан даних" style="padding:24px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-wrap:wrap;align-items:center;gap:24px 48px">
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font:var(--text-label);color:var(--color-text-muted)">Фільмів</span><span style="font:600 28px/36px 'Inter',sans-serif">{{ adm.films }}</span></div>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font:var(--text-label);color:var(--color-text-muted)">Персоналій</span><span style="font:600 28px/36px 'Inter',sans-serif">{{ adm.people }}</span></div>
+<div style="display:flex;flex-direction:column;gap:4px"><span style="font:var(--text-label);color:var(--color-text-muted)">Останнє оновлення</span><span style="font:600 20px/36px 'Inter',sans-serif">{{ adm.updated }}</span></div>
+<button onClick="{{ adm.start }}" data-link="{{ lk.admConfirm }}" disabled="{{ adm.busy }}" style="margin-left:auto;display:flex;align-items:center;gap:8px;min-height:48px;padding:0 20px;border-radius:6px;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-on-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer;opacity:{{ adm.btnOp }}" style-hover="background:var(--color-primary-hover)" style-active="background:var(--color-primary-pressed)"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M21 12a9 9 0 0 0-15-6.7L3 8M3 3v5h5M3 12a9 9 0 0 0 15 6.7l3-2.7M21 21v-5h-5"></path></svg>Оновити дані з Wikidata</button>
+</section>
+<sc-if value="{{ adm.showProg }}" hint-placeholder-val="{{ false }}">
+<section data-name="Індикатор оновлення" aria-live="polite" style="padding:24px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 style="margin:0;font:var(--text-block)">{{ adm.progTitle }}</h2><span style="font:600 14px/20px 'Inter',sans-serif;color:var(--color-text-muted)">{{ adm.pct }}%</span></div>
+<div style="height:8px;border-radius:4px;background:var(--color-hover);overflow:hidden"><div style="width:{{ adm.pct }}%;height:100%;background:{{ adm.barBg }};transition:width .5s"></div></div>
+<ol style="margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat({{ stageCols }},minmax(0,1fr));gap:8px">
+<sc-for list="{{ adm.stages }}" as="sg" hint-placeholder-count="5"><li style="display:flex;align-items:center;gap:8px;font:500 14px/20px 'Inter',sans-serif;color:{{ sg.fg }}">
+<sc-if value="{{ sg.done }}" hint-placeholder-val="{{ false }}"><span style="width:24px;height:24px;flex:none;border-radius:50%;background:var(--color-success);color:var(--color-on-primary);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round"><path d="M20 6 9 17l-5-5"></path></svg></span></sc-if>
+<sc-if value="{{ sg.cur }}" hint-placeholder-val="{{ false }}"><span style="width:24px;height:24px;flex:none;border-radius:50%;border:3px solid var(--color-border);border-top-color:var(--color-primary);animation:kgSpin .8s linear infinite"></span></sc-if>
+<sc-if value="{{ sg.fail }}" hint-placeholder-val="{{ false }}"><span style="width:24px;height:24px;flex:none;border-radius:50%;background:var(--color-error);color:var(--color-on-primary);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round"><path d="M18 6 6 18M6 6l12 12"></path></svg></span></sc-if>
+<sc-if value="{{ sg.pend }}" hint-placeholder-val="{{ true }}"><span style="width:24px;height:24px;flex:none;border-radius:50%;border:2px solid var(--color-border)"></span></sc-if>
+<span style="display:flex;flex-direction:column"><span>{{ sg.label }}</span><span style="font:400 12px/16px 'Inter',sans-serif;color:var(--color-text-muted)">{{ sg.note }}</span></span></li></sc-for>
+</ol>
+<sc-if value="{{ adm.done }}" hint-placeholder-val="{{ false }}"><div data-name="Повідомлення / успіх" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-radius:8px;background:var(--color-success-bg);color:var(--color-success);font:500 14px/20px 'Inter',sans-serif"><span>Додано 12, змінено 37</span><button onClick="{{ adm.hide }}" data-link="{{ lk.admin }}" style="min-height:36px;padding:0 12px;border:none;border-radius:6px;background:transparent;color:var(--color-success);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:rgba(46,125,50,.1)">Закрити</button></div></sc-if>
+<sc-if value="{{ adm.failed }}" hint-placeholder-val="{{ false }}"><div role="alert" data-name="Повідомлення / помилка" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-radius:8px;background:var(--color-error-bg);color:var(--color-error);font:500 14px/20px 'Inter',sans-serif"><span>Wikidata не відповідає після 3 спроб</span><button onClick="{{ adm.confirm }}" data-link="{{ lk.admRunning }}" style="min-height:36px;padding:0 12px;border:1px solid var(--color-error);border-radius:6px;background:transparent;color:var(--color-error);font:600 14px/20px 'Inter',sans-serif;cursor:pointer">Повторити</button></div></sc-if>
+</section></sc-if>
+<section data-name="Журнал оновлень" style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:8px;overflow:hidden">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:16px 16px 16px 24px"><h2 style="margin:0;font:var(--text-block)">Журнал оновлень</h2>
+<sc-if value="{{ P }}" hint-placeholder-val="{{ false }}"><button onClick="{{ adm.toggleSort }}" data-link="{{ lk.admin }}" style="min-height:44px;padding:0 12px;border:1px solid var(--color-border);border-radius:6px;background:var(--color-surface);font:500 14px/20px 'Inter',sans-serif">{{ adm.sortArrow }} {{ adm.sortLabel }}</button></sc-if></div>
+<sc-if value="{{ adm.noLog }}" hint-placeholder-val="{{ false }}"><div style="padding:32px;text-align:center;font:var(--text-label);color:var(--color-text-muted);border-top:1px solid var(--color-border)">Журнал порожній — оновлень ще не було.</div></sc-if>
+<sc-if value="{{ adm.hasLog }}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{ D }}" hint-placeholder-val="{{ true }}"><div role="table" aria-label="Журнал оновлень">
+<div role="row" style="display:grid;grid-template-columns:240px 160px 120px 120px minmax(0,1fr);gap:16px;padding:0 24px;background:var(--color-bg);border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border);font:500 14px/20px 'Inter',sans-serif;color:var(--color-text-muted)">
+<button role="columnheader" onClick="{{ adm.toggleSort }}" data-link="{{ lk.admin }}" aria-sort="{{ adm.ariaSort }}" style="display:flex;align-items:center;gap:6px;min-height:44px;padding:0;border:none;background:transparent;color:var(--color-text);font:600 14px/20px 'Inter',sans-serif;cursor:pointer;text-align:left">Дата {{ adm.sortArrow }}</button>
+<span role="columnheader" style="align-self:center">Тривалість</span><span role="columnheader" style="align-self:center">Додано</span><span role="columnheader" style="align-self:center">Змінено</span><span role="columnheader" style="align-self:center">Статус</span></div>
+<sc-for list="{{ adm.log }}" as="lr" hint-placeholder-count="3"><div role="row" tabindex="0" onClick="{{ lr.open }}" data-link="{{ lk.admDetail }}" style="display:grid;grid-template-columns:240px 160px 120px 120px minmax(0,1fr);gap:16px;align-items:center;min-height:52px;padding:0 24px;border-bottom:1px solid var(--color-border);cursor:pointer;font:var(--text-body)" style-hover="background:var(--color-hover)"><span role="cell">{{ lr.date }}</span><span role="cell" style="color:var(--color-text-muted)">{{ lr.dur }}</span><span role="cell">{{ lr.added }}</span><span role="cell">{{ lr.changed }}</span><span role="cell"><span style="padding:2px 8px;border-radius:4px;background:{{ lr.sbg }};color:{{ lr.sfg }};font:500 14px/20px 'Inter',sans-serif">{{ lr.status }}</span></span></div></sc-for>
+</div></sc-if>
+<sc-if value="{{ P }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:8px;padding:0 16px 16px">
+<sc-for list="{{ adm.log }}" as="lr" hint-placeholder-count="3"><div role="button" tabindex="0" onClick="{{ lr.open }}" data-link="{{ lk.admDetail }}" style="padding:12px 16px;border:1px solid var(--color-border);border-radius:8px;display:flex;flex-direction:column;gap:4px" style-active="background:var(--color-hover)"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font:500 16px/24px 'Inter',sans-serif">{{ lr.date }}</span><span style="padding:2px 8px;border-radius:4px;background:{{ lr.sbg }};color:{{ lr.sfg }};font:500 14px/20px 'Inter',sans-serif">{{ lr.status }}</span></div><span style="font:var(--text-label);color:var(--color-text-muted)">{{ lr.dur }} · додано {{ lr.added }}, змінено {{ lr.changed }}</span></div></sc-for>
+</div></sc-if>
+</sc-if>
+</section>
+</div>
+</sc-if>
+
+</main>
+
+<sc-if value="{{ filmBar }}" hint-placeholder-val="{{ false }}">
+<div data-name="Закріплені дії" style="position:absolute;left:0;right:0;bottom:0;z-index:10;display:flex;gap:8px;padding:12px 16px 24px;background:var(--color-surface);border-top:1px solid var(--color-border)">
+<button onClick="{{ film.openGraph }}" data-link="{{ lk.graph }}" style="flex:1;min-height:48px;border-radius:6px;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-on-primary);font:600 14px/20px 'Inter',sans-serif" style-active="background:var(--color-primary-pressed)">Граф зв'язків</button>
+<a href="{{ film.wiki }}" target="_blank" rel="noopener" style="flex:1;min-height:48px;display:flex;align-items:center;justify-content:center;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif;text-decoration:none">Запис у Wikidata ↗</a>
+</div></sc-if>
+
+<sc-if value="{{ graphSheet }}" hint-placeholder-val="{{ false }}">
+<div data-name="Шторка вузла" data-overlay="true" style="position:absolute;left:0;right:0;bottom:0;z-index:20;padding:8px 16px 24px;background:var(--color-surface);border-radius:16px 16px 0 0;box-shadow:0 -8px 24px rgba(27,31,36,.15);display:flex;flex-direction:column;gap:12px">
+<div style="align-self:center;width:40px;height:4px;border-radius:2px;background:var(--color-border)"></div>
+<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div style="display:flex;flex-direction:column;gap:2px"><span style="font:var(--text-label);color:var(--color-text-muted)">{{ graph.sel.kind }}</span><h2 style="margin:0;font:var(--text-block)">{{ graph.sel.title }}</h2></div><button aria-label="Закрити" onClick="{{ graph.closeSel }}" data-link="{{ lk.graph }}" style="width:44px;height:44px;border:none;background:transparent;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></div>
+<div style="display:flex;flex-wrap:wrap;gap:8px"><sc-for list="{{ graph.sel.tags }}" as="t" hint-placeholder-count="1"><span style="display:flex;align-items:center;gap:6px;padding:2px 8px;border-radius:4px;border:1px solid var(--color-border);font:var(--text-label)"><span style="width:8px;height:8px;border-radius:50%;background:{{ t.c }}"></span>{{ t.label }}</span></sc-for></div>
+<p style="margin:0;font:var(--text-label);color:var(--color-text-muted)">{{ graph.sel.sub }}</p>
+<button onClick="{{ graph.sel.open }}" data-link="{{ graph.sel.link }}" style="min-height:48px;border-radius:6px;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-on-primary);font:600 14px/20px 'Inter',sans-serif">Відкрити сторінку</button>
+</div></sc-if>
+
+<sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ cat.closeFilters }}" style="position:absolute;inset:0;z-index:30;background:rgba(27,31,36,.45);display:flex;align-items:flex-end">
+<div data-name="Шторка фільтрів" data-overlay="true" onClick="{{ stop }}" role="dialog" aria-label="Фільтри" style="width:100%;max-height:85%;overflow:auto;padding:8px 16px 24px;background:var(--color-surface);border-radius:16px 16px 0 0;display:flex;flex-direction:column;gap:20px">
+<div style="align-self:center;width:40px;height:4px;border-radius:2px;background:var(--color-border)"></div>
+<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0;font:var(--text-block)">{{ cat.filtersLabel }}</h2><button aria-label="Закрити" onClick="{{ cat.closeFilters }}" data-link="{{ lk.catalog }}" style="width:44px;height:44px;border:none;background:transparent;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<div style="display:flex;justify-content:space-between;font:var(--text-label)"><span style="color:var(--color-text-muted)">Роки</span><span style="font-weight:600">{{ cat.yText }}</span></div>
+<input type="range" min="1991" max="2026" value="{{ cat.yFrom }}" onChange="{{ cat.onYFrom }}" data-link="{{ lk.filtered }}" aria-label="Рік від" style="height:44px;accent-color:var(--color-primary)">
+<input type="range" min="1991" max="2026" value="{{ cat.yTo }}" onChange="{{ cat.onYTo }}" data-link="{{ lk.filtered }}" aria-label="Рік до" style="height:44px;accent-color:var(--color-primary)">
+</div>
+<div style="display:flex;gap:8px"><sc-for list="{{ cat.periods }}" as="o" hint-placeholder-count="2"><button onClick="{{ o.on }}" data-link="{{ o.link }}" aria-pressed="{{ o.pressed }}" style="flex:1;min-height:44px;border-radius:6px;border:1px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};font:500 14px/20px 'Inter',sans-serif">{{ o.label }}</button></sc-for></div>
+<label style="display:flex;flex-direction:column;gap:8px;font:var(--text-label);color:var(--color-text-muted)">Жанр<select value="{{ cat.genre }}" onChange="{{ cat.onGenre }}" data-link="{{ lk.filtered }}" style="height:44px;padding:0 12px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface);color:var(--color-text);font:var(--text-body)"><option value="">Усі жанри</option><option value="драма">драма</option><option value="документальний">документальний</option><option value="комедія">комедія</option><option value="воєнний">воєнний</option><option value="історичний">історичний</option><option value="трилер">трилер</option></select></label>
+<label style="display:flex;flex-direction:column;gap:8px;font:var(--text-label);color:var(--color-text-muted)">Режисер<select value="{{ cat.director }}" onChange="{{ cat.onDirector }}" data-link="{{ lk.filtered }}" style="height:44px;padding:0 12px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface);color:var(--color-text);font:var(--text-body)"><option value="">Усі режисери</option><option value="vasyan">Валентин Васянович</option><option value="sanin">Олесь Санін</option><option value="seitab">Ахтем Сеітаблаєв</option><option value="slabosh">Мирослав Слабошпицький</option><option value="lukich">Антоніо Лукіч</option><option value="aliev">Нариман Алієв</option><option value="tsilyk">Ірина Цілик</option><option value="sukhol">Дмитро Сухолиткий-Собчук</option><option value="gorbach">Марина Ер Горбач</option><option value="chernov">Мстислав Чернов</option></select></label>
+<label style="display:flex;align-items:center;gap:12px;min-height:44px;font:var(--text-body)"><input type="checkbox" checked="{{ cat.withActors }}" onChange="{{ cat.onWithActors }}" data-link="{{ lk.filtered }}" style="width:22px;height:22px;accent-color:var(--color-primary)">Лише з акторами</label>
+<div style="display:flex;gap:8px">
+<button onClick="{{ cat.reset }}" data-link="{{ lk.catalog }}" style="flex:1;min-height:48px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif">Скинути фільтри</button>
+<button onClick="{{ cat.closeFilters }}" data-link="{{ lk.filtered }}" style="flex:1;min-height:48px;border-radius:6px;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-on-primary);font:600 14px/20px 'Inter',sans-serif">{{ cat.showBtn }}</button>
+</div>
+</div></div></sc-if>
+
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeMenu }}" style="position:absolute;inset:0;z-index:40;background:rgba(27,31,36,.45);display:flex;justify-content:flex-end">
+<nav data-name="Бокова шторка меню" data-overlay="true" onClick="{{ stop }}" aria-label="Головне меню" style="width:300px;height:100%;background:var(--color-surface);display:flex;flex-direction:column;padding:8px 0 24px">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:0 8px 8px 20px;border-bottom:1px solid var(--color-border)"><span style="font:600 18px/24px 'Inter',sans-serif;color:var(--color-primary)">КіноГраф</span><button aria-label="Закрити меню" onClick="{{ closeMenu }}" data-link="{{ lk.catalog }}" style="width:44px;height:44px;border:none;background:transparent;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><path d="M18 6 6 18M6 6l12 12"></path></svg></button></div>
+<sc-for list="{{ nav }}" as="n" hint-placeholder-count="5"><div role="button" tabindex="0" onClick="{{ n.go }}" data-link="{{ n.link }}" style="min-height:52px;display:flex;align-items:center;padding:0 20px;border-left:4px solid {{ n.mbar }};background:{{ n.mbg }};font:500 16px/24px 'Inter',sans-serif" style-active="background:var(--color-pressed)">{{ n.label }}</div></sc-for>
+<div style="margin-top:auto;padding:16px 20px 0;border-top:1px solid var(--color-border)">
+<sc-if value="{{ isUser }}" hint-placeholder-val="{{ true }}"><div role="button" tabindex="0" onClick="{{ goLogin }}" data-link="{{ lk.login }}" style="min-height:44px;display:flex;align-items:center;font:var(--text-label);color:var(--color-text-muted)">Вхід для адміністратора</div></sc-if>
+<sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}"><button onClick="{{ logout }}" data-link="{{ lk.catalog }}" style="width:100%;min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path></svg>Вийти</button></sc-if>
+</div>
+</nav></div></sc-if>
+
+<sc-if value="{{ exp.open }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ exp.close }}" style="position:absolute;inset:0;z-index:50;background:rgba(27,31,36,.45);display:flex;align-items:center;justify-content:center;padding:16px">
+<div role="dialog" aria-label="Експорт" data-overlay="true" onClick="{{ stop }}" style="width:100%;max-width:440px;padding:24px;background:var(--color-surface);border-radius:8px;box-shadow:0 16px 48px rgba(27,31,36,.25);display:flex;flex-direction:column;gap:16px">
+<h2 style="margin:0;font:var(--text-block)">{{ exp.title }}</h2>
+<span style="font:var(--text-label);color:var(--color-text-muted)">Оберіть формат файлу</span>
+<div role="radiogroup" style="display:flex;flex-direction:column;gap:8px"><sc-for list="{{ exp.fmts }}" as="fm" hint-placeholder-count="3"><div role="radio" aria-checked="{{ fm.checked }}" tabindex="0" onClick="{{ fm.on }}" data-link="{{ lk.expSelf }}" style="display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 16px;border:1px solid {{ fm.bd }};border-radius:8px;background:{{ fm.bg }};cursor:pointer"><span style="width:20px;height:20px;flex:none;border-radius:50%;border:2px solid var(--color-primary);display:flex;align-items:center;justify-content:center"><span style="width:10px;height:10px;border-radius:50%;background:{{ fm.dot }}"></span></span><span style="display:flex;flex-direction:column"><span style="font:600 16px/24px 'Inter',sans-serif">{{ fm.label }}</span><span style="font:var(--text-label);color:var(--color-text-muted)">{{ fm.desc }}</span></span></div></sc-for></div>
+<div style="display:flex;justify-content:flex-end;gap:8px">
+<button onClick="{{ exp.close }}" data-link="{{ lk.expBack }}" style="min-height:44px;padding:0 16px;border:none;border-radius:6px;background:transparent;color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-hover)">Скасувати</button>
+<button onClick="{{ exp.go }}" data-link="{{ lk.expBack }}" style="min-height:44px;padding:0 20px;border-radius:6px;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-on-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-primary-hover)" style-active="background:var(--color-primary-pressed)">Завантажити</button>
+</div></div></div></sc-if>
+
+<sc-if value="{{ adm.confirmOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:50;background:rgba(27,31,36,.45);display:flex;align-items:center;justify-content:center;padding:16px">
+<div role="alertdialog" data-overlay="true" aria-label="Підтвердження оновлення" style="width:100%;max-width:460px;padding:24px;background:var(--color-surface);border-radius:8px;box-shadow:0 16px 48px rgba(27,31,36,.25);display:flex;flex-direction:column;gap:16px">
+<h2 style="margin:0;font:var(--text-block)">Оновити дані з Wikidata?</h2>
+<p style="margin:0;font:var(--text-body);color:var(--color-text-muted);text-wrap:pretty">Буде завантажено актуальні записи про фільми, учасників, жанри й нагороди. Оновлення триває кілька хвилин, каталог залишається доступним.</p>
+<div style="display:flex;justify-content:flex-end;gap:8px">
+<button onClick="{{ adm.cancel }}" data-link="{{ lk.admin }}" style="min-height:44px;padding:0 16px;border:none;border-radius:6px;background:transparent;color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-hover)">Скасувати</button>
+<button onClick="{{ adm.confirm }}" data-link="{{ lk.admRunning }}" style="min-height:44px;padding:0 20px;border-radius:6px;border:1px solid var(--color-primary);background:var(--color-primary);color:var(--color-on-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-primary-hover)" style-active="background:var(--color-primary-pressed)">Оновити</button>
+</div></div></div></sc-if>
+
+<sc-if value="{{ adm.det }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ adm.closeDet }}" style="position:absolute;inset:0;z-index:50;background:rgba(27,31,36,.45);display:flex;align-items:center;justify-content:center;padding:16px">
+<div role="dialog" aria-label="Подробиці оновлення" data-overlay="true" onClick="{{ stop }}" style="width:100%;max-width:480px;padding:24px;background:var(--color-surface);border-radius:8px;box-shadow:0 16px 48px rgba(27,31,36,.25);display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 style="margin:0;font:var(--text-block)">Оновлення {{ adm.detDate }}</h2><span style="padding:2px 8px;border-radius:4px;background:{{ adm.dsbg }};color:{{ adm.dsfg }};font:500 14px/20px 'Inter',sans-serif">{{ adm.detStatus }}</span></div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+<div style="display:flex;flex-direction:column;padding:12px;border-radius:8px;background:var(--color-bg)"><span style="font:var(--text-label);color:var(--color-text-muted)">Тривалість</span><span style="font:600 16px/24px 'Inter',sans-serif">{{ adm.detDur }}</span></div>
+<div style="display:flex;flex-direction:column;padding:12px;border-radius:8px;background:var(--color-bg)"><span style="font:var(--text-label);color:var(--color-text-muted)">Додано</span><span style="font:600 16px/24px 'Inter',sans-serif">{{ adm.detAdded }}</span></div>
+<div style="display:flex;flex-direction:column;padding:12px;border-radius:8px;background:var(--color-bg)"><span style="font:var(--text-label);color:var(--color-text-muted)">Змінено</span><span style="font:600 16px/24px 'Inter',sans-serif">{{ adm.detChanged }}</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:4px"><sc-for list="{{ adm.detStages }}" as="ds" hint-placeholder-count="5"><div style="display:flex;justify-content:space-between;min-height:32px;align-items:center;border-bottom:1px solid var(--color-border);font:var(--text-label)"><span>{{ ds.label }}</span><span style="color:{{ ds.fg }};font-weight:500">{{ ds.st }}</span></div></sc-for></div>
+<sc-if value="{{ adm.detHasMsg }}" hint-placeholder-val="{{ false }}"><div role="alert" style="padding:12px 16px;border-radius:8px;background:var(--color-error-bg);color:var(--color-error);font:500 14px/20px 'Inter',sans-serif">{{ adm.detMsg }}</div></sc-if>
+<button onClick="{{ adm.closeDet }}" data-link="{{ lk.admin }}" style="align-self:flex-end;min-height:44px;padding:0 20px;border-radius:6px;border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-primary);font:600 14px/20px 'Inter',sans-serif;cursor:pointer" style-hover="background:var(--color-hover)">Закрити</button>
+</div></div></sc-if>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+<div role="status" style="position:absolute;left:50%;bottom:96px;transform:translateX(-50%);z-index:60;padding:12px 20px;border-radius:8px;background:var(--color-text);color:var(--color-surface);font:500 14px/20px 'Inter',sans-serif;box-shadow:0 8px 24px rgba(27,31,36,.25);white-space:nowrap">{{ toastText }}</div></sc-if>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</x-prototype>
+<script type="text/x-prototype" data-prototype-script data-props="{&quot;pageSize&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[4,8,12],&quot;default&quot;:8,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Каталог&quot;}}">
+const PPL = {sanin:'Олесь Санін',slabosh:'Мирослав Слабошпицький',seitab:'Ахтем Сеітаблаєв',vasyan:'Валентин Васянович',lukich:'Антоніо Лукіч',aliev:'Нариман Алієв',tsilyk:'Ірина Цілик',sukhol:'Дмитро Сухолиткий-Собчук',gorbach:'Марина Ер Горбач',chernov:'Мстислав Чернов',rymaruk:'Андрій Римарук',lidah:'Андрій Лідаговський',vitovska:'Ірма Вітовська',lutsky:'Роман Луцький',yatsenko:'Олександр Яценко',cherkashyna:'Оксана Черкашина',novikova:'Яна Новікова',fesenko:'Григорій Фесенко',dovzhenko:'Вячеслав Довженко',vorozhbyt:'Наталія Ворожбит',nikitiuk:'Марися Нікітюк',biliaklov:'Ремзі Біляклов',zahaik:'Алла Загайкевич'};
+const F = [
+ {id:'mamai',t:'Мамай',y:2003,dur:80,g:['драма','історичний'],d:['sanin'],w:['sanin'],c:[],a:[],aw:[]},
+ {id:'plemya',t:"Плем'я",y:2014,dur:130,g:['драма'],d:['slabosh'],w:['slabosh'],c:[],a:['novikova','fesenko'],aw:['Каннський кінофестиваль — Гран-прі Тижня критики']},
+ {id:'povodyr',t:'Поводир',y:2014,dur:122,g:['драма','історичний'],d:['sanin'],w:['sanin'],c:['zahaik'],a:[],aw:[]},
+ {id:'kiborhy',t:'Кіборги',y:2017,dur:113,g:['драма','воєнний'],d:['seitab'],w:['vorozhbyt'],c:[],a:['dovzhenko'],aw:[]},
+ {id:'atlantyda',t:'Атлантида',y:2019,dur:108,g:['драма'],d:['vasyan'],w:['vasyan'],c:[],a:['rymaruk'],aw:['Венеційський кінофестиваль — найкращий фільм програми «Горизонти»']},
+ {id:'dumky',t:'Мої думки тихі',y:2019,dur:104,g:['комедія','драма'],d:['lukich'],w:['lukich'],c:[],a:['lidah','vitovska'],aw:[]},
+ {id:'dodomu',t:'Додому',y:2019,dur:97,g:['драма'],d:['aliev'],w:['aliev','nikitiuk'],c:[],a:['seitab','biliaklov'],aw:[]},
+ {id:'zemlya',t:'Земля блакитна, ніби апельсин',y:2020,dur:74,g:['документальний'],d:['tsilyk'],w:['tsilyk'],c:[],a:[],aw:['Санденс — нагорода за режисуру, міжнародне документальне кіно']},
+ {id:'vidblysk',t:'Відблиск',y:2021,dur:126,g:['драма','воєнний'],d:['vasyan'],w:['vasyan'],c:[],a:['lutsky'],aw:[]},
+ {id:'pamfir',t:'Памфір',y:2022,dur:102,g:['драма','трилер'],d:['sukhol'],w:['sukhol'],c:[],a:['yatsenko'],aw:[]},
+ {id:'klondike',t:'Клондайк',y:2022,dur:100,g:['драма','воєнний'],d:['gorbach'],w:['gorbach'],c:[],a:['cherkashyna'],aw:['Санденс — нагорода за режисуру, міжнародне ігрове кіно']},
+ {id:'mariupol',t:'20 днів у Маріуполі',y:2023,dur:95,g:['документальний','воєнний'],d:['chernov'],w:['chernov'],c:[],a:[],aw:['Оскар — найкращий документальний повнометражний фільм']}
+];
+F.forEach((f,i)=>{ f.bg = `linear-gradient(${140+i*11}deg, var(--color-primary-light) 0%, var(--color-primary) 55%, var(--color-primary-dark) 100%)`; });
+const RK = ['d','w','c','a'];
+const ROLE = {d:{t:'режисер',g:'Режисер',c:'var(--color-role-director)'},w:{t:'сценарист',g:'Сценарист',c:'var(--color-role-writer)'},c:{t:'композитор',g:'Композитор',c:'var(--color-role-composer)'},a:{t:'актор',g:'Актори',c:'var(--color-role-actor)'}};
+const fById = id => F.find(f=>f.id===id);
+const crew = f => { const out=[]; RK.forEach(r=>(f[r]||[]).forEach(pid=>{ let x=out.find(o=>o.pid===pid); if(!x){x={pid,role:r,roles:[]};out.push(x);} x.roles.push(r); })); return out; };
+const pFilms = pid => F.filter(f=>RK.some(r=>f[r].includes(pid))).map(f=>({f,roles:RK.filter(r=>f[r].includes(pid))})).sort((a,b)=>a.f.y-b.f.y);
+const ini = n => n.split(/[\s-]+/).filter(Boolean).slice(0,2).map(s=>s[0]).join('');
+const plural = (n,a) => { const m=n%10,h=n%100; return a[(m===1&&h!==11)?0:(m>=2&&m<=4&&(h<10||h>=20))?1:2]; };
+const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const wiki = s => 'https://www.wikidata.org/w/index.php?search='+encodeURIComponent(s);
+const short = (s,n) => s.length>n ? s.slice(0,n-1)+'…' : s;
+const dt = ms => { const d=new Date(ms), p=x=>String(x).padStart(2,'0'); return `${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()}, ${p(d.getHours())}:${p(d.getMinutes())}`; };
+const YC = {1991:28,1992:31,1993:24,1994:19,1995:16,1996:14,1997:12,1998:13,1999:11,2000:15,2001:17,2002:19,2003:22,2004:24,2005:27,2006:29,2007:31,2008:34,2009:33,2010:36,2011:38,2012:41,2013:44,2014:51,2015:58,2016:64,2017:73,2018:79,2019:84,2020:70,2021:76,2022:59,2023:65,2024:68,2025:61,2026:17};
+const GEN = [['драма',214,318],['документальний',132,187],['комедія',96,121],['воєнний',18,94],['анімація',37,59],['історичний',41,46]];
+const TOPD = [['Олесь Санін',7],['Валентин Васянович',7],['Ахтем Сеітаблаєв',6],['Мирослав Слабошпицький',4],['Антоніо Лукіч',3],['Нариман Алієв',3],['Ірина Цілик',3],['Дмитро Сухолиткий-Собчук',3],['Марина Ер Горбач',2],['Мстислав Чернов',2]];
+const TOPA = [['Ірма Вітовська',24],['Ахтем Сеітаблаєв',15],['Олександр Яценко',14],['Роман Луцький',11],['Оксана Черкашина',9],['Вячеслав Довженко',9],['Андрій Лідаговський',4],['Андрій Римарук',2],['Яна Новікова',2],['Григорій Фесенко',2]];
+const QSER = Object.keys(YC).map(y=>{ const i=y-1991; return {y:+y, d:Math.round(Math.min(92,44+i*1.05+Math.sin(i*1.7)*5)), a:Math.round(Math.min(80,20+i*1.1+Math.cos(i*1.3)*6))}; });
+const STAGES = ['Фільми','Учасники','Жанри','Нагороди','Запис у сховище'];
+const EX = [
+ {label:'Фільми за жанром', q:`PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+# Українські драми від 1991 року
+SELECT ?filmLabel ?year WHERE {
+  ?film wdt:P31 wd:Q11424 ;
+        wdt:P495 wd:Q212 ;
+        wdt:P136 wd:Q130232 ;
+        wdt:P577 ?date .
+  BIND(YEAR(?date) AS ?year)
+  FILTER(?year >= 1991)
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "uk". }
+}
+ORDER BY DESC(?year)
+LIMIT 50`, cols:['?filmLabel','?year'], rows:F.filter(f=>f.g.includes('драма')).sort((a,b)=>b.y-a.y).map(f=>[f.t,String(f.y)]), time:'0,48 с'},
+ {label:'Режисери з найбільшою кількістю фільмів', q:`PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+SELECT ?directorLabel (COUNT(?film) AS ?films) WHERE {
+  ?film wdt:P31 wd:Q11424 ;
+        wdt:P495 wd:Q212 ;
+        wdt:P57 ?director .
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "uk". }
+}
+GROUP BY ?directorLabel
+ORDER BY DESC(?films)
+LIMIT 10`, cols:['?directorLabel','?films'], rows:TOPD.map(r=>[r[0],String(r[1])]), time:'1,12 с'},
+ {label:'Фільми одного актора', q:`PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+SELECT ?filmLabel ?year WHERE {
+  ?actor rdfs:label "Ірма Вітовська"@uk .
+  ?film wdt:P161 ?actor ;
+        wdt:P577 ?date .
+  BIND(YEAR(?date) AS ?year)
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "uk". }
+}
+ORDER BY ?year`, cols:['?filmLabel','?year'], rows:[['Мої думки тихі','2019']], time:'0,36 с'}
+];
+const KW = /^(PREFIX|SELECT|WHERE|FILTER|BIND|AS|ORDER|BY|DESC|ASC|LIMIT|SERVICE|GROUP|COUNT|YEAR|VALUES|OPTIONAL|DISTINCT)$/;
+const hl = line => { const out=[]; if(/^\s*#/.test(line)) return [{t:line,c:'var(--color-text-muted)'}]; const re=/<[^>]*>|"[^"]*"(?:@\w+)?|\?\w+|[A-Za-z_]+:[A-Za-z0-9_]*|[A-Za-z_]+|\s+|./g; let m; while((m=re.exec(line))){ const t=m[0]; let c='var(--color-text)', w='400'; if(t[0]==='<') c='var(--color-text-muted)'; else if(t[0]==='"') c='var(--color-success)'; else if(t[0]==='?') c='var(--color-role-writer)'; else if(/:/.test(t)) c='var(--color-role-director)'; else if(KW.test(t)) {c='var(--color-primary)'; w='600';} out.push({t,c,w}); } return out.length?out:[{t:' ',c:'inherit',w:'400'}]; };
+const LOG0 = [
+ {id:3,ms:Date.parse('2026-10-20T03:00:00'),dur:'2 хв 14 с',added:12,changed:37,ok:true},
+ {id:2,ms:Date.parse('2026-10-13T03:00:00'),dur:'1 хв 41 с',added:0,changed:5,ok:true},
+ {id:1,ms:Date.parse('2026-10-06T03:00:00'),dur:'1 хв 06 с',added:0,changed:0,ok:false,msg:'Wikidata не відповідає після 3 спроб',stop:1}
+];
+const NUM = {catalog:'4.1 Каталог',film:'4.2 Картка фільму',person:'4.3 Сторінка персоналії',graph:"4.4 Граф зв'язків",stats:'4.5 Статистика',quality:'4.6 Якість даних',sparql:'4.7 SPARQL-консоль',login:'4.8 Вхід адміністратора',admin:'4.9 Панель адміністрування'};
+const UIL = {normal:'звичайний',loading:'завантаження',empty:'порожньо',error:'помилка'};
+const CUSTOM = {catalog:['loading','empty'],film:['empty'],sparql:['loading','empty','error'],login:['error','empty'],admin:['error','empty']};
+const EMPTY = {person:'У відкритих даних для цієї персоналії не знайдено фільмів.',graph:"Для цього фільму у відкритих даних немає зв'язків.",stats:'Недостатньо даних, щоб побудувати статистику.',quality:'Показники якості ще не розраховано.'};
+const GENRES = ['драма','документальний','комедія','воєнний','історичний','трилер'];
+const CW = {d:[936,600], p:[390,600]};
+
+class Component extends DCLogic {
+  stageRef = React.createRef();
+  mainRef = React.createRef();
+  state = {screen:'catalog',device:'desktop',role:'user',ui:'normal',W:1440,
+    q:'',yFrom:1991,yTo:2026,genre:'',director:'',withActors:false,sort:'year',page:1,shown:6,
+    filmId:'povodyr',personId:'sanin',fromFilm:null,acc:{d:true,w:false,c:false,a:true},
+    g:null,hover:null,tab:'d',
+    ex:0,text:EX[0].q,sp:'idle',
+    key:'',showKey:false,keyErr:false,
+    upd:{phase:'idle',stage:0,attempt:0},log:LOG0,sortDesc:true,detail:null,updated:Date.parse('2026-10-20T03:00:00'),
+    menu:false,sheet:false,exp:null,fmt:'csv',toast:null};
+  bkey(p){ return ['screen','device','ui','role','film','person','from','preset','label','graphCenter','sel'].map(k=>p[k]||'').join('|'); }
+  componentDidMount(){ const p=this.props; this.base={...this.state}; if(p.board){ this._cfg=this.bkey(p); this.applyBoard(p); return; } this.onResize=()=>this.measure(); window.addEventListener('resize',this.onResize); this.measure(); this.setState({g:this.freshGraph('atlantyda',2,'desktop')}); }
+  applyBoard(p){ const device=p.device||'desktop', screen=p.screen||'catalog', ui=p.ui||'normal'; const g=this.freshGraph(p.graphCenter||'povodyr',2,device); const at=Date.parse('2026-10-22T10:00:00');
+    const s={...this.base,applied:p.label||null,screen,device,ui,role:p.role||(screen==='admin'?'admin':'user'),g};
+    if(p.film) s.filmId=p.film; if(p.person) s.personId=p.person; if(p.from) s.fromFilm=p.from;
+    if(screen==='sparql') s.sp=ui==='loading'?'running':'done';
+    if(screen==='login'&&ui==='error'){ s.keyErr=true; s.key='kinograf-2025'; }
+    let pr=p.preset; if(screen==='admin'&&ui==='error'&&!pr) pr='failed';
+    if(pr==='filtered'){ s.yFrom=2014; s.genre='драма'; }
+    if(pr==='filters'){ s.sheet=true; s.yFrom=2014; s.genre='драма'; }
+    if(pr==='search') s.q='Атлантида';
+    if(pr==='menu') s.menu=true;
+    if(pr==='export') s.exp=screen==='sparql'?'sparql':'catalog';
+    if(pr==='graphSel') g.sel=p.sel||'p:sanin';
+    if(pr==='confirm') s.upd={phase:'confirm',stage:0,attempt:0};
+    if(pr==='running') s.upd={phase:'running',stage:2,attempt:0};
+    if(pr==='done'){ s.upd={phase:'done',stage:5,attempt:0}; s.updated=at; s.log=[{id:9,ms:at,dur:'2 хв 14 с',added:12,changed:37,ok:true},...LOG0]; }
+    if(pr==='failed'){ s.upd={phase:'failed',stage:1,attempt:3}; s.log=[{id:9,ms:at,dur:'0 хв 52 с',added:0,changed:0,ok:false,msg:'Wikidata не відповідає після 3 спроб',stop:1},...LOG0]; }
+    if(pr==='detail') s.detail=1;
+    if(pr==='hover') s.hover='2019';
+    if(pr==='showKey'){ s.key='kinograf-2026'; s.showKey=true; }
+    this.setState(s); }
+  componentWillUnmount(){ window.removeEventListener('resize',this.onResize); clearInterval(this.timer); clearTimeout(this.tt); }
+  componentDidUpdate(){ if(this.props.board){ const k=this.bkey(this.props); if(k!==this._cfg){ this._cfg=k; this.applyBoard(this.props); return; } } if(this._lastScreen!==this.state.screen){ this._lastScreen=this.state.screen; if(this.mainRef.current) this.mainRef.current.scrollTop=0; } }
+  measure(){ const el=this.stageRef.current; if(el) this.setState({W:el.clientWidth}); }
+  scale(){ if(this.props.board) return 1; const D=this.state.device==='desktop'; return Math.min(1,(this.state.W)/(D?1440:414)); }
+  go(screen,extra){ this.setState({screen,ui:'normal',menu:false,sheet:false,...(extra||{})}); }
+  toast(t){ clearTimeout(this.tt); this.setState({toast:t}); this.tt=setTimeout(()=>this.setState({toast:null}),2600); }
+  freshGraph(center,depth,device){ const dk=(device||this.state.device)==='desktop'?'d':'p'; const [cw,ch]=CW[dk]; const z=depth===2?(dk==='d'?0.78:0.48):(dk==='d'?1.2:0.8); return {center,depth,pos:{},sel:null,q:'',z,tx:cw/2,ty:ch/2}; }
+  graphData(g){ const f=fById(g.center); const nodes=[],edges=[]; const add=n=>{ if(!nodes.find(x=>x.id===n.id)) nodes.push(n); return nodes.find(x=>x.id===n.id); };
+    add({id:'f:'+f.id,kind:'film',ref:f.id,x:0,y:0});
+    const ppl=crew(f);
+    ppl.forEach((p,i)=>{ const ang=-Math.PI*0.8+i*2*Math.PI/Math.max(ppl.length,1); add({id:'p:'+p.pid,kind:'person',ref:p.pid,role:p.role,x:Math.cos(ang)*170,y:Math.sin(ang)*170,ang}); edges.push(['f:'+f.id,'p:'+p.pid,p.role]); });
+    if(g.depth===2){ ppl.forEach(p=>{ const pn=nodes.find(n=>n.id==='p:'+p.pid); const others=F.filter(o=>o.id!==f.id && crew(o).some(c=>c.pid===p.pid)); others.forEach((o,j)=>{ const ang=pn.ang+(j-(others.length-1)/2)*0.4; const fn=add({id:'f:'+o.id,kind:'film',ref:o.id,x:Math.cos(ang)*320,y:Math.sin(ang)*320*0.8,ang}); edges.push([pn.id,fn.id,crew(o).find(c=>c.pid===p.pid).role]); const oc=crew(o).filter(c=>!nodes.find(n=>n.id==='p:'+c.pid)); oc.forEach((c,k)=>{ const a2=fn.ang+(k-(oc.length-1)/2)*0.45; add({id:'p:'+c.pid,kind:'person',ref:c.pid,role:c.role,x:Math.cos(a2)*460,y:Math.sin(a2)*460*0.75}); edges.push([fn.id,'p:'+c.pid,c.role]); }); crew(o).filter(c=>c.pid!==p.pid && nodes.find(n=>n.id==='p:'+c.pid) && !edges.find(e=>e[0]===fn.id&&e[1]==='p:'+c.pid)).forEach(c=>edges.push([fn.id,'p:'+c.pid,c.role])); }); }); }
+    nodes.forEach(n=>{ const p=g.pos[n.id]; if(p){n.x=p.x;n.y=p.y;} n.label=n.kind==='film'?fById(n.ref).t:PPL[n.ref]; });
+    return {nodes,edges}; }
+  setG(patch){ this.setState(s=>({g:{...s.g,...patch}})); }
+  zoom(k){ const g=this.state.g, dk=this.state.device==='desktop'?'d':'p', [cw,ch]=CW[dk]; const nz=Math.max(0.3,Math.min(2.5,g.z*k)); this.setG({z:nz,tx:cw/2-(cw/2-g.tx)*nz/g.z,ty:ch/2-(ch/2-g.ty)*nz/g.z}); }
+  gMove(e){ const d=this.drag; if(!d) return; const dx=e.clientX-d.lx, dy=e.clientY-d.ly; d.lx=e.clientX; d.ly=e.clientY; d.moved+=Math.abs(dx)+Math.abs(dy); const s=this.scale(); this.setState(st=>{ const g=st.g; if(d.kind==='node'){ const n=this.graphData(g).nodes.find(x=>x.id===d.id); return {g:{...g,pos:{...g.pos,[d.id]:{x:n.x+dx/(s*g.z),y:n.y+dy/(s*g.z)}}}}; } return {g:{...g,tx:g.tx+dx/s,ty:g.ty+dy/s}}; }); }
+  ptDown(e){ this.pts=this.pts||{}; this.pts[e.pointerId]={x:e.clientX,y:e.clientY}; const k=Object.values(this.pts); if(k.length===2){ this.pinch=Math.hypot(k[0].x-k[1].x,k[0].y-k[1].y)||1; this.drag=null; } }
+  ptMove(e){ if(this.pts&&this.pts[e.pointerId]) this.pts[e.pointerId]={x:e.clientX,y:e.clientY}; if(this.pinch&&this.pts){ const k=Object.values(this.pts); if(k.length===2){ const nd=Math.hypot(k[0].x-k[1].x,k[0].y-k[1].y)||1; this.zoom(nd/this.pinch); this.pinch=nd; } return true; } return false; }
+  ptUp(e){ if(this.pts&&e) delete this.pts[e.pointerId]; if(!this.pts||Object.keys(this.pts).length<2) this.pinch=null; }
+  gUp(){ const d=this.drag; this.drag=null; if(!d) return; if(d.moved<4) this.setG({sel:d.kind==='node'?d.id:null}); }
+  buildSvg(g){ const h=React.createElement; const {nodes,edges}=this.graphData(g); const sel=g.sel; const nb=new Set(); if(sel){ nb.add(sel); edges.forEach(e=>{ if(e[0]===sel) nb.add(e[1]); if(e[1]===sel) nb.add(e[0]); }); }
+    const pos=Object.fromEntries(nodes.map(n=>[n.id,n]));
+    const el=edges.map((e,i)=>{ const a=pos[e[0]],b=pos[e[1]]; const on=sel&&(e[0]===sel||e[1]===sel); return h('line',{key:'e'+i,x1:a.x,y1:a.y,x2:b.x,y2:b.y,style:{stroke:on?'var(--color-primary)':'#B9C2CE',strokeWidth:on?2.5:1.5,opacity:sel&&!on?0.3:1}}); });
+    const nl=nodes.map(n=>{ const isSel=n.id===sel, dim=sel&&!nb.has(n.id); const down=e=>{ e.stopPropagation(); this.drag={kind:'node',id:n.id,lx:e.clientX,ly:e.clientY,moved:0}; };
+      const shape = n.kind==='film'
+        ? h('rect',{x:-64,y:-20,width:128,height:40,rx:6,style:{fill:isSel?'var(--color-accent)':'var(--color-primary)',stroke:isSel?'var(--color-primary)':'none',strokeWidth:2}})
+        : h('circle',{r:18,style:{fill:isSel?'var(--color-accent)':ROLE[n.role].c,stroke:isSel?'var(--color-primary)':'var(--color-surface)',strokeWidth:isSel?3:2}});
+      const label = n.kind==='film'
+        ? h('text',{y:5,style:{textAnchor:'middle',font:"500 13px 'Inter',sans-serif",fill:isSel?'var(--color-text)':'var(--color-on-primary)',pointerEvents:'none'}},short(n.label,17))
+        : h('text',{y:36,style:{textAnchor:'middle',font:"500 13px 'Inter',sans-serif",fill:'var(--color-text)',paintOrder:'stroke',stroke:'var(--color-surface)',strokeWidth:4,pointerEvents:'none'}},n.label);
+      const ini2 = n.kind==='person' ? h('text',{y:4,style:{textAnchor:'middle',font:"600 11px 'Inter',sans-serif",fill:isSel?'var(--color-text)':'var(--color-on-primary)',pointerEvents:'none'}},ini(n.label)) : null;
+      return h('g',{key:n.id,'data-link':this.lkGraphSel,transform:`translate(${n.x} ${n.y})`,onPointerDown:down,style:{cursor:'pointer',opacity:dim?0.3:1},role:'button','aria-label':n.label},shape,ini2,label); });
+    return h('svg',{width:'100%',height:'100%',role:'img','aria-label':"Граф зв'язків фільму «"+fById(g.center).t+"»",style:{display:'block',touchAction:'none',cursor:'grab',userSelect:'none'},
+      onPointerDown:e=>{ this.drag={kind:'pan',lx:e.clientX,ly:e.clientY,moved:0}; this.ptDown(e); }, onPointerMove:e=>{ if(!this.ptMove(e)) this.gMove(e); }, onPointerUp:e=>{ this.ptUp(e); this.gUp(); }, onPointerLeave:e=>{ this.ptUp(e); this.gUp(); },
+      onWheel:e=>this.zoom(e.deltaY<0?1.1:0.9)},
+      h('g',{transform:`translate(${g.tx} ${g.ty}) scale(${g.z})`},el,nl)); }
+  filtered(){ const st=this.state, q=st.q.trim().toLowerCase(); let l=F.filter(f=>(!q||f.t.toLowerCase().includes(q)) && f.y>=st.yFrom && f.y<=st.yTo && (!st.genre||f.g.includes(st.genre)) && (!st.director||f.d.includes(st.director)) && (!st.withActors||f.a.length));
+    l.sort(st.sort==='year'?(a,b)=>b.y-a.y||a.t.localeCompare(b.t,'uk'):(a,b)=>a.t.localeCompare(b.t,'uk')); return st.ui==='empty'?[]:l; }
+  startUpdate(){ clearInterval(this.timer); this.setState({upd:{phase:'running',stage:0,attempt:0}}); this.timer=setInterval(()=>this.tick(),750); }
+  tick(){ const st=this.state, u=st.upd; const fail=st.ui==='error';
+    if(fail && u.stage===1){ if(u.attempt<3){ this.setState({upd:{...u,attempt:u.attempt+1}}); return; } clearInterval(this.timer); this.setState({upd:{...u,phase:'failed'},log:[{id:Date.now(),ms:Date.now(),dur:'0 хв 52 с',added:0,changed:0,ok:false,msg:'Wikidata не відповідає після 3 спроб',stop:1},...st.log]}); return; }
+    if(u.stage>=4){ clearInterval(this.timer); const now=Date.now(); this.setState({upd:{...u,phase:'done',stage:5},updated:now,log:[{id:now,ms:now,dur:'2 хв 14 с',added:12,changed:37,ok:true},...st.log]}); return; }
+    this.setState({upd:{...u,stage:u.stage+1}}); }
+  download(){ const st=this.state, ctx=st.exp; let cols,rows; if(ctx==='catalog'){ cols=['title','year','director','genres']; rows=this.filtered().map(f=>[f.t,f.y,f.d.map(p=>PPL[p]).join('; '),f.g.join('; ')]); } else { const e=EX[st.ex]; cols=e.cols.map(c=>c.slice(1)); rows=e.rows; }
+    let body; if(st.fmt==='csv') body=[cols.join(','),...rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','))].join('\n');
+    else if(st.fmt==='json') body=JSON.stringify(rows.map(r=>Object.fromEntries(cols.map((c,i)=>[c,r[i]]))),null,2);
+    else body='@prefix kg: <https://kinograf.example/ns#> .\n\n'+rows.map((r,i)=>`kg:row${i+1} `+cols.map((c,j)=>`kg:${c} "${r[j]}"`).join(' ;\n    ')+' .').join('\n\n');
+    const name=`kinograf-${ctx==='catalog'?'katalog':'sparql'}.${st.fmt==='turtle'?'ttl':st.fmt}`;
+    try{ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([body],{type:'text/plain'})); a.download=name; a.click(); }catch(e){}
+    this.setState({exp:null}); this.toast(`Файл ${name} завантажено`); }
+  seg(items,cur,on,accent,link){ return items.map(([v,l])=>({label:l,link:link||null,on:()=>on(v),bg:v===cur?(accent?'var(--color-accent)':'var(--color-primary)'):'var(--color-surface)',fg:v===cur?(accent?'var(--color-text)':'var(--color-on-primary)'):'var(--color-text)',bd:v===cur?(accent?'var(--color-accent)':'var(--color-primary)'):'var(--color-border)',pressed:v===cur?'true':'false'})); }
+
+  renderVals(){
+    const st=this.state, D=st.device==='desktop', admin=st.role==='admin', s=this.scale();
+    const board=!!this.props.board; const fw=D?1440:390, fh=D?900:844, bez=D||board?0:12;
+    const frame={s,fw,fh,bez,bw:fw+bez*2,ow:Math.round((fw+bez*2)*s),oh:Math.round((fh+bez*2)*s),bezBg:bez?'#1B1F24':'transparent',bezR:bez?52:0,innerR:bez?40:0,shadow:board?'none':'0 12px 40px rgba(20,30,45,.18)',name:this.props.label||`${D?'Десктоп':'Телефон'} / ${NUM[st.screen]} / ${UIL[st.ui]}`};
+    const content = st.ui==='normal' || (CUSTOM[st.screen]||[]).includes(st.ui);
+    const v={}; Object.keys(NUM).forEach(k=>v[k]=st.screen===k&&content);
+    const goCatalog=()=>this.go('catalog');
+    const openFilm=id=>this.go('film',{filmId:id});
+    const openPerson=(pid,from)=>this.go('person',{personId:pid,fromFilm:from===undefined?st.fromFilm:from});
+    const openGraph=id=>this.go('graph',{g:this.freshGraph(id,st.g?st.g.depth:2)});
+    const dev=D?'Десктоп':'Телефон', L=(sc,vr)=>`${dev} / ${NUM[sc]} / ${vr||'звичайний'}`;
+    const filmV=id=>id==='mamai'?'не вказано (Мамай)':id==='atlantyda'?'Атлантида':'звичайний', persV=id=>id==='slabosh'?'один фільм':'звичайний';
+    const lk={catalog:L('catalog'),self:L(st.screen),login:L('login'),menu:`Телефон / ${NUM.catalog} / меню`,filtered:L('catalog','фільтри застосовано'),search:L('catalog','пошук'),catExport:L('catalog','експорт'),filtersSheet:L('catalog','шторка фільтрів'),graph:L('graph'),graphSel:L('graph','вузол вибрано'),statsTip:L('stats','підказка'),admin:L('admin'),spExport:L('sparql','експорт'),showKey:L('login','ключ показано'),admConfirm:L('admin','підтвердження'),admRunning:L('admin','виконується'),admDetail:L('admin','подробиці журналу'),fromFilm:L('film',filmV(st.fromFilm)),expSelf:L(st.exp==='sparql'?'sparql':'catalog','експорт'),expBack:L(st.exp==='sparql'?'sparql':'catalog')};
+    this.lkGraphSel=lk.graphSel;
+    const navDef=[['catalog','Каталог',['catalog','film','person']],['graph','Граф',['graph']],['stats','Статистика',['stats']],['quality','Якість даних',['quality']],['sparql','SPARQL',['sparql']]];
+    if(admin) navDef.push(['admin','Адміністрування',['admin']]);
+    const nav=navDef.map(([k,l,act])=>{ const a=act.includes(st.screen); return {label:l,active:a,link:L(k),go:()=>k==='graph'?openGraph(st.g?st.g.center:'atlantyda'):this.go(k),color:a?'var(--color-accent)':'var(--color-on-primary)',bar:a?'var(--color-accent)':'transparent',mbg:a?'var(--color-hover)':'transparent',mbar:a?'var(--color-accent)':'transparent'}; });
+    const logout=()=>{ clearInterval(this.timer); this.setState({role:'user',screen:'catalog',ui:'normal',menu:false,upd:{phase:'idle',stage:0,attempt:0}}); this.toast('Ви вийшли з режиму адміністратора'); };
+    const svc={role:st.role,ui:st.ui,
+      onRole:e=>{ const r=e.target.value; if(r==='admin') this.setState({role:'admin'}); else logout(); },
+      onUi:e=>this.setState({ui:e.target.value,sp:'idle',keyErr:e.target.value==='error'&&st.screen==='login'}),
+      devices:[['desktop','Десктоп'],['phone','Телефон']].map(([k,l])=>({label:l,link:null,on:()=>this.setState(x=>({device:k,menu:false,sheet:false,g:x.g?this.freshGraph(x.g.center,x.g.depth,k):x.g})),bg:st.device===k?'#3A424D':'transparent',fg:st.device===k?'#FFFFFF':'#3A424D'}))};
+    const gen={loading:!content&&st.ui==='loading',empty:!content&&st.ui==='empty',error:!content&&st.ui==='error',emptyText:EMPTY[st.screen]||'',pad:D?'32px 80px':'16px',retry:()=>this.setState({ui:'normal'})};
+
+    // catalog
+    const list=this.filtered(), ps=this.props.pageSize??8, pages=Math.max(1,Math.ceil(list.length/ps)), page=Math.min(st.page,pages);
+    const card=f=>({id:f.id,t:f.t,y:f.y,dir:f.d.map(p=>PPL[p]).join(', '),meta:`${f.y} · ${f.d.map(p=>PPL[p]).join(', ')}`,genres:f.g.slice(0,3),bg:f.bg,aria:`Постер-заглушка фільму «${f.t}», ${f.y}`,link:L('film',filmV(f.id)),open:()=>openFilm(f.id)});
+    const yearsChanged=st.yFrom!==1991||st.yTo!==2026;
+    const activeCount=(yearsChanged?1:0)+(st.genre?1:0)+(st.director?1:0)+(st.withActors?1:0);
+    const period=st.yFrom===1991&&st.yTo===2013?'p1':st.yFrom===2014&&st.yTo===2026?'p2':'';
+    const reset=()=>this.setState({q:'',yFrom:1991,yTo:2026,genre:'',director:'',withActors:false,page:1,shown:6,ui:st.ui==='empty'?'normal':st.ui});
+    const cat={q:st.q,onQ:e=>this.setState({q:e.target.value,page:1,shown:6}),clearQ:()=>this.setState({q:'',page:1}),hasQ:!!st.q,
+      countText:`Знайдено: ${list.length} ${plural(list.length,['фільм','фільми','фільмів'])}`,showBtn:`Показати ${list.length} ${plural(list.length,['фільм','фільми','фільмів'])}`,
+      sorts:this.seg([['year','За роком'],['title','За назвою']],st.sort,v=>this.setState({sort:v,page:1}),false,lk.self),onSort:e=>this.setState({sort:e.target.value}),sort:st.sort,
+      loading:st.ui==='loading',notLoading:st.ui!=='loading',empty:st.ui!=='loading'&&list.length===0,has:st.ui!=='loading'&&list.length>0,
+      skel:[1,2,3,4,5,6,7,8],skelP:[1,2,3,4],
+      cards:list.slice((page-1)*ps,page*ps).map(card),pcards:list.slice(0,st.shown).map(card),hasMore:list.length>st.shown,showMore:()=>this.setState({shown:st.shown+6}),
+      pages:Array.from({length:pages},(_,i)=>({n:i+1,go:()=>this.setState({page:i+1}),bg:i+1===page?'var(--color-primary)':'var(--color-surface)',fg:i+1===page?'var(--color-on-primary)':'var(--color-text)',cur:i+1===page?'page':'false'})),
+      prev:()=>this.setState({page:Math.max(1,page-1)}),next:()=>this.setState({page:Math.min(pages,page+1)}),prevOp:page>1?1:0.45,nextOp:page<pages?1:0.45,multi:pages>1,
+      yFrom:st.yFrom,yTo:st.yTo,yText:`${st.yFrom} — ${st.yTo}`,
+      onYFrom:e=>this.setState({yFrom:Math.min(+e.target.value,st.yTo),page:1}),onYTo:e=>this.setState({yTo:Math.max(+e.target.value,st.yFrom),page:1}),
+      periods:this.seg([['p1','1991–2013'],['p2','2014 — дотепер']],period,v=>this.setState(v===period?{yFrom:1991,yTo:2026,page:1}:v==='p1'?{yFrom:1991,yTo:2013,page:1}:{yFrom:2014,yTo:2026,page:1}),true,lk.filtered),
+      genre:st.genre,onGenre:e=>this.setState({genre:e.target.value,page:1}),director:st.director,onDirector:e=>this.setState({director:e.target.value,page:1}),
+      withActors:st.withActors,onWithActors:e=>this.setState({withActors:e.target.checked,page:1}),reset,activeCount,filtersLabel:activeCount?`Фільтри (${activeCount})`:'Фільтри',
+      openFilters:()=>this.setState({sheet:true}),closeFilters:()=>this.setState({sheet:false}),exportOpen:()=>this.setState({exp:'catalog'})};
+
+    // film
+    const f=fById(st.filmId), forceMissing=st.ui==='empty'&&st.screen==='film';
+    const seenP=new Set(); const roles=RK.filter(r=>r!=='c'||f.c.length).filter(r=>!(r==='a'&&f.g.includes('документальний')&&!f.a.length)).map(r=>{ const ids=forceMissing?[]:f[r]; const open=!!st.acc[r]; return {key:r,label:ROLE[r].g,count:ids.length?String(ids.length):'',has:ids.length>0,missing:ids.length===0,
+      people:ids.map(pid=>{ const dup=seenP.has(pid); seenP.add(pid); return {name:PPL[pid],ini:ini(PPL[pid]),rc:ROLE[r].c,link:dup?null:L('person',persV(pid)),open:()=>openPerson(pid,f.id)}; }),fix:wiki(f.t),open,closed:!open,toggle:()=>this.setState(x=>({acc:{...x.acc,[r]:!x.acc[r]}})),chev:open?'rotate(180deg)':'none'}; });
+    const fc=crew(f).map(c=>c.pid);
+    let rel=F.filter(o=>o.id!==f.id).map(o=>({o,n:crew(o).filter(c=>fc.includes(c.pid)).length})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n||b.o.y-a.o.y);
+    const relIds=rel.map(x=>x.o.id); F.filter(o=>o.id!==f.id&&!relIds.includes(o.id)&&o.g.some(g=>f.g.includes(g))).sort((a,b)=>Math.abs(a.y-f.y)-Math.abs(b.y-f.y)).slice(0,Math.max(0,5-rel.length)).forEach(o=>rel.push({o,n:0}));
+    const film={t:f.t,y:f.y,meta:`${f.y} · ${f.dur} хв`,genres:f.g,awards:f.aw,hasAwards:f.aw.length>0,roles,aria:`Постер-заглушка фільму «${f.t}», ${f.y}`,bg:f.bg,wiki:wiki(f.t),openGraph:()=>openGraph(f.id),
+      related:rel.map(x=>({t:x.o.t,y:x.o.y,bg:x.o.bg,aria:`Постер-заглушка фільму «${x.o.t}»`,note:x.n?`Спільних учасників: ${x.n}`:'Спільний жанр',noteBg:x.n?'var(--color-accent)':'var(--color-hover)',link:L('film',filmV(x.o.id)),open:()=>openFilm(x.o.id)}))};
+
+    // person
+    const pid=st.personId, pf=pFilms(pid), from=st.fromFilm?fById(st.fromFilm):null;
+    const prs=RK.filter(r=>pf.some(x=>x.roles.includes(r)));
+    const minY=Math.min(...pf.map(x=>x.f.y))-1, maxY=Math.max(...pf.map(x=>x.f.y))+1;
+    const tl={}; pf.forEach(x=>{ (tl[x.f.y]=tl[x.f.y]||[]).push(x); });
+    const co={}; pf.forEach(x=>crew(x.f).forEach(c=>{ if(c.pid!==pid){ co[c.pid]=co[c.pid]||{n:0,films:[]}; co[c.pid].n++; co[c.pid].films.push(x.f.t);} }));
+    const span=Math.max(1,maxY-minY), axis=[]; for(let yy=minY;yy<=maxY;yy++) if(span<=12||(yy-minY)%Math.ceil(span/10)===0) axis.push({y:yy,x:((yy-minY)/span*100).toFixed(2)});
+    const person={name:PPL[pid],ini:ini(PPL[pid]),tags:prs.map(r=>({label:ROLE[r].t,c:ROLE[r].c})),count:`${pf.length} ${plural(pf.length,['фільм','фільми','фільмів'])} у довіднику`,wiki:wiki(PPL[pid]),
+      hasFrom:!!from,fromT:from?from.t:'',openFrom:()=>from&&openFilm(from.id),
+      timeline:Object.keys(tl).map(y=>({y,x:((y-minY)/span*100).toFixed(2),films:tl[y].map(x=>({t:x.f.t,link:L('film',filmV(x.f.id)),open:()=>openFilm(x.f.id),role:x.roles.map(r=>ROLE[r].t).join(', ')}))})),axis,
+      rows:pf.slice().reverse().map(x=>({y:x.f.y,t:x.f.t,role:x.roles.map(r=>ROLE[r].t).join(', '),link:L('film',filmV(x.f.id)),open:()=>openFilm(x.f.id)})),
+      collabs:Object.entries(co).sort((a,b)=>b[1].n-a[1].n).slice(0,6).map(([id,c])=>({name:PPL[id],ini:ini(PPL[id]),n:`Спільних фільмів: ${c.n}`,films:c.films.join(', '),link:L('person',persV(id)),open:()=>openPerson(id)})),
+      hasCollabs:pf.length>1};
+
+    // graph
+    const g=st.g||this.freshGraph('atlantyda',2,st.device);
+    const gd=this.graphData(g); const selN=gd.nodes.find(n=>n.id===g.sel);
+    let sel={has:!!selN,none:!selN};
+    if(selN){ if(selN.kind==='film'){ const sf=fById(selN.ref); sel={...sel,kind:'Фільм',title:sf.t,sub:`${sf.y} · ${sf.d.map(p=>PPL[p]).join(', ')}`,tags:sf.g.map(x=>({label:x,c:'var(--color-primary)'})),isFilm:true,canCenter:sf.id!==g.center,center:()=>this.setState({g:this.freshGraph(sf.id,g.depth)}),open:()=>openFilm(sf.id),link:L('film',filmV(sf.id)),links:`Зв'язків у графі: ${gd.edges.filter(e=>e[0]===selN.id||e[1]===selN.id).length}`}; }
+      else { const spf=pFilms(selN.ref); sel={...sel,kind:'Персоналія',title:PPL[selN.ref],sub:`${spf.length} ${plural(spf.length,['фільм','фільми','фільмів'])}: ${spf.map(x=>x.f.t).join(', ')}`,tags:RK.filter(r=>spf.some(x=>x.roles.includes(r))).map(r=>({label:ROLE[r].t,c:ROLE[r].c})),isFilm:false,canCenter:false,open:()=>openPerson(selN.ref,null),link:L('person',persV(selN.ref)),links:`Зв'язків у графі: ${gd.edges.filter(e=>e[0]===selN.id||e[1]===selN.id).length}`}; } }
+    const gq=g.q.trim().toLowerCase();
+    const graph={svg:this.buildSvg(g),centerT:fById(g.center).t,q:g.q,onQ:e=>this.setG({q:e.target.value}),
+      hits:gq?gd.nodes.filter(n=>n.label.toLowerCase().includes(gq)).slice(0,5).map(n=>({label:n.label,kind:n.kind==='film'?'фільм':'персоналія',pick:()=>this.setG({sel:n.id,q:''})})):[],hasHits:!!gq,
+      depths:this.seg([[1,'1 рівень'],[2,'2 рівні']],g.depth,dv=>this.setState({g:this.freshGraph(g.center,dv)}),false,lk.graph),
+      zin:()=>this.zoom(1.2),zout:()=>this.zoom(1/1.2),fit:()=>this.setState({g:{...this.freshGraph(g.center,g.depth),sel:g.sel}}),zoomText:Math.round(g.z*100)+'%',
+      sel,closeSel:()=>this.setG({sel:null}),
+      legend:[{label:'Фільм',c:'var(--color-primary)',r:'2px'},{label:'Режисер',c:ROLE.d.c,r:'50%'},{label:'Сценарист',c:ROLE.w.c,r:'50%'},{label:'Композитор',c:ROLE.c.c,r:'50%'},{label:'Актор',c:ROLE.a.c,r:'50%'},{label:'Вибраний',c:'var(--color-accent)',r:'50%'}],
+      stats:`Вузлів: ${gd.nodes.length} · зв'язків: ${gd.edges.length}`};
+
+    // stats
+    const maxC=Math.max(...Object.values(YC));
+    const bars=Object.entries(YC).map(([y,n])=>({y,n,h:(n/maxC*100).toFixed(1),bg:st.hover===y?'var(--color-accent)':'var(--color-primary)',lbl:(+y-1991)%5===0||y==='2026'?y:'',enter:()=>this.setState({hover:y})}));
+    const hi=st.hover?Object.keys(YC).indexOf(st.hover):-1;
+    const gmax=Math.max(...GEN.map(x=>Math.max(x[1],x[2])));
+    const stats={bars,leave:()=>this.setState({hover:null}),tip:hi>=0,tipText:hi>=0?`${st.hover}: ${YC[st.hover]} ${plural(YC[st.hover],['фільм','фільми','фільмів'])}`:'',tipLeft:hi>=0?((hi+0.5)/36*100).toFixed(1):'0',tipBottom:hi>=0?(YC[st.hover]/maxC*100).toFixed(1):'0',
+      genres:GEN.map(x=>({g:x[0],a:(x[1]/gmax*100).toFixed(1),b:(x[2]/gmax*100).toFixed(1),na:x[1],nb:x[2]})),
+      topD:TOPD.map((r,i)=>({i:i+1,name:r[0],n:r[1],w:(r[1]/TOPD[0][1]*100).toFixed(0)})),topA:TOPA.map((r,i)=>({i:i+1,name:r[0],n:r[1],w:(r[1]/TOPA[0][1]*100).toFixed(0)})),
+      tabs:this.seg([['d','Топ-10 режисерів'],['a','Топ-10 акторів']],st.tab,t=>this.setState({tab:t}),false,lk.self),tabD:st.tab==='d',tabA:st.tab==='a'};
+
+    // quality
+    const pts=k=>QSER.map((p,i)=>`${(i/(QSER.length-1)*1000).toFixed(1)},${(200-p[k]*2).toFixed(1)}`).join(' ');
+    const quality={metrics:[{label:'Усього фільмів',value:'1 403',sub:'у довіднику з 1991 року',pct:'100'},{label:'З режисером',value:'68%',sub:'959 з 1 403',pct:'68'},{label:'З акторами',value:'47%',sub:'662 з 1 403',pct:'47'},{label:'З жанром',value:'81%',sub:'1 137 з 1 403',pct:'81'},{label:'З постером',value:'39%',sub:'547 з 1 403',pct:'39'}],
+      pd:pts('d'),pa:pts('a'),xl:QSER.filter(p=>(p.y-1991)%5===0||p.y===2026).map(p=>({y:p.y,x:((p.y-1991)/35*100).toFixed(2)})),updated:`Дані оновлено: ${dt(st.updated)}`,isAdmin:admin,openLog:()=>this.go('admin')};
+
+    // sparql
+    const lines=st.text.split('\n');
+    const bal=(st.text.match(/\{/g)||[]).length-(st.text.match(/\}/g)||[]).length;
+    let errLine=0; if(st.sp==='done'){ if(st.ui==='error') errLine=7; else if(!/SELECT/i.test(st.text)) errLine=1; else if(bal!==0) errLine=lines.length; }
+    const exIdx=/P136/.test(st.text)?0:/COUNT/.test(st.text)?1:/rdfs:label/.test(st.text)?2:-1;
+    const resRows=st.ui==='empty'||exIdx<0?[]:EX[exIdx].rows, resCols=exIdx<0?['?result']:EX[exIdx].cols;
+    const sp={examples:EX.map((e,i)=>({label:e.label,pick:()=>this.setState({ex:i,text:e.q,sp:'idle'}),bg:i===st.ex?'var(--color-hover)':'var(--color-surface)',bd:i===st.ex?'var(--color-primary)':'var(--color-border)'})),
+      ex:String(st.ex),onEx:e=>{ const i=+e.target.value; this.setState({ex:i,text:EX[i].q,sp:'idle'}); },
+      lines:lines.map((l,i)=>({n:i+1,toks:hl(l),nbg:errLine===i+1?'var(--color-error-bg)':'transparent',nfg:errLine===i+1?'var(--color-error)':'var(--color-text-muted)'})),
+      text:st.text,onText:e=>this.setState({text:e.target.value,sp:'idle'}),h:lines.length*22+24,
+      run:()=>{ this.setState({sp:'running'}); setTimeout(()=>this.setState({sp:'done',ex:exIdx>=0?exIdx:st.ex}),st.ui==='loading'?99999999:700); },
+      idle:st.sp==='idle',running:st.sp==='running',done:st.sp==='done'&&!errLine,isErr:!!errLine,errText:errLine?`Синтаксична помилка в рядку ${errLine}: ${st.ui==='error'?'очікувалося «.» або «;» після трійки':bal!==0?'очікувалося «}»':'запит має містити SELECT'}`:'',
+      empty:st.sp==='done'&&!errLine&&resRows.length===0,hasRows:st.sp==='done'&&!errLine&&resRows.length>0,
+      cols:resCols,rows:resRows.map(r=>({cells:r})),gridCols:`repeat(${resCols.length},minmax(160px,1fr))`,
+      meta:`${resRows.length} ${plural(resRows.length,['рядок','рядки','рядків'])} · ${exIdx>=0?EX[exIdx].time:'0,21 с'}`,exportOpen:()=>this.setState({exp:'sparql'})};
+
+    // login
+    const login={key:st.key,onKey:e=>this.setState({key:e.target.value,keyErr:false}),type:st.showKey?'text':'password',showLabel:st.showKey?'Сховати':'Показати',toggle:()=>this.setState({showKey:!st.showKey}),
+      err:st.keyErr,bd:st.keyErr?'var(--color-error)':'var(--color-border)',
+      submit:e=>{ if(e&&e.preventDefault) e.preventDefault(); if(st.key.trim()==='kinograf-2026'&&st.ui!=='error'){ this.setState({role:'admin',screen:'admin',ui:'normal',key:'',keyErr:false}); this.toast('Вхід виконано'); } else this.setState({keyErr:true}); }};
+
+    // admin
+    const u=st.upd;
+    const stages=STAGES.map((l,i)=>{ let k='pending'; if(u.phase==='done'||i<u.stage) k='done'; else if(i===u.stage&&u.phase==='running') k='cur'; else if(i===u.stage&&u.phase==='failed') k='fail';
+      return {label:l,done:k==='done',cur:k==='cur',fail:k==='fail',pend:k==='pending',fg:k==='pending'?'var(--color-text-muted)':k==='fail'?'var(--color-error)':'var(--color-text)',
+        note:k==='cur'&&i===1&&u.attempt>0?`спроба ${u.attempt + 1} з 3`:k==='fail'?'зупинено':k==='done'?'готово':k==='cur'?'виконується':''}; });
+    const logs=(st.ui==='empty'&&st.screen==='admin'?[]:st.log).slice().sort((a,b)=>st.sortDesc?b.ms-a.ms:a.ms-b.ms);
+    const det=st.detail?st.log.find(r=>r.id===st.detail):null;
+    const adm={films:'1 403',people:'2 797',updated:dt(st.updated),
+      start:()=>this.setState({upd:{...u,phase:'confirm'}}),cancel:()=>this.setState({upd:{phase:'idle',stage:0,attempt:0}}),confirm:()=>this.startUpdate(),
+      confirmOpen:u.phase==='confirm',busy:u.phase==='running',btnOp:u.phase==='running'?0.45:1,
+      showProg:['running','done','failed'].includes(u.phase),running:u.phase==='running',done:u.phase==='done',failed:u.phase==='failed',
+      pct:u.phase==='done'?100:Math.round(u.stage/5*100),barBg:u.phase==='failed'?'var(--color-error)':u.phase==='done'?'var(--color-success)':'var(--color-primary)',
+      progTitle:u.phase==='done'?'Оновлення завершено':u.phase==='failed'?'Оновлення зупинено':'Оновлення виконується…',stages,
+      hide:()=>this.setState({upd:{phase:'idle',stage:0,attempt:0}}),
+      log:logs.map(r=>({date:dt(r.ms),dur:r.dur,added:String(r.added),changed:String(r.changed),status:r.ok?'успішно':'помилка',sfg:r.ok?'var(--color-success)':'var(--color-error)',sbg:r.ok?'var(--color-success-bg)':'var(--color-error-bg)',open:()=>this.setState({detail:r.id})})),
+      hasLog:logs.length>0,noLog:logs.length===0,sortArrow:st.sortDesc?'↓':'↑',sortLabel:st.sortDesc?'спочатку нові':'спочатку старі',ariaSort:st.sortDesc?'descending':'ascending',toggleSort:()=>this.setState({sortDesc:!st.sortDesc}),
+      det:!!det,detDate:det?dt(det.ms):'',detStatus:det?(det.ok?'успішно':'помилка'):'',dsfg:det&&det.ok?'var(--color-success)':'var(--color-error)',dsbg:det&&det.ok?'var(--color-success-bg)':'var(--color-error-bg)',
+      detDur:det?det.dur:'',detAdded:det?String(det.added):'',detChanged:det?String(det.changed):'',detMsg:det&&det.msg?det.msg:'',detHasMsg:!!(det&&det.msg),
+      detStages:det?STAGES.map((l,i)=>({label:l,st:det.ok||i<det.stop?'готово':i===det.stop?'помилка':'не виконано',fg:det.ok||i<det.stop?'var(--color-success)':i===det.stop?'var(--color-error)':'var(--color-text-muted)'})):[],
+      closeDet:()=>this.setState({detail:null})};
+
+    const fmts=[['csv','CSV','Таблиця для Excel чи Google Таблиць'],['json','JSON','Масив об’єктів для розробників'],['turtle','Turtle','RDF-трійки для графових баз']].map(([k,l,d])=>({k,label:l,desc:d,on:()=>this.setState({fmt:k}),checked:st.fmt===k,bd:st.fmt===k?'var(--color-primary)':'var(--color-border)',bg:st.fmt===k?'var(--color-hover)':'var(--color-surface)',dot:st.fmt===k?'var(--color-primary)':'transparent'}));
+    const exp={open:!!st.exp,title:st.exp==='catalog'?`Експорт каталогу · ${list.length} ${plural(list.length,['фільм','фільми','фільмів'])}`:'Експорт результатів запиту',fmts,close:()=>this.setState({exp:null}),go:()=>this.download()};
+
+    return {lk,applied:st.applied||null,D,P:!D,frame,svc,showSvc:!board,wrap:{minH:board?'0':'100vh',pad:board?'0':'72px 16px 48px'},nav,isUser:!admin,isAdmin:admin,v,gen,cat,film,person,graph,stats,quality,sp,login,adm,exp,
+      stageRef:this.stageRef,mainRef:this.mainRef,goCatalog,goLogin:()=>this.go('login',{keyErr:false}),logout,
+      menuOpen:st.menu,openMenu:()=>this.setState({menu:true}),closeMenu:()=>this.setState({menu:false}),sheetOpen:st.sheet&&!D&&st.screen==='catalog',
+      filmBar:v.film&&!D,graphSheet:v.graph&&!D&&sel.has,
+      toast:!!st.toast,toastText:st.toast||'',stop:e=>e.stopPropagation(),
+      qCols:D?5:2,qGap:D?24:16,spCols:D?'minmax(0,3fr) minmax(0,9fr)':'minmax(0,1fr)',spMaxH:D?340:300,stageCols:D?5:1};
+  }
+}
+</script>
+</body>
+</html>
