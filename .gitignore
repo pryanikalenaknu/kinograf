@@ -13,3 +13,7 @@ dist/
 .idea/
 .vscode/
 .DS_Store
+test-results/
+playwright-report/
+coverage/
+.claude/
