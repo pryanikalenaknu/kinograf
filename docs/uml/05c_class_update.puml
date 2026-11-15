@@ -1,0 +1,80 @@
+@startuml
+!include common.iuml
+skinparam class {
+  BackgroundColor #F5F8FC
+  BorderColor #1F4E79
+}
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 70
+hide empty members
+title Діаграма класів: сервіс оновлення даних
+
+package "services" {
+  class UpdateService {
+    -lock: Lock
+    -lock_path: Path [0..1]
+    +running: bool {readOnly}
+    +start(): UpdateLog
+    +run(log: UpdateLog): UpdateLog
+    +history(limit: int): list[UpdateLog]
+    +log(log_id: int): UpdateLog [0..1]
+    +recover_interrupted(): int
+  }
+  class UpdateInProgressError <<exception>>
+}
+
+package "opendata" {
+  class WikidataLoader {
+    +fetch_films(): list[Film]
+    +fetch_participations(): LoadedParticipations
+    +fetch_genres(): dict[str, list[Genre]]
+    +fetch_awards(): dict[str, list[Award]]
+  }
+  class WikidataClient {
+    +run(query: str): list[dict]
+  }
+}
+
+package "repositories" {
+  class Database {
+    +create_schema()
+    +transaction(): Connection
+  }
+  class FilmRepository {
+    +replace_all(films, genres, awards): tuple[int, int]
+  }
+  class PersonRepository {
+    +replace_all(people, participations)
+  }
+  class LogRepository {
+    +start(): UpdateLog
+    +set_stage(log: UpdateLog, stage: str)
+    +finish(log: UpdateLog)
+    +get(log_id: int): UpdateLog [0..1]
+    +recent(limit: int): list[UpdateLog]
+    +fail_running(message: str): int
+  }
+}
+
+package "rdf" {
+  class RdfStore {
+    +load()
+    +rebuild(films, people, participations, genres, awards)
+  }
+}
+
+UpdateService -left-> WikidataLoader
+UpdateService .right.> UpdateInProgressError : <<throw>>
+WikidataLoader -down-> "1" WikidataClient
+UpdateService -down-> Database
+UpdateService -down-> FilmRepository
+UpdateService -down-> PersonRepository
+UpdateService -down-> LogRepository
+UpdateService -down-> RdfStore
+Database -[hidden]right- FilmRepository
+FilmRepository -[hidden]right- PersonRepository
+PersonRepository -[hidden]right- LogRepository
+LogRepository -[hidden]right- RdfStore
+@enduml

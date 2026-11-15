@@ -1,0 +1,99 @@
+@startuml
+!include common.iuml
+skinparam class {
+  BackgroundColor #F5F8FC
+  BorderColor #1F4E79
+}
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 60
+hide empty members
+title Діаграма класів: об'єкти передачі даних
+
+package "services" {
+  class CatalogService
+  class FilmService
+  class PersonService
+  class StatsService
+  class GraphService
+  class SparqlService
+}
+
+package "Об'єкти передачі даних" as dto {
+  class Page <<dataclass>> {
+    +items: list[CatalogFilm]
+    +total: int
+    +page: int
+  }
+  class CatalogFilm <<dataclass>> {
+    +film: Film
+    +directors: list[Person]
+    +genres: list[Genre]
+  }
+  class FilmDetails <<dataclass>> {
+    +film: Film
+    +participants: dict[Role, list[Person]]
+    +genres: list[Genre]
+    +awards: list[Award]
+    +related: list[RelatedFilm]
+  }
+  class RelatedFilm <<dataclass>> {
+    +film: Film
+    +shared_people: int
+    +shared_genres: int
+  }
+  class PersonProfile <<dataclass>> {
+    +person: Person
+    +filmography: list[FilmographyEntry]
+    +collaborators: list[RankedPerson]
+  }
+  class FilmographyEntry <<dataclass>> {
+    +film: Film
+    +roles: list[Role]
+  }
+  class RankedPerson <<dataclass>> {
+    +person: Person
+    +films: int
+  }
+  class Stats <<dataclass>> {
+    +totals: dict[str, int]
+    +films_by_year: dict[int, int]
+    +genres_by_period: dict
+    +top_directors: list[RankedPerson]
+    +top_actors: list[RankedPerson]
+    +completeness: dict[str, float]
+    +completeness_by_year: dict[int, dict]
+    +last_updated: datetime [0..1]
+  }
+  class GraphData <<dataclass>> {
+    +nodes: list[dict]
+    +edges: list[dict]
+  }
+  class QueryResult <<dataclass>> {
+    +columns: list[str]
+    +rows: list[dict]
+    +truncated: bool
+    +elapsed_ms: int
+  }
+}
+
+CatalogService -[hidden]right- FilmService
+FilmService -[hidden]right- PersonService
+PersonService -[hidden]right- StatsService
+StatsService -[hidden]right- GraphService
+GraphService -[hidden]right- SparqlService
+
+CatalogService .down.> Page : <<create>>
+FilmService .down.> FilmDetails : <<create>>
+PersonService .down.> PersonProfile : <<create>>
+StatsService .down.> Stats : <<create>>
+GraphService .down.> GraphData : <<create>>
+SparqlService .down.> QueryResult : <<create>>
+
+Page *-down- "0..*" CatalogFilm
+FilmDetails *-down- "0..*" RelatedFilm
+PersonProfile *-down- "0..*" FilmographyEntry
+PersonProfile *-down- "0..*" RankedPerson
+Stats *-down- "0..*" RankedPerson
+@enduml

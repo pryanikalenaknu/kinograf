@@ -1,0 +1,113 @@
+@startuml
+!include common.iuml
+skinparam class {
+  BackgroundColor #F5F8FC
+  BorderColor #1F4E79
+}
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 80
+hide empty members
+title Діаграма класів: сервіси читання й доступ до даних
+
+package "services" {
+  class CatalogService {
+    +search(text, filters, sort, page): Page
+    +genres(): list[Genre]
+    +directors(): list[Person]
+  }
+  class FilmService {
+    +details(qid: str): FilmDetails [0..1]
+  }
+  class PersonService {
+    +profile(qid: str): PersonProfile [0..1]
+  }
+  class StatsService {
+    +overview(): Stats
+  }
+  class GraphService {
+    +neighbourhood(qid: str, depth: int): GraphData [0..1]
+  }
+  class SparqlService {
+    +execute(query: str): QueryResult
+  }
+  class ExportService {
+    +export_films(fmt, text, filters, sort): bytes
+    +export_sparql(fmt: str, query: str): bytes
+  }
+}
+
+package "repositories" {
+  class FilmFilters <<dataclass>> {
+    +year_from: int [0..1]
+    +year_to: int [0..1]
+    +period: str [0..1]
+    +genre: str [0..1]
+    +director: str [0..1]
+    +has_cast: bool
+  }
+  class FilmRepository {
+    +get(qid: str): Film [0..1]
+    +search(text, filters, sort, page, page_size): tuple[list[Film], int]
+    +related(qid: str, limit: int): list[tuple[Film, int, int]]
+    +genres_of(qid: str): list[Genre]
+    +awards_of(qid: str): list[Award]
+    +genres_by_film(qids: list[str]): dict[str, list[Genre]]
+    +all_genres(): list[Genre]
+  }
+  class PersonRepository {
+    +get(qid: str): Person [0..1]
+    +filmography(qid: str): list[tuple[Film, Role]]
+    +collaborators(qid: str, limit: int): list[tuple[Person, int]]
+    +participants(film_qid: str): dict[Role, list[Person]]
+    +directors_by_film(film_qids: list[str]): dict[str, list[Person]]
+    +directors(): list[Person]
+  }
+  class StatsRepository {
+    +totals(): dict[str, int]
+    +films_by_year(): dict[int, int]
+    +genres_by_period(): dict
+    +top_people(role: Role, limit: int): list[tuple[Person, int]]
+    +completeness(): dict[str, float]
+    +completeness_by_year(): dict[int, dict]
+  }
+  class LogRepository {
+    +last_success(): UpdateLog [0..1]
+  }
+}
+
+package "rdf" {
+  class RdfStore {
+    -graph: Graph
+    +query(sparql: str): SparqlResult
+    +neighbours(qid: str, depth: int, limit: int): list[tuple]
+    +entities(qids: list[str]): dict[str, tuple]
+    +export_turtle(qids: list[str] [0..1]): str
+  }
+}
+
+CatalogService -[hidden]right- FilmService
+FilmService -[hidden]right- PersonService
+PersonService -[hidden]right- StatsService
+StatsService -[hidden]right- ExportService
+ExportService -[hidden]right- GraphService
+GraphService -[hidden]right- SparqlService
+FilmFilters -[hidden]right- FilmRepository
+FilmRepository -[hidden]right- PersonRepository
+PersonRepository -[hidden]right- StatsRepository
+StatsRepository -[hidden]right- LogRepository
+
+CatalogService ..> FilmFilters
+CatalogService -down-> FilmRepository
+CatalogService -down-> PersonRepository
+FilmService -down-> FilmRepository
+FilmService -down-> PersonRepository
+PersonService -down-> PersonRepository
+StatsService -down-> StatsRepository
+StatsService -down-> LogRepository
+ExportService -down-> FilmRepository
+ExportService -down-> RdfStore
+GraphService -down-> RdfStore
+SparqlService -down-> RdfStore
+@enduml

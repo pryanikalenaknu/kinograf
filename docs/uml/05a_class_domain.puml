@@ -1,0 +1,91 @@
+@startuml
+!include common.iuml
+skinparam class {
+  BackgroundColor #F5F8FC
+  BorderColor #1F4E79
+}
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 50
+skinparam ranksep 60
+hide empty members
+title Діаграма класів: модель предметної області й модуль відкритих даних
+
+package "opendata" {
+  class WikidataClient {
+    -endpoint: str
+    -user_agent: str
+    -max_attempts: int
+    -retry_delay: float
+    +run(query: str): list[dict]
+  }
+  class WikidataLoader {
+    -min_year: int
+    +fetch_films(): list[Film]
+    +fetch_participations(): LoadedParticipations
+    +fetch_genres(): dict[str, list[Genre]]
+    +fetch_awards(): dict[str, list[Award]]
+  }
+  class LoadedParticipations {
+    +people: dict[str, Person]
+    +participations: list[Participation]
+  }
+}
+
+package "models" as models {
+  class Film {
+    +qid: str
+    +title: str
+    +release_date: date
+    +duration_min: int [0..1]
+    +image_url: str [0..1]
+    +year: int {readOnly}
+    +wikidata_url: str {readOnly}
+  }
+  class Participation {
+    +role: Role
+  }
+  class Person {
+    +qid: str
+    +name: str
+    +wikidata_url: str {readOnly}
+  }
+  enum Role <<enumeration>> {
+    DIRECTOR
+    SCREENWRITER
+    COMPOSER
+    CAST
+  }
+  class Genre {
+    +qid: str
+    +name: str
+  }
+  class Award {
+    +qid: str
+    +name: str
+  }
+  class UpdateLog {
+    +id: int [0..1]
+    +started_at: datetime
+    +finished_at: datetime [0..1]
+    +status: str
+    +films_added: int
+    +films_changed: int
+    +message: str
+    +stage: str
+  }
+}
+
+WikidataClient -[hidden]right- WikidataLoader
+WikidataLoader -[hidden]right- LoadedParticipations
+WikidataLoader -left-> "1" WikidataClient
+WikidataLoader .right.> LoadedParticipations : <<create>>
+WikidataLoader .down.> models : <<create>>
+
+Film "1" -right- "0..*" Participation
+Participation "0..*" -right- "1" Person
+Participation ..> Role
+Film "0..*" -down- "0..*" Genre
+Film "0..*" -down- "0..*" Award
+Person -[hidden]right- UpdateLog
+@enduml

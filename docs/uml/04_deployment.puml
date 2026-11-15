@@ -1,0 +1,41 @@
+@startuml
+!include common.iuml
+skinparam node {
+  BackgroundColor #F5F8FC
+  BorderColor #1F4E79
+}
+skinparam artifact {
+  BackgroundColor #EAF2FB
+  BorderColor #1F4E79
+}
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 60
+left to right direction
+title Діаграма розгортання КіноГраф
+node "Пристрій користувача" <<device>> as device {
+  node "Вебпереглядач" <<execution environment>> as browser {
+    artifact "Односторінковий застосунок\n(React, Chart.js, vis-network)" as spa
+  }
+}
+node "Сервер застосунку" <<device>> as server {
+  node "Docker Engine" <<execution environment>> as docker {
+    node "Контейнер web (nginx)" <<execution environment>> as web {
+      artifact "Статичні файли інтерфейсу" as static
+    }
+    node "Контейнер api (Python 3.12, uvicorn)" <<execution environment>> as api {
+      artifact "kinograf (FastAPI)" as app
+      artifact "kinograf.db" <<file>> as db
+      artifact "graph.ttl" <<file>> as ttl
+    }
+  }
+}
+node "Сервер Wikidata\nquery.wikidata.org" <<device>> as wd {
+  artifact "SPARQL-точка доступу" as sparql
+}
+browser -- web : <<HTTPS>>
+web -- api : <<HTTP>> /api/*
+api -- wd : <<HTTPS>> SPARQL
+app ..> db
+app ..> ttl
+@enduml
