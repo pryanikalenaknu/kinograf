@@ -1,0 +1,63 @@
+@startuml
+!include common.iuml
+skinparam component {
+  BackgroundColor #EAF2FB
+  BorderColor #1F4E79
+}
+skinparam database {
+  BackgroundColor #EAF2FB
+  BorderColor #1F4E79
+}
+skinparam cloud {
+  BackgroundColor #FFF7E6
+  BorderColor #B8860B
+}
+skinparam packageStyle rectangle
+skinparam linetype ortho
+title Діаграма компонентів КіноГраф
+package "Рівень інтерфейсу (React)" {
+  [Каталог і пошук] as ui_catalog
+  [Картка фільму] as ui_film
+  [Сторінка персоналії] as ui_person
+  [Граф зв'язків] as ui_graph
+  [Статистика і якість даних] as ui_stats
+  [SPARQL-консоль] as ui_sparql
+  [Адміністрування] as ui_admin
+  [API-клієнт] as ui_client
+}
+package "Рівень програми (FastAPI)" {
+  interface "REST API\n/api/*" as rest
+  [Маршрутизатори API] as routers
+  [Сервіси] as services
+  [Автентифікація\nадміністратора] as auth
+}
+package "Рівень доступу до даних" {
+  [Репозиторії] as repos
+  [RDF-сховище] as rdfstore
+}
+package "Модуль відкритих даних" {
+  [Завантажувач Wikidata] as loader
+  [SPARQL-клієнт] as client
+}
+database "SQLite + FTS5" as sqlite
+artifact "graph.ttl" as ttl
+cloud "Wikidata\nSPARQL-точка доступу" as wikidata
+ui_catalog ..> ui_client
+ui_film ..> ui_client
+ui_person ..> ui_client
+ui_graph ..> ui_client
+ui_stats ..> ui_client
+ui_sparql ..> ui_client
+ui_admin ..> ui_client
+ui_client --( rest
+rest - routers
+routers --> services
+routers --> auth
+services --> repos
+services --> rdfstore
+services --> loader
+loader --> client
+client --> wikidata : HTTPS
+repos --> sqlite : SQL
+rdfstore --> ttl
+@enduml

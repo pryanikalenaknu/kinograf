@@ -1,0 +1,33 @@
+/* Дизайн-токени КіноГраф з прототипу інтерфейсу */
+:root {
+  --color-primary:#1F3A5F;
+  --color-primary-hover:#2A4C7A;
+  --color-primary-pressed:#162B47;
+  --color-primary-light:#3A6396;
+  --color-primary-dark:#12243C;
+  --color-accent:#F2C14E;
+  --color-accent-hover:#E5B23C;
+  --color-bg:#F7F8FA;
+  --color-surface:#FFFFFF;
+  --color-text:#1B1F24;
+  --color-text-muted:#5B6573;
+  --color-border:#E1E5EB;
+  --color-hover:#EEF2F7;
+  --color-pressed:#DFE6EF;
+  --color-on-primary:#FFFFFF;
+  --color-on-primary-muted:#D3DCE7;
+  --color-success:#2E7D32;
+  --color-success-bg:#E8F3E9;
+  --color-error:#C62828;
+  --color-error-bg:#FBEAEA;
+  --color-skeleton:#E6E9EE;
+  --color-role-director:#1F77B4;
+  --color-role-writer:#9467BD;
+  --color-role-composer:#2CA02C;
+  --color-role-actor:#FF7F0E;
+  --text-page:600 32px/40px 'Inter',sans-serif;
+  --text-page-m:600 24px/32px 'Inter',sans-serif;
+  --text-block:600 20px/28px 'Inter',sans-serif;
+  --text-body:400 16px/24px 'Inter',sans-serif;
+  --text-label:400 14px/20px 'Inter',sans-serif;
+  --text-code:400 14px/22px 'JetBrains Mono',monospace}
