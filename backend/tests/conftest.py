@@ -3,6 +3,7 @@
 import pytest
 
 from kinograf.opendata import queries
+from kinograf.rdf import RdfStore
 from kinograf.repositories import Database, FilmRepository, PersonRepository
 from tests import sample_data
 
@@ -113,3 +114,17 @@ def filled_database(database) -> Database:
         list(sample_data.PEOPLE.values()), sample_data.PARTICIPATIONS
     )
     return database
+
+
+@pytest.fixture
+def rdf_store(tmp_path) -> RdfStore:
+    """RDF-граф, побудований з тестового набору й збережений у тимчасовій теці."""
+    store = RdfStore(tmp_path / "graph.ttl")
+    store.rebuild(
+        sample_data.FILMS,
+        list(sample_data.PEOPLE.values()),
+        sample_data.PARTICIPATIONS,
+        sample_data.GENRES,
+        sample_data.AWARDS,
+    )
+    return store
