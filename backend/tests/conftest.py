@@ -3,6 +3,8 @@
 import pytest
 
 from kinograf.opendata import queries
+from kinograf.repositories import Database, FilmRepository, PersonRepository
+from tests import sample_data
 
 FILM = "http://www.wikidata.org/entity/"
 
@@ -93,3 +95,21 @@ def all_queries() -> list[str]:
         queries.genres_query(1991),
         queries.awards_query(1991),
     ]
+
+
+@pytest.fixture
+def database(tmp_path) -> Database:
+    """Порожня база даних у тимчасовій теці."""
+    database = Database(tmp_path / "kinograf.db")
+    database.create_schema()
+    return database
+
+
+@pytest.fixture
+def filled_database(database) -> Database:
+    """База даних із тестовим набором з ``sample_data``."""
+    FilmRepository(database).replace_all(sample_data.FILMS, sample_data.GENRES, sample_data.AWARDS)
+    PersonRepository(database).replace_all(
+        list(sample_data.PEOPLE.values()), sample_data.PARTICIPATIONS
+    )
+    return database
