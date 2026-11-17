@@ -1,0 +1,73 @@
+.export-formats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.export-format {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.export-format input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.export-format:has(input:checked) {
+  border-color: var(--color-primary);
+  background: var(--color-hover);
+}
+
+.export-format:has(input:focus-visible) {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.export-dot {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.export-format:has(input:checked) .export-dot::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
+.export-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.export-label {
+  font-weight: 600;
+}
+
+.export-error {
+  margin: 0;
+  color: var(--color-error);
+  font: var(--text-label);
+}
+
+.btn-ghost {
+  border-color: transparent;
+  background: transparent;
+}
