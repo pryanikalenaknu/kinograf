@@ -1,0 +1,160 @@
+.catalog {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.catalog-filters {
+  grid-column: span 3;
+  position: sticky;
+  top: 96px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.catalog-main {
+  grid-column: span 9;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 8px 0 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.search-box:focus-within {
+  border-color: var(--color-primary);
+}
+
+.search-box input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: var(--text-body);
+}
+
+.search-box input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.search-box .btn-plain {
+  width: 36px;
+  height: 36px;
+}
+
+.catalog-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.catalog-count {
+  font: var(--text-body);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.catalog-sort-label {
+  margin-left: auto;
+}
+
+.catalog-toolbar .btn {
+  margin-left: 8px;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.catalog-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 40px 24px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.catalog-empty p {
+  margin: 0;
+}
+
+@media (max-width: 1100px) and (min-width: 768px) {
+  .catalog-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .catalog {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .catalog-main {
+    gap: 16px;
+  }
+
+  .search-box {
+    padding: 0 4px 0 12px;
+  }
+
+  .search-box .btn-plain {
+    width: 44px;
+    height: 44px;
+  }
+
+  .catalog-toolbar-phone {
+    display: flex;
+    gap: 8px;
+  }
+
+  .catalog-toolbar-phone .btn:first-child,
+  .catalog-toolbar-phone .select {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .catalog-toolbar-phone .select {
+    padding: 0 8px;
+    border-radius: 6px;
+    font: var(--text-label);
+    font-weight: 500;
+  }
+
+  .catalog-count {
+    font: var(--text-label);
+    font-weight: 600;
+  }
+
+  .catalog-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .catalog-more {
+    min-height: 48px;
+  }
+}

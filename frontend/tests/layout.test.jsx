@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { renderApp } from './utils.jsx';
 
+vi.mock('../src/pages/CatalogPage.jsx', () => ({ CatalogPage: () => <h1>Каталог фільмів</h1> }));
+
 describe('верхня панель і маршрути', () => {
   it('показує головне меню з активним розділом', () => {
     renderApp('/stats');
