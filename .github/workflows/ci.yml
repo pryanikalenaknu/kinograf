@@ -23,3 +23,24 @@ jobs:
           ruff format --check .
       - name: Тести з вимірюванням покриття
         run: pytest
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Встановлення залежностей
+        run: npm ci
+      - name: Перевірка стилю
+        run: npm run lint
+      - name: Тести з вимірюванням покриття
+        run: npm run coverage
+      - name: Збірка
+        run: npm run build
