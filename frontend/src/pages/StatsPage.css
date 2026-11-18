@@ -1,0 +1,195 @@
+.stats {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.stats > .page-title,
+.stats-years {
+  grid-column: span 12;
+}
+
+.stats-years,
+.stats-genres {
+  min-width: 0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.stats-genres {
+  grid-column: span 6;
+}
+
+.stats-top {
+  grid-column: span 6;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.stats-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.chart {
+  position: relative;
+}
+
+.chart-years {
+  height: 280px;
+}
+
+.chart-genres {
+  height: 260px;
+}
+
+.legend {
+  display: flex;
+  gap: 16px;
+}
+
+.legend > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.legend-before {
+  background: var(--color-primary-light);
+}
+
+.legend-after {
+  background: var(--color-primary);
+}
+
+.ranking {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ranking ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ranking li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ranking-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font: var(--text-label);
+}
+
+.ranking-row a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.ranking-row a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.ranking-track {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-hover);
+}
+
+.ranking-bar {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+}
+
+@media (max-width: 1100px) and (min-width: 768px) {
+  .stats-genres,
+  .stats-top {
+    grid-column: span 12;
+  }
+}
+
+@media (max-width: 767px) {
+  .stats {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .stats-years,
+  .stats-genres {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .stats-years .panel-title,
+  .stats-genres .panel-title {
+    font: var(--text-block);
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .stats-heading {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .chart-scroll {
+    overflow-x: auto;
+    margin: 0 -16px;
+    padding: 0 16px;
+  }
+
+  .chart-years {
+    width: 720px;
+    height: 240px;
+  }
+
+  .chart-genres {
+    width: 520px;
+    height: 200px;
+  }
+
+  .stats-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .stats-tabs .segmented {
+    width: 100%;
+  }
+
+  .stats-tabs .segmented button {
+    flex: 1;
+    height: 44px;
+  }
+
+  .stats-tabs .ranking {
+    padding: 16px;
+  }
+}
