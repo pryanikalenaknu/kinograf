@@ -5,6 +5,7 @@ import { renderApp } from './utils.jsx';
 
 vi.mock('../src/pages/CatalogPage.jsx', () => ({ CatalogPage: () => <h1>Каталог фільмів</h1> }));
 vi.mock('../src/pages/StatsPage.jsx', () => ({ StatsPage: () => <h1>Статистика</h1> }));
+vi.mock('../src/pages/AdminPage.jsx', () => ({ AdminPage: () => <h1>Адміністрування</h1> }));
 
 describe('верхня панель і маршрути', () => {
   it('показує головне меню з активним розділом', () => {
@@ -53,6 +54,21 @@ describe('верхня панель і маршрути', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Відкрити меню' }));
     await userEvent.keyboard('{Escape}');
     expect(screen.getAllByRole('navigation', { name: 'Головне меню' })).toHaveLength(1);
+  });
+
+  it('для адміністратора показує позначку, розділ адміністрування й вихід', async () => {
+    renderApp('/admin', { adminKey: 'secret' });
+    expect(screen.getByText('Адміністратор')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Адміністрування' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Вийти' }));
+    expect(screen.queryByText('Адміністратор')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Каталог фільмів' })).toBeInTheDocument();
+    expect(sessionStorage.length).toBe(0);
+  });
+
+  it('без ключа перенаправляє з панелі адміністрування на вхід', () => {
+    renderApp('/admin');
+    expect(screen.getByRole('heading', { name: 'Вхід для адміністратора' })).toBeInTheDocument();
   });
 
   it('показує сторінку «не знайдено» для невідомої адреси', () => {

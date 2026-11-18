@@ -1,0 +1,504 @@
+.login {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-form {
+  width: 100%;
+  max-width: 400px;
+  padding: 32px;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-text) 6%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.login-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-heading .page-title {
+  font: var(--text-page-m);
+}
+
+.login-heading p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-field label {
+  font: var(--text-label);
+  font-weight: 500;
+}
+
+.login-input {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 4px 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface);
+}
+
+.login-input:focus-within {
+  border-color: var(--color-primary);
+}
+
+.login-input-error,
+.login-input-error:focus-within {
+  border-color: var(--color-error);
+}
+
+.login-input input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font: var(--text-body);
+}
+
+.login-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-primary);
+  font: var(--text-label);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.login-toggle:hover {
+  background: var(--color-hover);
+}
+
+.login-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: var(--text-label);
+  font-weight: 500;
+  color: var(--color-error);
+}
+
+.login-submit {
+  min-height: 48px;
+  font: var(--text-body);
+  font-weight: 600;
+}
+
+.login-back {
+  align-self: center;
+  padding: 12px;
+  font: var(--text-label);
+  font-weight: 500;
+}
+
+.admin {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin-state {
+  padding: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px 48px;
+}
+
+.admin-figure {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-number {
+  font: var(--text-page);
+  font-size: 28px;
+  line-height: 36px;
+}
+
+.admin-date {
+  font: var(--text-block);
+  line-height: 36px;
+}
+
+.admin-update {
+  margin-left: auto;
+  min-height: 48px;
+  padding: 0 20px;
+}
+
+.progress {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.progress-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-percent {
+  font-weight: 600;
+}
+
+.progress-track {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--color-hover);
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width 0.5s;
+}
+
+.progress-success {
+  background: var(--color-success);
+}
+
+.progress-error {
+  background: var(--color-error);
+}
+
+.stages {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.stage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: var(--text-label);
+  font-weight: 500;
+}
+
+.stage-mark {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-on-primary);
+}
+
+.stage-done .stage-mark {
+  background: var(--color-success);
+}
+
+.stage-fail {
+  color: var(--color-error);
+}
+
+.stage-fail .stage-mark {
+  background: var(--color-error);
+}
+
+.stage-current .stage-mark {
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  animation: kg-spin 0.8s linear infinite;
+}
+
+.stage-pending {
+  color: var(--color-text-muted);
+}
+
+.stage-pending .stage-mark {
+  border: 2px solid var(--color-border);
+}
+
+.stage-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.stage-note {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font: var(--text-label);
+  font-weight: 500;
+}
+
+.notice-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.notice-error {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.btn-text {
+  min-height: 36px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: var(--text-label);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-outline {
+  border: 1px solid currentColor;
+}
+
+.status {
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font: var(--text-label);
+  font-weight: 500;
+}
+
+.status-success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.status-error {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.status-running {
+  background: var(--color-hover);
+  color: var(--color-primary);
+}
+
+.journal {
+  overflow: hidden;
+}
+
+.journal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 16px 16px 24px;
+}
+
+.journal-empty {
+  margin: 0;
+  padding: 32px;
+  text-align: center;
+  border-top: 1px solid var(--color-border);
+}
+
+.journal-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.journal-table th {
+  height: 44px;
+  padding: 0 24px 0 0;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  font: var(--text-label);
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.journal-table th:first-child,
+.journal-table td:first-child {
+  padding-left: 24px;
+}
+
+.journal-table td {
+  height: 52px;
+  padding: 0 24px 0 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.journal-table tbody tr {
+  cursor: pointer;
+}
+
+.journal-table tbody tr:hover {
+  background: var(--color-hover);
+}
+
+.journal-table tr:last-child td {
+  border-bottom: none;
+}
+
+.journal-sort-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font: var(--text-label);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.details-numbers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.details-numbers > div {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--color-bg);
+}
+
+.details-stages {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.details-stages li {
+  display: flex;
+  justify-content: space-between;
+  min-height: 32px;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  font: var(--text-label);
+}
+
+.details-state {
+  font-weight: 500;
+}
+
+.details-done {
+  color: var(--color-success);
+}
+
+.details-error {
+  color: var(--color-error);
+}
+
+.details-pending {
+  color: var(--color-text-muted);
+}
+
+.confirm-text {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+@media (max-width: 767px) {
+  .login {
+    min-height: calc(100vh - 56px);
+    padding: 16px;
+  }
+
+  .admin-state {
+    gap: 24px 48px;
+  }
+
+  .admin-update {
+    margin-left: auto;
+  }
+
+  .stages {
+    grid-template-columns: 1fr;
+  }
+
+  .journal-head {
+    padding: 16px;
+  }
+
+  .journal-sort {
+    min-height: 44px;
+    padding: 0 12px;
+    color: var(--color-text);
+    font-weight: 500;
+  }
+
+  .journal-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 16px 16px;
+  }
+
+  .journal-card {
+    padding: 12px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+    white-space: normal;
+    cursor: pointer;
+  }
+
+  .journal-card:active {
+    background: var(--color-hover);
+  }
+
+  .journal-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .journal-card-date {
+    font-weight: 500;
+  }
+}
