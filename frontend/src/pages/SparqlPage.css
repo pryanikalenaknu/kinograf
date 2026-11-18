@@ -1,0 +1,255 @@
+.sparql {
+  display: grid;
+  grid-template-columns: 314px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.sparql-heading {
+  grid-column: 1 / -1;
+}
+
+.sparql-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sparql-examples button {
+  min-height: 56px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: var(--text-label);
+  font-weight: 500;
+  text-align: left;
+  white-space: normal;
+  cursor: pointer;
+}
+
+.sparql-examples button:hover {
+  border-color: var(--color-primary);
+}
+
+.sparql-examples button[aria-pressed='true'] {
+  border-color: var(--color-primary);
+  background: var(--color-hover);
+}
+
+.sparql-main {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.sparql-select {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font: var(--text-label);
+  color: var(--color-text-muted);
+}
+
+.query,
+.results {
+  overflow: hidden;
+}
+
+.query-head,
+.results-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 8px 8px 16px;
+  border-bottom: 1px solid var(--color-border);
+  min-height: 61px;
+}
+
+.results-heading {
+  font: var(--text-body);
+  font-weight: 600;
+}
+
+.results-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.editor {
+  display: flex;
+  max-height: 480px;
+  overflow: auto;
+}
+
+.editor-gutter {
+  flex: none;
+  padding: 12px 0;
+  background: var(--color-bg);
+  border-right: 1px solid var(--color-border);
+  font: var(--text-code);
+  color: var(--color-text-muted);
+  text-align: right;
+  user-select: none;
+}
+
+.editor-gutter div {
+  padding: 0 10px 0 12px;
+}
+
+.editor-gutter .editor-bad {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.editor-area {
+  flex: 1;
+  display: grid;
+  min-width: max-content;
+}
+
+.editor-area pre,
+.editor-area textarea {
+  grid-area: 1 / 1;
+  margin: 0;
+  padding: 12px 16px;
+  font: var(--text-code);
+  white-space: pre;
+}
+
+.editor-area pre {
+  pointer-events: none;
+}
+
+.editor-area textarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  background: transparent;
+  color: transparent;
+  caret-color: var(--color-text);
+}
+
+.editor-area textarea:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+.sparql-comment,
+.sparql-iri {
+  color: var(--color-text-muted);
+}
+
+.sparql-string {
+  color: var(--color-success);
+}
+
+.sparql-variable {
+  color: var(--color-role-writer);
+}
+
+.sparql-prefixed {
+  color: var(--color-role-director);
+}
+
+.sparql-keyword {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.results-note {
+  margin: 0;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+
+.results-running {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  animation: kg-spin 0.8s linear infinite;
+}
+
+.results-error {
+  margin: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error);
+  color: var(--color-error);
+  font: var(--text-label);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.results-error svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.results-scroll {
+  overflow-x: auto;
+}
+
+.results-table {
+  width: 100%;
+  min-width: max-content;
+  border-collapse: collapse;
+}
+
+.results-table th {
+  padding: 8px 16px;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  font: var(--text-code);
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.results-table td {
+  min-width: 160px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+  font: var(--text-label);
+}
+
+.results-table tr:last-child td {
+  border-bottom: none;
+}
+
+.results-table tbody tr:hover {
+  background: var(--color-hover);
+}
+
+@media (max-width: 767px) {
+  .sparql {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .editor {
+    max-height: 360px;
+  }
+}
