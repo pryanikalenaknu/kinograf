@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { renderApp } from './utils.jsx';
 
 vi.mock('../src/pages/CatalogPage.jsx', () => ({ CatalogPage: () => <h1>Каталог фільмів</h1> }));
+vi.mock('../src/pages/StatsPage.jsx', () => ({ StatsPage: () => <h1>Статистика</h1> }));
 
 describe('верхня панель і маршрути', () => {
   it('показує головне меню з активним розділом', () => {
@@ -26,6 +27,13 @@ describe('верхня панель і маршрути', () => {
       'aria-current',
       'page',
     );
+  });
+
+  it('переходить між розділами за меню', async () => {
+    renderApp('/');
+    const nav = screen.getAllByRole('navigation', { name: 'Головне меню' })[0];
+    await userEvent.click(within(nav).getByRole('link', { name: 'Статистика' }));
+    expect(await screen.findByRole('heading', { name: 'Статистика' })).toBeInTheDocument();
   });
 
   it('відкриває й закриває бокову шторку меню', async () => {
