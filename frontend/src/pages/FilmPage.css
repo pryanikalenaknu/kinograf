@@ -1,0 +1,313 @@
+.film {
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.film-layout {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.film-side {
+  grid-column: span 3;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.film-poster {
+  aspect-ratio: 2 / 3;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.film-poster .poster-title {
+  font: var(--text-page-m);
+}
+
+.film-main {
+  grid-column: span 9;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.film-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.film-genres {
+  gap: 8px;
+}
+
+.awards {
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.awards ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.awards li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.awards li::before {
+  content: '';
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+.participants {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.participants-row {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.participants-role {
+  padding-top: 10px;
+}
+
+.participants-people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.related {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.related-list {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.related-card {
+  flex: none;
+  width: 216px;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.related-card:hover {
+  color: var(--color-text);
+  border-color: var(--color-primary);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--color-primary) 14%, transparent);
+}
+
+.related-poster {
+  height: 120px;
+  padding: 12px;
+}
+
+.related-poster .poster-title {
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.related-body {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.related-note {
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--color-hover);
+  font: var(--text-label);
+  font-weight: 500;
+}
+
+.related-note-people {
+  background: var(--color-accent);
+}
+
+.accordion {
+  overflow: hidden;
+}
+
+.accordion-item {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.accordion-item:last-child {
+  border-bottom: none;
+}
+
+.accordion-head {
+  width: 100%;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border: none;
+  background: transparent;
+  font: var(--text-body);
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.accordion-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.accordion-body {
+  padding: 0 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.accordion-person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.film-actions-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px 24px;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+}
+
+.film-actions-bar .btn {
+  flex: 1;
+  min-height: 48px;
+}
+
+@media (max-width: 767px) {
+  .film-page {
+    padding-bottom: 96px;
+  }
+
+  .film-hero {
+    height: 220px;
+  }
+
+  .film-hero .poster-title {
+    font-size: 22px;
+    line-height: 28px;
+  }
+
+  .film {
+    gap: 16px;
+    padding-top: 16px;
+  }
+
+  .film-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .film-main {
+    gap: 16px;
+  }
+
+  .film-heading {
+    gap: 16px;
+  }
+
+  .awards {
+    padding: 16px;
+  }
+
+  .awards h2 {
+    font: var(--text-body);
+    font-weight: 600;
+  }
+
+  .awards li {
+    font: var(--text-label);
+  }
+
+  .related-list {
+    gap: 12px;
+    margin: 0 -16px;
+    padding: 0 16px 8px;
+  }
+
+  .related-card {
+    width: 160px;
+  }
+
+  .related-poster {
+    height: 96px;
+    padding: 8px;
+  }
+
+  .related-poster .poster-title {
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  .related-body {
+    padding: 8px 12px;
+    gap: 4px;
+  }
+
+  .related-note {
+    padding: 2px 6px;
+    font-size: 12px;
+    line-height: 16px;
+  }
+}

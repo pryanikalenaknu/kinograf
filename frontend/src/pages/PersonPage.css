@@ -1,0 +1,329 @@
+.person {
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.person-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.person-title {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.person-tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.person-wikidata-desktop {
+  margin-left: auto;
+}
+
+.timeline {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.timeline-axis {
+  position: relative;
+  height: 140px;
+  margin: 0 48px;
+}
+
+.timeline-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 80px;
+  height: 2px;
+  background: var(--color-border);
+}
+
+.timeline-tick {
+  position: absolute;
+  top: 92px;
+  transform: translateX(-50%);
+}
+
+.timeline-point {
+  position: absolute;
+  bottom: calc(140px - 87px);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.timeline-start {
+  transform: translateX(-7px);
+  align-items: flex-start;
+}
+
+.timeline-end {
+  transform: translateX(calc(-100% + 7px));
+  align-items: flex-end;
+}
+
+.timeline-tier-1 .timeline-dot {
+  margin-top: 28px;
+}
+
+.timeline-chip {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 2px 8px;
+  border: 1px solid var(--color-primary);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font: var(--text-label);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.timeline-chip:hover {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.timeline-dot {
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: 3px solid var(--color-surface);
+  box-shadow: 0 0 0 1px var(--color-primary);
+  cursor: pointer;
+}
+
+.person-columns {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.filmography {
+  grid-column: span 8;
+  overflow: hidden;
+}
+
+.filmography .panel-title {
+  padding: 24px 24px 16px;
+}
+
+.filmography-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.filmography-table th {
+  padding: 8px 24px;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  font: var(--text-label);
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.filmography-table td {
+  height: 48px;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.filmography-table tr:last-child td {
+  border-bottom: none;
+}
+
+.filmography-table tbody tr:hover {
+  background: var(--color-hover);
+}
+
+.filmography-table td:first-child {
+  width: 96px;
+}
+
+.filmography-table td:last-child {
+  width: 220px;
+}
+
+.filmography-table a {
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.collaborators {
+  grid-column: span 4;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.collaborator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 4px 8px;
+  margin: 0 -8px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.collaborator:hover {
+  background: var(--color-hover);
+}
+
+.collaborator-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.collaborator-name {
+  font-weight: 500;
+}
+
+@media (max-width: 767px) {
+  .person {
+    gap: 16px;
+    padding-top: 16px;
+  }
+
+  .person-header {
+    gap: 16px;
+  }
+
+  .person-title {
+    gap: 4px;
+  }
+
+  .person-wikidata {
+    width: 100%;
+  }
+
+  .timeline,
+  .filmography,
+  .collaborators {
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+
+  .timeline {
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .timeline-list {
+    margin: 0 0 0 8px;
+    padding: 0;
+    list-style: none;
+    border-left: 2px solid var(--color-border);
+  }
+
+  .timeline-list li {
+    position: relative;
+    padding: 0 0 16px 20px;
+  }
+
+  .timeline-list li::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    border: 3px solid var(--color-bg);
+  }
+
+  .timeline-year {
+    font: var(--text-label);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .timeline-film {
+    min-height: 44px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .person-columns {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .filmography .panel-title {
+    padding: 8px 0 16px;
+  }
+
+  .filmography-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .filmography-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    text-decoration: none;
+  }
+
+  .filmography-card:active {
+    border-color: var(--color-primary);
+  }
+
+  .filmography-card-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .filmography-card-title {
+    font-weight: 500;
+  }
+
+  .collaborators {
+    margin-top: 8px;
+    gap: 16px;
+  }
+
+  .collaborators > .collaborator {
+    margin: 0;
+    padding: 4px 16px;
+    min-height: 56px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+}
