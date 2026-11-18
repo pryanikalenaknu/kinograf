@@ -44,3 +44,31 @@ jobs:
         run: npm run coverage
       - name: Збірка
         run: npm run build
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Встановлення сервера
+        working-directory: backend
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install -e .
+      - name: Встановлення інтерфейсу
+        working-directory: frontend
+        run: npm ci
+      - name: Встановлення Playwright
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Приймальні тести
+        working-directory: e2e
+        run: npm test
