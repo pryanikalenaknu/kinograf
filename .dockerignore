@@ -1,0 +1,13 @@
+.git
+.env
+.claude
+**/node_modules
+**/dist
+**/.venv
+**/__pycache__
+backend/data
+design/figma-board
+design/screens
+design/claude-design
+docs
+tools

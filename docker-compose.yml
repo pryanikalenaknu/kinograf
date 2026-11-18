@@ -1,0 +1,29 @@
+# КіноГраф: web (nginx зі статичними файлами інтерфейсу) і api (FastAPI на uvicorn).
+# Запуск: docker compose up --build, після чого застосунок доступний на http://localhost:8080.
+services:
+  api:
+    build: ./backend
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - kinograf-data:/app/data
+    mem_limit: 1g
+    cpus: 2
+    pids_limit: 256
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "8080:8080"
+    mem_limit: 128m
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  kinograf-data:
