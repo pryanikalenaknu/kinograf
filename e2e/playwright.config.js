@@ -4,7 +4,7 @@ const API_PORT = 8001;
 const WEB_PORT = 5174;
 
 /**
- * Приймальні тести КіноГраф: 14 сценаріїв за прецедентами з docs/uml/01_usecase.puml.
+ * Приймальні тести КіноГраф: 17 сценаріїв за прецедентами з docs/uml/01_usecase.puml.
  * Запускаються на тестових даних: server.py піднімає підставну Wikidata, наповнює свіже
  * сховище звичайним оновленням і запускає API; інтерфейс працює через Vite.
  */
@@ -25,7 +25,11 @@ export default defineConfig({
     {
       command: '../backend/.venv/bin/python server.py',
       url: `http://127.0.0.1:${API_PORT}/api/genres`,
-      env: { E2E_API_PORT: String(API_PORT), E2E_ADMIN_KEY: 'e2e-key' },
+      env: {
+        E2E_API_PORT: String(API_PORT),
+        E2E_ADMIN_KEY: 'e2e-key',
+        E2E_BASE_URL: `http://127.0.0.1:${WEB_PORT}`,
+      },
       reuseExistingServer: false,
       timeout: 60_000,
     },
