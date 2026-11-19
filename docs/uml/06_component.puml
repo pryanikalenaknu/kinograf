@@ -22,18 +22,26 @@ package "Рівень інтерфейсу (React)" {
   [Граф зв'язків] as ui_graph
   [Статистика і якість даних] as ui_stats
   [SPARQL-консоль] as ui_sparql
+  [Відкриті дані] as ui_open
   [Адміністрування] as ui_admin
   [API-клієнт] as ui_client
 }
+package "Зовнішні програми" {
+  [Програма-клієнт] as ext_client
+}
 package "Рівень програми (FastAPI)" {
   interface "REST API\n/api/*" as rest
+  interface "Зв'язані дані\n/id, /data" as ld
   [Маршрутизатори API] as routers
+  [Маршрутизатори\nзв'язаних даних] as ldrouters
   [Сервіси] as services
   [Автентифікація\nадміністратора] as auth
 }
 package "Рівень доступу до даних" {
   [Репозиторії] as repos
   [RDF-сховище] as rdfstore
+  [Опубліковані дані] as linkedstore
+  [Перевірка SHACL] as shacl
 }
 package "Модуль відкритих даних" {
   [Завантажувач Wikidata] as loader
@@ -41,23 +49,35 @@ package "Модуль відкритих даних" {
 }
 database "SQLite + FTS5" as sqlite
 artifact "graph.ttl" as ttl
+artifact "linked.ttl" as linked
+artifact "shapes.ttl" as shapes
 cloud "Wikidata\nSPARQL-точка доступу" as wikidata
+cloud "Інші набори:\nDBpedia, IMDb, Вікіпедія" as others
 ui_catalog ..> ui_client
 ui_film ..> ui_client
 ui_person ..> ui_client
 ui_graph ..> ui_client
 ui_stats ..> ui_client
 ui_sparql ..> ui_client
+ui_open ..> ui_client
 ui_admin ..> ui_client
 ui_client --( rest
+ext_client --( ld
 rest - routers
+ld - ldrouters
 routers --> services
 routers --> auth
+ldrouters --> services
 services --> repos
 services --> rdfstore
+services --> linkedstore
+services --> shacl
 services --> loader
 loader --> client
 client --> wikidata : HTTPS
 repos --> sqlite : SQL
 rdfstore --> ttl
+linkedstore --> linked
+shacl --> shapes
+linkedstore ..> others : sameAs
 @enduml

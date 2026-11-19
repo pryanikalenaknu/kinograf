@@ -1,0 +1,44 @@
+@startuml
+!include common.iuml
+skinparam activity {
+  BackgroundColor #EAF2FB
+  BorderColor #1F4E79
+}
+title Отримання даних сутності за постійною адресою
+|Програма-клієнт|
+start
+:Надіслати GET /id/film/{qid}\nіз заголовком Accept;
+|КіноГраф|
+if (Сутність є в наборі?) then (ні)
+  :Відповісти 404;
+  stop
+else (так)
+endif
+:Вибрати формат за Accept\nз урахуванням ваг q;
+switch (Найкращий формат)
+case (text/html, */*)
+  :303 See Other →\n/films/{qid};
+  |Програма-клієнт|
+  :Вебпереглядач відкриває\nсторінку фільму;
+  stop
+case (text/turtle)
+  |КіноГраф|
+  :303 See Other →\n/data/film/{qid}.ttl;
+case (application/ld+json)
+  |КіноГраф|
+  :303 See Other →\n/data/film/{qid}.jsonld;
+endswitch
+|Програма-клієнт|
+:Перейти за адресою\nіз заголовка Location;
+|КіноГраф|
+:Вибрати з linked.ttl трійки про сутність\nі назви пов'язаних сутностей;
+:Додати опис документа:\nfoaf:primaryTopic, ліцензія CC0,\nvoid:inDataset;
+:Серіалізувати в Turtle або JSON-LD;
+|Програма-клієнт|
+:Отримати RDF;
+if (Потрібні дані з інших наборів?) then (так)
+  :Перейти за owl:sameAs\nдо Wikidata або DBpedia;
+else (ні)
+endif
+stop
+@enduml

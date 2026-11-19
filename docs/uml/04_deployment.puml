@@ -18,24 +18,34 @@ node "Пристрій користувача" <<device>> as device {
     artifact "Односторінковий застосунок\n(React, Chart.js, vis-network)" as spa
   }
 }
+node "Зовнішній пристрій" <<device>> as ext {
+  node "Програма-клієнт\n(клієнт зв'язаних даних)" <<execution environment>> as client
+}
 node "Сервер застосунку" <<device>> as server {
   node "Docker Engine" <<execution environment>> as docker {
     node "Контейнер web (nginx)" <<execution environment>> as web {
       artifact "Статичні файли інтерфейсу" as static
+      artifact "nginx.conf\n(проксі /api, /id, /data,\n/.well-known/void)" as conf
     }
     node "Контейнер api (Python 3.12, uvicorn)" <<execution environment>> as api {
       artifact "kinograf (FastAPI)" as app
       artifact "kinograf.db" <<file>> as db
       artifact "graph.ttl" <<file>> as ttl
+      artifact "linked.ttl" <<file>> as linked
+      artifact "shacl-report.ttl" <<file>> as report
     }
   }
 }
 node "Сервер Wikidata\nquery.wikidata.org" <<device>> as wd {
   artifact "SPARQL-точка доступу" as sparql
 }
+device -[hidden]right- ext
 browser -- web : <<HTTPS>>
-web -- api : <<HTTP>> /api/*
+client -- web : <<HTTPS>> RDF
+web -- api : <<HTTP>>
 api -- wd : <<HTTPS>> SPARQL
 app ..> db
 app ..> ttl
+app ..> linked
+app ..> report
 @enduml
