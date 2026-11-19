@@ -1,5 +1,5 @@
 /**
- * Знімки всіх дев'яти екранів запущеного застосунку для README і звіту.
+ * Знімки всіх десяти екранів запущеного застосунку для README і звіту.
  *
  * Запуск: KINOGRAF_URL=http://localhost:8080 KINOGRAF_ADMIN_KEY=... node screenshots.mjs
  * Знімки зберігаються в docs/screenshots/{desktop,phone}_4-N.png, як еталони в design/screens.
@@ -36,6 +36,7 @@ const SCREENS = [
   },
   { id: '4-8', path: '/admin/login' },
   { id: '4-9', path: '/admin', admin: true },
+  { id: '4-10', path: '/open-data' },
 ];
 
 await mkdir(OUT, { recursive: true });
