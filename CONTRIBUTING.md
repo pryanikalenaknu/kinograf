@@ -24,7 +24,7 @@
 
 ## Стек
 
-- Серверна частина: Python 3.12, FastAPI, uvicorn, SQLite з FTS5, rdflib, SPARQLWrapper.
+- Серверна частина: Python 3.12, FastAPI, uvicorn, SQLite з FTS5, rdflib, SPARQLWrapper, pyshacl.
 - Інтерфейс: React + Vite, React Router, Chart.js, vis-network.
 - Тести: pytest і pytest-cov (сервер), Vitest і Testing Library (інтерфейс), Playwright (приймальні тести).
 - Стиль: ruff (PEP 8), ESLint.
@@ -37,7 +37,7 @@ backend/kinograf/
   api/            маршрутизатори FastAPI; знає лише services
   services/       логіка й об'єкти передачі даних
   repositories/   доступ до SQLite
-  rdf/            RDF-граф: побудова, SPARQL, експорт у Turtle
+  rdf/            RDF-графи: робоча копія Wikidata, опублікований граф schema.org, правила SHACL
   opendata/       клієнт і завантажувач Wikidata
   models/         моделі предметної області
   config.py       налаштування зі змінних середовища
