@@ -150,7 +150,7 @@ describe('панель адміністрування', () => {
     expect(alert).toHaveTextContent('Wikidata не відповідає');
     const progress = screen.getByRole('region', { name: 'Перебіг оновлення' });
     expect(within(progress).getByText('Оновлення зупинено')).toBeInTheDocument();
-    expect(within(progress).getByText('40%')).toBeInTheDocument();
+    expect(within(progress).getByText('25%')).toBeInTheDocument();
     expect(within(alert).getByRole('button', { name: 'Повторити' })).toBeInTheDocument();
   });
 
@@ -173,8 +173,21 @@ describe('панель адміністрування', () => {
     });
     renderApp('/admin', { adminKey: 'secret' });
     const progress = await screen.findByRole('region', { name: 'Перебіг оновлення' });
-    expect(within(progress).getByText('60%')).toBeInTheDocument();
+    expect(within(progress).getByText('38%')).toBeInTheDocument();
     expect(within(progress).getByText('Нагороди').nextSibling).toHaveTextContent('виконується');
+    const stages = within(progress)
+      .getAllByRole('listitem')
+      .map((item) => item.querySelector('.stage-text span').textContent);
+    expect(stages).toEqual([
+      'Фільми',
+      'Учасники',
+      'Жанри',
+      'Нагороди',
+      'Посилання',
+      'Запис у сховище',
+      'Публікація',
+      'Перевірка якості',
+    ]);
   });
 
   it('повертає на вхід, якщо ключ більше не діє', async () => {

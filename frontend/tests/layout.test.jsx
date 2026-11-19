@@ -12,7 +12,14 @@ describe('верхня панель і маршрути', () => {
     renderApp('/stats');
     const nav = screen.getAllByRole('navigation', { name: 'Головне меню' })[0];
     const links = within(nav).getAllByRole('link').map((link) => link.textContent);
-    expect(links).toEqual(['Каталог', 'Граф', 'Статистика', 'Якість даних', 'SPARQL']);
+    expect(links).toEqual([
+      'Каталог',
+      'Граф',
+      'Статистика',
+      'Якість даних',
+      'SPARQL',
+      'Відкриті дані',
+    ]);
     expect(within(nav).getByRole('link', { name: 'Статистика' })).toHaveAttribute(
       'aria-current',
       'page',

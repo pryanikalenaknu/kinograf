@@ -170,8 +170,15 @@
   text-decoration: none;
 }
 
-.collaborators {
+.person-side {
   grid-column: span 4;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.collaborators {
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -222,6 +229,10 @@
 
   .timeline,
   .filmography,
+  .person-side {
+    gap: 16px;
+  }
+
   .collaborators {
     padding: 0;
     background: transparent;

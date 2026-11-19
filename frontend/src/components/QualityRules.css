@@ -1,0 +1,294 @@
+.rules {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rules-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+}
+
+.rules-heading .panel-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+}
+
+.rules-shacl {
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--color-hover);
+  color: var(--color-text-muted);
+  font: var(--text-code);
+  font-size: 13px;
+}
+
+.rules-downloads {
+  display: flex;
+  gap: 8px;
+}
+
+.rules-downloads .btn {
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.rules-summary {
+  margin: 0;
+}
+
+.rules-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rules-table th,
+.rules-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.rules-table thead th {
+  padding-top: 0;
+  font: var(--text-label);
+  color: var(--color-text-muted);
+}
+
+.rules-table tbody th {
+  font-weight: 400;
+  width: 38%;
+}
+
+.rules-table tbody tr:last-child th,
+.rules-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.rules-property {
+  font: var(--text-code);
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.rules-number {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+
+.rules-table td:last-child {
+  width: 37%;
+}
+
+.rules-track {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-hover);
+  overflow: hidden;
+}
+
+.rules-bar {
+  display: block;
+  height: 100%;
+  min-width: 4px;
+  border-radius: 3px;
+}
+
+.rules-bar-violation {
+  background: var(--color-error);
+}
+
+.rules-bar-warning {
+  background: var(--color-accent);
+}
+
+.rules-bar-info {
+  background: var(--color-primary-light);
+}
+
+.severity,
+.issue-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font: 500 13px/18px 'Inter', sans-serif;
+  white-space: nowrap;
+}
+
+.severity-violation,
+.issue-tag-violation {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.severity-warning,
+.issue-tag-warning {
+  background: #fdf3d9;
+  color: #7a5300;
+}
+
+.severity-info,
+.issue-tag-info {
+  background: var(--color-hover);
+  color: var(--color-text-muted);
+}
+
+.rules-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rules-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.rules-list-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.issues-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+.issues-title {
+  margin: 0;
+  font: 600 18px/24px 'Inter', sans-serif;
+}
+
+.issues-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.issues-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 220px;
+}
+
+.issues-count {
+  margin-left: auto;
+}
+
+.issues {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.film-issues {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.film-issues-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.film-issues-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.film-issues-title a {
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.film-issues-title a:hover {
+  text-decoration: underline;
+}
+
+.issue-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.film-issues .btn {
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.issues-error {
+  margin: 0;
+  color: var(--color-error);
+}
+
+.btn-link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-primary);
+  font: inherit;
+  font-weight: 500;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 767px) {
+  .rules {
+    padding: 16px;
+  }
+
+  .rules-downloads {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rules-downloads .btn {
+    justify-content: center;
+  }
+
+  .issues-filter {
+    flex: 1 1 140px;
+    min-width: 0;
+  }
+
+  .issues-count {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .film-issues {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .film-issues .btn {
+    justify-content: center;
+  }
+}

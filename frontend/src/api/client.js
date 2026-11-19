@@ -71,6 +71,23 @@ export function filmQuery(filters) {
   };
 }
 
+/**
+ * Завантажує документ JSON-LD про фільм або персоналію з маршрутів зв'язаних даних.
+ *
+ * @param {'film'|'person'} kind вид сутності
+ * @param {string} qid ідентифікатор у Wikidata
+ * @returns {Promise<object>} розібраний документ
+ */
+export async function linkedDocument(kind, qid) {
+  const response = await fetch(`/data/${kind}/${encodeURIComponent(qid)}.jsonld`, {
+    headers: { Accept: 'application/ld+json' },
+  });
+  if (!response.ok) {
+    throw new ApiError(response.status, response.statusText);
+  }
+  return response.json();
+}
+
 export const api = {
   films: (filters, page = 1) => request(`/films${queryString({ ...filmQuery(filters), page })}`),
   film: (qid) => request(`/films/${encodeURIComponent(qid)}`),
@@ -79,6 +96,10 @@ export const api = {
   genres: () => request('/genres'),
   directors: () => request('/directors'),
   stats: () => request('/stats'),
+  opendata: () => request('/opendata'),
+  qualityRules: () => request('/quality/rules'),
+  qualityIssues: ({ rule, severity, page = 1 }) =>
+    request(`/quality/issues${queryString({ rule, severity, page })}`),
   sparql: (query) => request('/sparql', { method: 'POST', body: { query } }),
   exportFilms: (filters, format) =>
     request(`/export/films${queryString({ ...filmQuery(filters), format })}`, { raw: true }),

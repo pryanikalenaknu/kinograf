@@ -1,0 +1,152 @@
+.odp {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.odp-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.odp-about {
+  font: var(--text-label);
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.odp-about:hover {
+  text-decoration: underline;
+}
+
+.odp-row {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.odp-datasets {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.odp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font: var(--text-label);
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.odp-chip:hover {
+  background: var(--color-hover);
+}
+
+.odp-uri-block {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.odp-uri-line {
+  flex: 1 1 280px;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.odp-uri {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-bg);
+  font: var(--text-code);
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.odp-uri-line .odp-copy {
+  flex: none;
+  width: 44px;
+  padding: 0;
+  justify-content: center;
+}
+
+.odp-formats {
+  display: flex;
+  gap: 8px;
+}
+
+.odp-formats .btn {
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.odp-stacked .odp-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.odp-stacked .odp-uri-line {
+  flex-basis: 100%;
+}
+
+.odp-stacked .odp-formats {
+  flex-basis: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.odp-stacked .odp-formats .btn {
+  justify-content: center;
+}
+
+@media (max-width: 767px) {
+  .odp {
+    padding: 16px;
+  }
+
+  .odp-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .odp-uri-line {
+    flex-basis: 100%;
+  }
+
+  .odp-formats {
+    flex-basis: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .odp-formats .btn {
+    justify-content: center;
+  }
+}
