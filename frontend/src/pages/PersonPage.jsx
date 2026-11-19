@@ -1,12 +1,14 @@
-/** Сторінка 4.3 «Сторінка персоналії»: ролі, хронологія, фільмографія, співробітники. */
+/** Сторінка 4.3 «Сторінка персоналії»: ролі, хронологія, фільмографія, співробітники, відкриті дані. */
 
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { useApi } from '../api/useApi.js';
 import { filmsCount, initials, rolesText } from '../components/format.js';
 import { Icon } from '../components/Icon.jsx';
+import { OpenDataPanel } from '../components/OpenDataPanel.jsx';
 import { Avatar, Breadcrumbs, RoleTag } from '../components/People.jsx';
 import { RequestState } from '../components/States.jsx';
+import { StructuredData } from '../components/StructuredData.jsx';
 import './PersonPage.css';
 
 const ROLE_ORDER = ['director', 'screenwriter', 'composer', 'cast'];
@@ -168,7 +170,7 @@ export function PersonPage() {
       </div>
     );
   }
-  const { person, filmography, collaborators } = request.data;
+  const { person, filmography, collaborators, links } = request.data;
   const roles = ROLE_ORDER.filter((role) => filmography.some((entry) => entry.roles.includes(role)));
   const from = state?.from;
   const crumbs = [
@@ -184,6 +186,7 @@ export function PersonPage() {
   );
   return (
     <div className="page person">
+      <StructuredData kind="person" qid={person.qid} />
       <Breadcrumbs items={crumbs} />
       <header className="person-header">
         <Avatar name={person.name} size="large" />
@@ -209,7 +212,10 @@ export function PersonPage() {
       {filmography.length > 0 && <Timeline filmography={filmography} />}
       <div className="person-columns">
         <Filmography filmography={filmography} />
-        {collaborators.length > 0 && <Collaborators collaborators={collaborators} />}
+        <div className="person-side">
+          {collaborators.length > 0 && <Collaborators collaborators={collaborators} />}
+          {links && <OpenDataPanel links={links} stacked />}
+        </div>
       </div>
     </div>
   );

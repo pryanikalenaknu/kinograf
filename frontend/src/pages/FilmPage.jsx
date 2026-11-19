@@ -1,4 +1,4 @@
-/** Сторінка 4.2 «Картка фільму»: учасники за ролями, нагороди, пов'язані фільми. */
+/** Сторінка 4.2 «Картка фільму»: учасники за ролями, нагороди, відкриті дані, пов'язані фільми. */
 
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -6,9 +6,11 @@ import { api } from '../api/client.js';
 import { useApi } from '../api/useApi.js';
 import { ROLE_COLORS, ROLE_LABELS } from '../components/format.js';
 import { Icon } from '../components/Icon.jsx';
+import { OpenDataPanel } from '../components/OpenDataPanel.jsx';
 import { Avatar, Breadcrumbs, MissingData, PersonChip } from '../components/People.jsx';
 import { Poster } from '../components/Poster.jsx';
 import { RequestState } from '../components/States.jsx';
+import { StructuredData } from '../components/StructuredData.jsx';
 import './FilmPage.css';
 
 const ROLES = ['director', 'screenwriter', 'composer', 'cast'];
@@ -152,9 +154,10 @@ export function FilmPage() {
   if (request.loading || request.error) {
     return <div className="page">{state}</div>;
   }
-  const { film, participants, genres, awards, related } = request.data;
+  const { film, participants, genres, awards, related, links } = request.data;
   return (
     <div className="film-page">
+      <StructuredData kind="film" qid={film.qid} />
       <Poster film={film} className="film-hero phone-only" showYear={false} width={800} />
       <div className="page film">
         <Breadcrumbs items={[{ label: 'Каталог фільмів', to: '/' }, { label: film.title }]} />
@@ -184,6 +187,7 @@ export function FilmPage() {
             <div className="phone-only">
               <ParticipantsAccordion participants={participants} film={film} />
             </div>
+            {links && <OpenDataPanel links={links} />}
           </div>
         </div>
         <RelatedFilms related={related} />
