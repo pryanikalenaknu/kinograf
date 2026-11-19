@@ -63,6 +63,21 @@ class RelatedFilmOut(Schema):
     shared_genres: int
 
 
+class EntityLinksOut(Schema):
+    """Постійна адреса сутності, її дані й відповідники в інших наборах.
+
+    Відсутні набори мають значення ``null``.
+    """
+
+    uri: str
+    wikidata: str
+    imdb: str | None
+    wikipedia: str | None
+    dbpedia: str | None
+    turtle: str
+    jsonld: str
+
+
 class FilmDetailsOut(Schema):
     """Картка фільму.
 
@@ -74,6 +89,7 @@ class FilmDetailsOut(Schema):
     genres: list[EntityOut]
     awards: list[EntityOut]
     related: list[RelatedFilmOut]
+    links: EntityLinksOut
 
 
 class FilmographyEntryOut(Schema):
@@ -96,6 +112,7 @@ class PersonProfileOut(Schema):
     person: PersonOut
     filmography: list[FilmographyEntryOut]
     collaborators: list[RankedPersonOut]
+    links: EntityLinksOut
 
 
 class StatsOut(Schema):
@@ -150,3 +167,89 @@ class UpdateLogOut(Schema):
     films_changed: int
     message: str
     stage: str
+
+
+class LinksetOut(Schema):
+    """Скільки фільмів і персоналій мають відповідник в іншому наборі."""
+
+    target: str
+    homepage: str
+    predicate: str
+    films: int
+    people: int
+
+
+class OpenDataOut(Schema):
+    """Опис опублікованого набору для екрана «Відкриті дані».
+
+    ``endpoints`` містить адреси ``void``, ``dump`` і ``sparql``.
+    """
+
+    base_url: str
+    license: str
+    source: str
+    modified: datetime | None
+    triples: int
+    films: int
+    people: int
+    linksets: list[LinksetOut]
+    endpoints: dict[str, str]
+    example_film: str | None
+
+
+class QualityRuleOut(Schema):
+    """Правило перевірки SHACL."""
+
+    rule: str
+    name: str
+    severity: Literal["violation", "warning", "info"]
+    message: str
+    property: str | None
+    order: int
+
+
+class RuleSummaryOut(Schema):
+    """Правило з кількістю фільмів, що його порушують."""
+
+    rule: QualityRuleOut
+    films: int
+
+
+class QualityReportOut(Schema):
+    """Зведення останньої перевірки за правилами SHACL.
+
+    ``by_severity`` — фільми за найсерйознішим зауваженням (``violation``, ``warning``,
+    ``info``); ``checked_at`` — ``null``, якщо перевірки ще не було.
+    """
+
+    checked_at: datetime | None
+    films_checked: int
+    films_with_issues: int
+    by_severity: dict[str, int]
+    rules: list[RuleSummaryOut]
+
+
+class QualityIssueOut(Schema):
+    """Зауваження до запису фільму з посиланням на виправлення у Wikidata."""
+
+    rule: str
+    severity: Literal["violation", "warning", "info"]
+    message: str
+    property: str | None
+    value: str | None
+    fix_url: str
+
+
+class FilmIssuesOut(Schema):
+    """Фільм з усіма його зауваженнями."""
+
+    film: FilmOut
+    issues: list[QualityIssueOut]
+
+
+class QualityPageOut(Schema):
+    """Сторінка фільмів із зауваженнями, по 12 на сторінці."""
+
+    items: list[FilmIssuesOut]
+    total: int
+    page: int

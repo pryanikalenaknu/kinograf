@@ -1,7 +1,7 @@
 """Картка фільму."""
 
-from kinograf.repositories import FilmRepository, PersonRepository
-from kinograf.services.dto import FilmDetails, RelatedFilm
+from kinograf.repositories import FilmRepository, LinkRepository, PersonRepository
+from kinograf.services.dto import EntityLinks, FilmDetails, RelatedFilm
 
 RELATED_LIMIT = 8
 
@@ -12,14 +12,24 @@ class FilmService:
     Args:
         films: Сховище фільмів.
         people: Сховище персоналій.
+        links: Сховище посилань на інші набори.
+        base_url: Базова адреса застосунку для постійних адрес.
     """
 
-    def __init__(self, films: FilmRepository, people: PersonRepository) -> None:
+    def __init__(
+        self,
+        films: FilmRepository,
+        people: PersonRepository,
+        links: LinkRepository,
+        base_url: str,
+    ) -> None:
         self._films = films
         self._people = people
+        self._links = links
+        self._base_url = base_url
 
     def details(self, qid: str) -> FilmDetails | None:
-        """Повертає фільм з учасниками, жанрами, нагородами й пов'язаними фільмами.
+        """Повертає фільм з учасниками, жанрами, нагородами, пов'язаними фільмами й посиланнями.
 
         Args:
             qid: Ідентифікатор фільму.
@@ -39,4 +49,5 @@ class FilmService:
                 RelatedFilm(film=related, shared_people=people, shared_genres=genres)
                 for related, people, genres in self._films.related(qid, RELATED_LIMIT)
             ],
+            links=EntityLinks.build(self._base_url, "film", qid, self._links.get(qid)),
         )

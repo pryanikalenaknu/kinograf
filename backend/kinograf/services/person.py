@@ -1,7 +1,7 @@
 """Сторінка персоналії."""
 
-from kinograf.repositories import PersonRepository
-from kinograf.services.dto import FilmographyEntry, PersonProfile, RankedPerson
+from kinograf.repositories import LinkRepository, PersonRepository
+from kinograf.services.dto import EntityLinks, FilmographyEntry, PersonProfile, RankedPerson
 
 COLLABORATORS_LIMIT = 8
 
@@ -11,13 +11,17 @@ class PersonService:
 
     Args:
         people: Сховище персоналій.
+        links: Сховище посилань на інші набори.
+        base_url: Базова адреса застосунку для постійних адрес.
     """
 
-    def __init__(self, people: PersonRepository) -> None:
+    def __init__(self, people: PersonRepository, links: LinkRepository, base_url: str) -> None:
         self._people = people
+        self._links = links
+        self._base_url = base_url
 
     def profile(self, qid: str) -> PersonProfile | None:
-        """Повертає персоналію з фільмографією й постійними співробітниками.
+        """Повертає персоналію з фільмографією, постійними співробітниками й посиланнями.
 
         Ролі в одному фільмі об'єднуються в один рядок фільмографії.
 
@@ -40,4 +44,5 @@ class PersonService:
                 RankedPerson(person=collaborator, films=films)
                 for collaborator, films in self._people.collaborators(qid, COLLABORATORS_LIMIT)
             ],
+            links=EntityLinks.build(self._base_url, "person", qid, self._links.get(qid)),
         )

@@ -4,7 +4,7 @@ import time
 import urllib.error
 from collections.abc import Callable
 
-from SPARQLWrapper import JSON, SPARQLWrapper
+from SPARQLWrapper import JSON, POST, URLENCODED, SPARQLWrapper
 
 
 class WikidataError(Exception):
@@ -92,8 +92,27 @@ class WikidataClient:
 
     def _execute(self, query: str) -> dict:
         """Надсилає запит до точки доступу й повертає розібраний JSON-результат."""
+        return self.prepare(query).queryAndConvert()
+
+    def prepare(self, query: str) -> SPARQLWrapper:
+        """Готує запит у формі, яку приймає Wikidata навіть під час обмежень.
+
+        Запит надсилається методом ``POST`` як форма ``query=…``, а формат результату
+        задається лише заголовком ``Accept``. Запити ``GET`` з додатковими параметрами
+        ``format``, ``output`` і ``results``, які SPARQLWrapper додає типово, Wikidata
+        під час збою 2026 року відхиляла з кодом 429 і паузою 1 000 с.
+
+        Args:
+            query: Текст SPARQL-запиту.
+
+        Returns:
+            Налаштований запит SPARQLWrapper.
+        """
         sparql = SPARQLWrapper(self.endpoint, agent=self.user_agent)
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
+        sparql.setMethod(POST)
+        sparql.setRequestMethod(URLENCODED)
+        sparql.setOnlyConneg(True)
         sparql.setTimeout(60)
-        return sparql.queryAndConvert()
+        return sparql

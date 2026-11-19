@@ -105,3 +105,15 @@ def test_shorter_retry_after_keeps_own_delay():
 )
 def test_retry_after_without_seconds_is_ignored(error):
     assert retry_after(error) == 0
+
+
+def test_request_is_plain_post_form_with_content_negotiation():
+    client = WikidataClient("https://query.example.org/sparql", "KinoGraf/test")
+    request = client.prepare("ASK { ?s ?p ?o }")._createRequest()
+    assert request.get_method() == "POST"
+    assert request.full_url == "https://query.example.org/sparql"
+    assert request.data == b"query=ASK+%7B+%3Fs+%3Fp+%3Fo+%7D"
+    headers = dict(request.header_items())
+    assert headers["Content-type"] == "application/x-www-form-urlencoded"
+    assert headers["Accept"].startswith("application/sparql-results+json")
+    assert headers["User-agent"] == "KinoGraf/test"

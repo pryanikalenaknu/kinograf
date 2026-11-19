@@ -1,0 +1,127 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix wd:   <http://www.wikidata.org/entity/> .
+@prefix wdt:  <http://www.wikidata.org/prop/direct/> .
+@prefix kgs:  <urn:kinograf:shapes:> .
+
+# Правила якості запису фільму в локальному графі (терміни Wikidata).
+# Кожне правило — окрема властивісна форма з назвою (sh:name), рівнем (sh:severity)
+# і повідомленням (sh:message). Властивість у sh:path вказує, що виправляти у Wikidata.
+# Рівень SPARQL-обмеження задає форма, що його містить, тому kgs:announced
+# винесено в окрему форму kgs:AnnouncedShape з рівнем sh:Info.
+
+kgs:FilmShape
+    a sh:NodeShape ;
+    rdfs:label "Запис фільму"@uk ;
+    sh:targetSubjectsOf wdt:P495 ;
+    sh:property
+        kgs:release-date ,
+        kgs:duration-range ,
+        kgs:title-uk ,
+        kgs:director ,
+        kgs:cast ,
+        kgs:genre ,
+        kgs:duration ,
+        kgs:screenwriter ,
+        kgs:image .
+
+kgs:AnnouncedShape
+    a sh:NodeShape ;
+    rdfs:label "Анонсований фільм"@uk ;
+    sh:targetSubjectsOf wdt:P495 ;
+    sh:severity sh:Info ;
+    sh:sparql kgs:announced .
+
+kgs:release-date
+    sh:path wdt:P577 ;
+    sh:name "Дата виходу"@uk ;
+    sh:minCount 1 ;
+    sh:datatype xsd:date ;
+    sh:severity sh:Violation ;
+    sh:message "Немає дати виходу або вона не є датою"@uk ;
+    sh:order 1 .
+
+kgs:duration-range
+    sh:path wdt:P2047 ;
+    sh:name "Тривалість від 1 до 600 хв"@uk ;
+    sh:minInclusive 1 ;
+    sh:maxInclusive 600 ;
+    sh:severity sh:Violation ;
+    sh:message "Тривалість поза межами 1–600 хв"@uk ;
+    sh:order 2 .
+
+kgs:title-uk
+    sh:path rdfs:label ;
+    sh:name "Назва українською"@uk ;
+    sh:minCount 1 ;
+    sh:pattern "[А-ЩЬЮЯҐЄІЇа-щьюяґєії]" ;
+    sh:severity sh:Warning ;
+    sh:message "Немає назви українською"@uk ;
+    sh:order 3 .
+
+kgs:director
+    sh:path wdt:P57 ;
+    sh:name "Режисер"@uk ;
+    sh:minCount 1 ;
+    sh:severity sh:Warning ;
+    sh:message "Не вказано режисера"@uk ;
+    sh:order 4 .
+
+kgs:cast
+    sh:path wdt:P161 ;
+    sh:name "Актори"@uk ;
+    sh:minCount 1 ;
+    sh:severity sh:Warning ;
+    sh:message "Не вказано акторів"@uk ;
+    sh:order 5 .
+
+kgs:genre
+    sh:path wdt:P136 ;
+    sh:name "Жанр"@uk ;
+    sh:minCount 1 ;
+    sh:severity sh:Warning ;
+    sh:message "Не вказано жанр"@uk ;
+    sh:order 6 .
+
+kgs:duration
+    sh:path wdt:P2047 ;
+    sh:name "Тривалість"@uk ;
+    sh:minCount 1 ;
+    sh:severity sh:Info ;
+    sh:message "Не вказано тривалість"@uk ;
+    sh:order 7 .
+
+kgs:screenwriter
+    sh:path wdt:P58 ;
+    sh:name "Сценарист"@uk ;
+    sh:minCount 1 ;
+    sh:severity sh:Info ;
+    sh:message "Не вказано сценариста"@uk ;
+    sh:order 8 .
+
+kgs:image
+    sh:path wdt:P18 ;
+    sh:name "Зображення"@uk ;
+    sh:minCount 1 ;
+    sh:severity sh:Info ;
+    sh:message "Немає зображення (постера)"@uk ;
+    sh:order 9 .
+
+kgs:announced
+    a sh:SPARQLConstraint ;
+    sh:name "Фільм уже вийшов"@uk ;
+    sh:message "Дата виходу ще не настала: фільм анонсовано"@uk ;
+    sh:order 10 ;
+    sh:prefixes kgs:prefixes ;
+    sh:select """
+        SELECT $this ?value (wdt:P577 AS ?path)
+        WHERE {
+            $this wdt:P577 ?value .
+            FILTER (STR(?value) > SUBSTR(STR(NOW()), 1, 10))
+        }
+    """ .
+
+kgs:prefixes
+    sh:declare
+        [ sh:prefix "wdt" ; sh:namespace "http://www.wikidata.org/prop/direct/"^^xsd:anyURI ] .

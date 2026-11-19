@@ -1,6 +1,6 @@
 """Підставна SPARQL-точка доступу Wikidata з незмінним набором фільмів для приймальних тестів.
 
-Відповідає на чотири запити завантажувача (фільми, учасники, жанри, нагороди) у форматі
+Відповідає на запити завантажувача (фільми, учасники, жанри, нагороди, посилання) у форматі
 SPARQL JSON, тож оновлення даних проходить увесь шлях без звернення до справжньої Wikidata.
 """
 
@@ -87,6 +87,21 @@ AWARDS = {
 }
 
 
+FILM_LINKS = {
+    "Q1001": ("tt3904770", "Плем'я (фільм)", "The Tribe (2014 film)"),
+    "Q1002": ("tt11187470", "Земля блакитна, ніби апельсин", "The Earth Is Blue as an Orange"),
+    "Q1004": ("tt3699354", "Поводир (фільм)", "The Guide (2014 film)"),
+    "Q1005": ("tt10699362", "Атлантида (фільм, 2019)", "Atlantis (2019 film)"),
+    "Q1008": ("tt7524430", "Кіборги (фільм)", None),
+}
+
+PERSON_LINKS = {
+    "Q2001": ("nm5752123", "Мирослав Слабошпицький", "Myroslav Slaboshpytskyi"),
+    "Q2002": ("nm1125213", "Олесь Санін", "Oles Sanin"),
+    "Q2003": (None, "Валентин Васянович", None),
+}
+
+
 def uri(qid: str) -> dict:
     """Повертає значення-URI сутності у форматі SPARQL JSON."""
     return {"type": "uri", "value": ENTITY + qid}
@@ -130,8 +145,24 @@ def linked_rows(items: dict, name: str) -> list[dict]:
     ]
 
 
+def link_rows(links: dict, subject: str) -> list[dict]:
+    """Рядки відповіді на запит посилань фільмів або учасників на IMDb і Вікіпедію."""
+    rows = []
+    for qid, values in links.items():
+        row = {subject: uri(qid)}
+        for name, value in zip(("imdb", "ukwiki", "enwiki"), values, strict=True):
+            if value:
+                row[name] = literal(value)
+        rows.append(row)
+    return rows
+
+
 def answer(query: str) -> list[dict]:
     """Обирає відповідь за характерним фрагментом запиту завантажувача."""
+    if "GROUP BY ?person" in query:
+        return link_rows(PERSON_LINKS, "person")
+    if "AS ?ukwiki" in query:
+        return link_rows(FILM_LINKS, "film")
     if "(MIN(?date) AS ?released)" in query:
         return film_rows()
     if "?personLabel" in query:

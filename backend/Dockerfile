@@ -1,10 +1,12 @@
-# Контейнер api: FastAPI на uvicorn. Дані (SQLite і graph.ttl) зберігаються в томі /app/data.
+# Контейнер api: FastAPI на uvicorn. Дані (SQLite, графи, звіт SHACL) зберігаються в томі /app/data.
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     KINOGRAF_DATABASE_PATH=/app/data/kinograf.db \
-    KINOGRAF_GRAPH_PATH=/app/data/graph.ttl
+    KINOGRAF_GRAPH_PATH=/app/data/graph.ttl \
+    KINOGRAF_LINKED_PATH=/app/data/linked.ttl \
+    KINOGRAF_REPORT_PATH=/app/data/shacl-report.ttl
 
 WORKDIR /app
 

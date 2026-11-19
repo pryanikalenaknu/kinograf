@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from datetime import date
 
-from kinograf.models import Award, Film, Genre, Participation, Person, Role
+from kinograf.models import Award, ExternalLinks, Film, Genre, Participation, Person, Role
 from kinograf.opendata import queries
 from kinograf.opendata.client import WikidataClient
 
@@ -127,3 +127,27 @@ class WikidataLoader:
             award = Award(qid=entity_id(row["award"]), name=row["awardLabel"])
             awards.setdefault(entity_id(row["film"]), []).append(award)
         return awards
+
+    def fetch_links(self) -> dict[str, ExternalLinks]:
+        """Завантажує посилання фільмів і їхніх учасників на IMDb і Вікіпедію.
+
+        Returns:
+            Посилання за ідентифікаторами фільмів і персоналій; сутності без жодного
+            посилання не включаються.
+        """
+        links: dict[str, ExternalLinks] = {}
+        for query, subject in (
+            (queries.film_links_query, "film"),
+            (queries.person_links_query, "person"),
+        ):
+            for row in self.client.run(query(self.min_year)):
+                if not any(row.get(name) for name in ("imdb", "ukwiki", "enwiki")):
+                    continue
+                qid = entity_id(row[subject])
+                links[qid] = ExternalLinks(
+                    qid=qid,
+                    imdb_id=row.get("imdb"),
+                    ukwiki=row.get("ukwiki"),
+                    enwiki=row.get("enwiki"),
+                )
+        return links

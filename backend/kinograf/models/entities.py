@@ -1,10 +1,13 @@
-"""Сутності предметної області: фільми, персоналії, їхні ролі, жанри й нагороди."""
+"""Сутності предметної області: фільми, персоналії, ролі, жанри, нагороди, посилання, зауваження."""
 
+import builtins
 from dataclasses import dataclass
 from datetime import date, datetime
 from enum import StrEnum
+from urllib.parse import quote
 
 WIKIDATA_ENTITY_URL = "https://www.wikidata.org/wiki/"
+WIKIPEDIA_SAFE = "()_,'!*"
 
 
 def wikidata_url(qid: str) -> str:
@@ -17,6 +20,18 @@ def wikidata_url(qid: str) -> str:
         Повна адреса сторінки сутності.
     """
     return WIKIDATA_ENTITY_URL + qid
+
+
+def wikipedia_path(title: str) -> str:
+    """Перетворює назву статті Вікіпедії на частину адреси, як це робить сама Вікіпедія.
+
+    Args:
+        title: Назва статті, наприклад ``Поводир (фільм)``.
+
+    Returns:
+        Назва з підкресленнями замість пробілів, закодована для адреси.
+    """
+    return quote(title.replace(" ", "_"), safe=WIKIPEDIA_SAFE)
 
 
 class Role(StrEnum):
@@ -139,3 +154,81 @@ class UpdateLog:
     message: str = ""
     stage: str = ""
     id: int | None = None
+
+
+@dataclass(frozen=True)
+class ExternalLinks:
+    """Посилання фільму або персоналії на інші набори даних.
+
+    Attributes:
+        qid: Ідентифікатор фільму або персоналії у Wikidata.
+        imdb_id: Ідентифікатор IMDb (``tt…`` для фільму, ``nm…`` для персоналії).
+        ukwiki: Назва статті української Вікіпедії.
+        enwiki: Назва статті англійської Вікіпедії.
+    """
+
+    qid: str
+    imdb_id: str | None = None
+    ukwiki: str | None = None
+    enwiki: str | None = None
+
+    @property
+    def imdb_url(self) -> str | None:
+        """Адреса сторінки на IMDb або ``None`` для відсутнього чи невідомого ідентифікатора."""
+        if not self.imdb_id:
+            return None
+        kind = {"tt": "title", "nm": "name"}.get(self.imdb_id[:2])
+        return f"https://www.imdb.com/{kind}/{self.imdb_id}/" if kind else None
+
+    @property
+    def ukwiki_url(self) -> str | None:
+        """Адреса статті української Вікіпедії."""
+        return (
+            f"https://uk.wikipedia.org/wiki/{wikipedia_path(self.ukwiki)}" if self.ukwiki else None
+        )
+
+    @property
+    def dbpedia_uri(self) -> str | None:
+        """URI ресурсу DBpedia, утвореного зі статті англійської Вікіпедії."""
+        return f"http://dbpedia.org/resource/{wikipedia_path(self.enwiki)}" if self.enwiki else None
+
+
+class Severity(StrEnum):
+    """Рівень зауваження перевірки SHACL, від найсерйознішого."""
+
+    VIOLATION = "violation"
+    WARNING = "warning"
+    INFO = "info"
+
+    @property
+    def rank(self) -> int:
+        """Повертає місце рівня: 0 — помилка, 1 — попередження, 2 — підказка."""
+        return list(Severity).index(self)
+
+
+@dataclass(frozen=True)
+class QualityIssue:
+    """Зауваження до запису фільму у Wikidata за одним правилом SHACL.
+
+    Attributes:
+        film_qid: Ідентифікатор фільму.
+        rule: Ідентифікатор правила, наприклад ``director``.
+        severity: Рівень зауваження.
+        message: Повідомлення правила.
+        property: Властивість Wikidata, яку треба виправити, наприклад ``P57``; для назви —
+            ``None``.
+        value: Значення, що порушує правило, наприклад тривалість ``5345``.
+    """
+
+    film_qid: str
+    rule: str
+    severity: Severity
+    message: str
+    property: str | None = None
+    value: str | None = None
+
+    @builtins.property
+    def fix_url(self) -> str:
+        """Адреса запису у Wikidata з якорем властивості, яку треба виправити."""
+        anchor = f"#{self.property}" if self.property else ""
+        return wikidata_url(self.film_qid) + anchor

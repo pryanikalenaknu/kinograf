@@ -2,8 +2,8 @@
 
 import pytest
 
-from kinograf.models import Person, Role
-from kinograf.repositories import LogRepository, PersonRepository, StatsRepository
+from kinograf.models import ExternalLinks, Person, Role
+from kinograf.repositories import LinkRepository, LogRepository, PersonRepository, StatsRepository
 from tests import sample_data
 
 
@@ -153,3 +153,16 @@ def test_log_recent_newest_first_and_last_success(logs):
     assert [log.id for log in logs.recent()] == [3, 2, 1]
     assert [log.id for log in logs.recent(limit=2)] == [3, 2]
     assert logs.last_success().id == second.id
+
+
+def test_link_repository_replace_get_all(database):
+    links = LinkRepository(database)
+    assert links.get("Q1") is None
+    links.replace_all(
+        {"Q1": ExternalLinks("Q1", "tt1"), "Q10": ExternalLinks("Q10", ukwiki="Ім'я")}
+    )
+    assert links.get("Q1") == ExternalLinks("Q1", "tt1")
+    assert set(links.all()) == {"Q1", "Q10"}
+    links.replace_all({"Q2": ExternalLinks("Q2", enwiki="Title")})
+    assert links.get("Q1") is None
+    assert list(links.all()) == ["Q2"]

@@ -6,6 +6,7 @@ requires-python = ">=3.12"
 dependencies = [
     "SPARQLWrapper>=2.0",
     "fastapi>=0.115",
+    "pyshacl>=0.30",
     "rdflib>=7.0",
     "uvicorn>=0.30",
 ]
@@ -25,6 +26,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 include = ["kinograf*"]
 
+[tool.setuptools.package-data]
+"kinograf.rdf" = ["shapes.ttl"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"
@@ -42,6 +46,9 @@ convention = "google"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--cov=kinograf --cov-report=term-missing"
+filterwarnings = [
+    "ignore:ConjunctiveGraph is deprecated:DeprecationWarning:rdflib.plugins.parsers.jsonld",
+]
 
 [tool.coverage.run]
 omit = ["kinograf/opendata/__main__.py"]

@@ -7,8 +7,14 @@ import pytest
 from kinograf import update
 from kinograf.config import Settings
 from kinograf.opendata import WikidataError, WikidataLoader
-from kinograf.rdf import RdfStore
-from kinograf.repositories import FilmRepository, LogRepository, PersonRepository
+from kinograf.rdf import LinkedDataStore, RdfStore, ShaclValidator
+from kinograf.repositories import (
+    FilmRepository,
+    LinkRepository,
+    LogRepository,
+    PersonRepository,
+    QualityRepository,
+)
 from kinograf.services import Services, UpdateInProgressError, UpdateService
 
 
@@ -31,8 +37,12 @@ def make_service(database, tmp_path, client):
         database,
         FilmRepository(database),
         PersonRepository(database),
+        LinkRepository(database),
         LogRepository(database),
         RdfStore(tmp_path / "graph.ttl"),
+        LinkedDataStore(tmp_path / "linked.ttl", "http://kino.test"),
+        QualityRepository(database),
+        ShaclValidator(tmp_path / "shacl-report.ttl"),
     )
 
 
@@ -40,7 +50,7 @@ def test_run_loads_data_into_database_and_graph(database, tmp_path, fake_client)
     service = make_service(database, tmp_path, fake_client)
     log = service.run(service.start())
     assert (log.status, log.films_added, log.films_changed) == ("success", 2, 0)
-    assert log.stage == "storage"
+    assert log.stage == "validation"
     assert log.finished_at is not None
     assert LogRepository(database).get(log.id) == log
     assert FilmRepository(database).get("Q1").title == "Плем'я"
@@ -112,6 +122,8 @@ def settings(tmp_path) -> Settings:
     return Settings(
         database_path=str(tmp_path / "data" / "kinograf.db"),
         graph_path=str(tmp_path / "data" / "graph.ttl"),
+        linked_path=str(tmp_path / "data" / "linked.ttl"),
+        report_path=str(tmp_path / "data" / "shacl-report.ttl"),
         admin_key="secret",
     )
 
@@ -196,3 +208,27 @@ def test_services_close_records_left_by_crash(settings, fake_client):
     crashed.update._logs.start()
     services = Services.create(settings, WikidataLoader(fake_client, 1991))
     assert services.update.history()[0].status == "error"
+
+
+def test_run_stores_links_and_imdb_in_graph(database, tmp_path, fake_client):
+    service = make_service(database, tmp_path, fake_client)
+    stages = []
+    service._logs.set_stage = lambda log, stage: stages.append(stage)
+    service.run(service.start())
+    assert stages == [
+        "films",
+        "participations",
+        "genres",
+        "awards",
+        "links",
+        "storage",
+        "publication",
+        "validation",
+    ]
+    links = LinkRepository(database)
+    assert links.get("Q1").imdb_id == "tt3904770"
+    assert links.get("Q10").ukwiki == "Мирослав Слабошпицький"
+    graph = RdfStore(tmp_path / "graph.ttl")
+    graph.load()
+    rows = graph.query("SELECT ?film ?imdb WHERE { ?film wdt:P345 ?imdb }").rows
+    assert {row["imdb"] for row in rows} == {"tt3904770", "nm5752123"}

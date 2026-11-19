@@ -1,7 +1,8 @@
 """Сервер для приймальних тестів: підставна Wikidata, свіже сховище й API на uvicorn.
 
 Запуск: ``python server.py`` з віртуального середовища backend. Порт API задає
-``E2E_API_PORT`` (типово 8001), ключ адміністратора — ``E2E_ADMIN_KEY``.
+``E2E_API_PORT`` (типово 8001), ключ адміністратора — ``E2E_ADMIN_KEY``, базову адресу
+постійних URI — ``E2E_BASE_URL`` (типово адреса інтерфейсу Vite).
 """
 
 import os
@@ -18,6 +19,7 @@ from kinograf.services import Services
 
 WIKIDATA_PORT = int(os.getenv("E2E_WIKIDATA_PORT", "8902"))
 API_PORT = int(os.getenv("E2E_API_PORT", "8001"))
+BASE_URL = os.getenv("E2E_BASE_URL", "http://127.0.0.1:5174")
 
 
 def main() -> None:
@@ -28,6 +30,9 @@ def main() -> None:
         sparql_endpoint=f"http://127.0.0.1:{WIKIDATA_PORT}/sparql",
         database_path=str(data / "kinograf.db"),
         graph_path=str(data / "graph.ttl"),
+        linked_path=str(data / "linked.ttl"),
+        report_path=str(data / "shacl-report.ttl"),
+        base_url=BASE_URL,
         admin_key=os.getenv("E2E_ADMIN_KEY", "e2e-key"),
         retry_delay=0.1,
     )
