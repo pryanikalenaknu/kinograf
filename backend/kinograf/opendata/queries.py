@@ -1,6 +1,7 @@
 """SPARQL-запити до Wikidata для отримання даних про українські фільми."""
 
-PREFIXES = """PREFIX wd: <http://www.wikidata.org/entity/>
+PREFIXES = """PREFIX schema: <http://schema.org/>
+PREFIX wd: <http://www.wikidata.org/entity/>
 PREFIX wdt: <http://www.wikidata.org/prop/direct/>
 PREFIX wikibase: <http://wikiba.se/ontology#>
 PREFIX bd: <http://www.bigdata.com/rdf#>
@@ -99,3 +100,65 @@ SELECT DISTINCT ?film ?award ?awardLabel WHERE {{
   ?film wdt:P166 ?award .
   {LABELS}
 }}"""
+
+
+def _links_pattern(subject: str) -> str:
+    """Повертає необов'язкові шаблони ідентифікатора IMDb і статей Вікіпедії для змінної."""
+    articles = "\n".join(
+        f"""  OPTIONAL {{ ?{lang}Article schema:about ?{subject} ;
+             schema:isPartOf <https://{lang}.wikipedia.org/> ;
+             schema:name ?{lang}Title . }}"""
+        for lang in ("uk", "en")
+    )
+    return f"""  OPTIONAL {{ ?{subject} wdt:P345 ?imdbId . }}
+{articles}"""
+
+
+LINK_COLUMNS = (
+    "(SAMPLE(?imdbId) AS ?imdb) (SAMPLE(?ukTitle) AS ?ukwiki) (SAMPLE(?enTitle) AS ?enwiki)"
+)
+
+
+def film_links_query(min_year: int) -> str:
+    """Будує запит посилань фільмів на IMDb і Вікіпедію.
+
+    Для кожного фільму повертається один рядок; якщо значень кілька, береться одне.
+
+    Args:
+        min_year: Перший рік випуску фільмів у вибірці.
+
+    Returns:
+        Текст SPARQL-запиту.
+    """
+    return f"""{PREFIXES}
+SELECT ?film {LINK_COLUMNS}
+WHERE {{
+{_ukrainian_films(min_year)}
+{_links_pattern("film")}
+}}
+GROUP BY ?film"""
+
+
+def person_links_query(min_year: int) -> str:
+    """Будує запит посилань учасників фільмів вибірки на IMDb і Вікіпедію.
+
+    Args:
+        min_year: Перший рік випуску фільмів у вибірці.
+
+    Returns:
+        Текст SPARQL-запиту.
+    """
+    properties = " ".join(f"wdt:{prop}" for prop in ROLE_PROPERTIES.values())
+    return f"""{PREFIXES}
+SELECT ?person {LINK_COLUMNS}
+WHERE {{
+  {{
+    SELECT DISTINCT ?person WHERE {{
+{_ukrainian_films(min_year)}
+      VALUES ?property {{ {properties} }}
+      ?film ?property ?person .
+    }}
+  }}
+{_links_pattern("person")}
+}}
+GROUP BY ?person"""

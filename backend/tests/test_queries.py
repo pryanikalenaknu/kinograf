@@ -1,6 +1,24 @@
 """Тести побудови SPARQL-запитів."""
 
+from rdflib.plugins.sparql import prepareQuery
+
 from kinograf.opendata import queries
+
+
+def test_every_query_is_valid_sparql(all_queries):
+    for query in [*all_queries, queries.film_links_query(1991), queries.person_links_query(1991)]:
+        prepareQuery(query)
+
+
+def test_link_queries_take_imdb_and_both_wikipedias():
+    for query in (queries.film_links_query(1991), queries.person_links_query(1991)):
+        assert "wdt:P345" in query
+        assert "<https://uk.wikipedia.org/>" in query
+        assert "<https://en.wikipedia.org/>" in query
+        assert "SAMPLE(?imdbId) AS ?imdb" in query
+    assert "GROUP BY ?film" in queries.film_links_query(1991)
+    assert "GROUP BY ?person" in queries.person_links_query(1991)
+    assert "wdt:P161" in queries.person_links_query(1991)
 
 
 def test_every_query_selects_ukrainian_films(all_queries):

@@ -58,7 +58,23 @@ CREATE TABLE IF NOT EXISTS update_log (
     message TEXT,
     stage TEXT
 );
+CREATE TABLE IF NOT EXISTS external_links (
+    qid TEXT PRIMARY KEY,
+    imdb_id TEXT,
+    ukwiki TEXT,
+    enwiki TEXT
+);
+CREATE TABLE IF NOT EXISTS quality_issues (
+    film_qid TEXT,
+    rule TEXT,
+    severity TEXT,
+    message TEXT,
+    property TEXT,
+    value TEXT,
+    PRIMARY KEY (film_qid, rule)
+);
 CREATE INDEX IF NOT EXISTS films_year ON films (year);
+CREATE INDEX IF NOT EXISTS quality_issues_rule ON quality_issues (rule, severity);
 CREATE INDEX IF NOT EXISTS participations_person ON participations (person_qid, role);
 CREATE INDEX IF NOT EXISTS film_genres_genre ON film_genres (genre_qid);
 CREATE VIRTUAL TABLE IF NOT EXISTS films_fts USING fts5 (

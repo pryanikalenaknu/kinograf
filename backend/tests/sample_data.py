@@ -2,7 +2,7 @@
 
 from datetime import date
 
-from kinograf.models import Award, Film, Genre, Participation, Person, Role
+from kinograf.models import Award, ExternalLinks, Film, Genre, Participation, Person, Role
 
 POSTER = "http://commons.wikimedia.org/wiki/Special:FilePath/"
 
@@ -66,4 +66,10 @@ GENRES = {
 AWARDS = {
     "Q2": [Award("Q100", "Премія «Сандерс»")],
     "Q5": [Award("Q101", "Венеційський кінофестиваль — найкращий фільм програми «Горизонти»")],
+}
+
+LINKS = {
+    "Q1": ExternalLinks("Q1", "tt3904770", "Плем'я (фільм)", "The Tribe (2014 film)"),
+    "Q4": ExternalLinks("Q4", "tt3699354", "Поводир (фільм)"),
+    "Q11": ExternalLinks("Q11", "nm1125213", "Олесь Санін", "Oles Sanin"),
 }
