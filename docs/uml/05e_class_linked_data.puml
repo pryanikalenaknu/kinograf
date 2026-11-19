@@ -1,0 +1,120 @@
+@startuml
+!include common.iuml
+skinparam class {
+  BackgroundColor #F5F8FC
+  BorderColor #1F4E79
+}
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 70
+hide empty members
+title Діаграма класів: публікація зв'язаних даних
+
+package "services" {
+  class LinkedDataService {
+    -base_url: str
+    +negotiate(kind: str, qid: str, accept: str): str [0..1]
+    +document(kind: str, qid: str, fmt: str): bytes [0..1]
+    +dataset_format(accept: str): str
+    +dataset(fmt: str): bytes
+    +dump(): bytes
+    +query(sparql: str, accept: str): tuple[bytes, str]
+    +overview(): OpenDataOverview
+  }
+  class FilmService {
+    +details(qid: str): FilmDetails [0..1]
+  }
+  class PersonService {
+    +profile(qid: str): PersonProfile [0..1]
+  }
+}
+
+package "rdf" {
+  abstract class GraphStore {
+    -path: Path
+    -timeout: float
+    -max_rows: int
+    +load()
+    +graph(): Graph
+    +query(sparql: str): SparqlResult
+    #replace(graph: Graph)
+  }
+  class RdfStore {
+    +rebuild(films, people, participations, genres, awards, links)
+    +neighbours(qid: str, depth: int, limit: int): list[tuple]
+    +entities(qids: list[str]): dict[str, tuple]
+    +export_turtle(qids: list[str] [0..1]): str
+  }
+  class LinkedDataStore {
+    -base_url: str
+    +publish(films, people, participations, genres, awards, links)
+    +contains(kind: str, qid: str): bool
+    +describe(kind: str, qid: str): Graph
+    +void(modified: datetime [0..1]): Graph
+    +entity_counts(): dict[str, int]
+    +example_film(): str [0..1]
+    +linkset_counts(): list[Linkset]
+    +serialize(graph: Graph, fmt: str): bytes {static}
+  }
+}
+
+package "repositories" {
+  class LinkRepository {
+    +replace_all(links: dict[str, ExternalLinks])
+    +get(qid: str): ExternalLinks [0..1]
+    +all(): dict[str, ExternalLinks]
+  }
+  class LogRepository {
+    +last_success(): UpdateLog [0..1]
+  }
+}
+
+package "Об'єкти передачі даних" as dto {
+  class EntityLinks <<dataclass>> {
+    +uri: str
+    +wikidata: str
+    +imdb: str [0..1]
+    +wikipedia: str [0..1]
+    +dbpedia: str [0..1]
+    +turtle: str
+    +jsonld: str
+    +{static} build(base_url, kind, qid, links): EntityLinks
+  }
+  class OpenDataOverview <<dataclass>> {
+    +base_url: str
+    +license: str
+    +source: str
+    +modified: datetime [0..1]
+    +triples: int
+    +films: int
+    +people: int
+    +linksets: list[Linkset]
+    +endpoints: dict[str, str]
+    +example_film: str [0..1]
+  }
+  class Linkset <<dataclass>> {
+    +target: str
+    +homepage: str
+    +predicate: str
+    +films: int
+    +people: int
+  }
+}
+
+GraphStore <|-- RdfStore
+GraphStore <|-- LinkedDataStore
+LinkedDataService -down-> LinkedDataStore
+LinkedDataService -down-> LogRepository
+LinkedDataService ..> OpenDataOverview : <<create>>
+OpenDataOverview *-down- "0..*" Linkset
+FilmService -down-> LinkRepository
+PersonService -down-> LinkRepository
+FilmService .down.> EntityLinks : <<create>>
+PersonService .down.> EntityLinks : <<create>>
+LinkedDataService -[hidden]right- FilmService
+FilmService -[hidden]right- PersonService
+LogRepository -[hidden]right- LinkRepository
+LinkRepository -[hidden]down- EntityLinks
+OpenDataOverview -[hidden]right- EntityLinks
+@enduml

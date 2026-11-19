@@ -955,7 +955,7 @@ class Component extends DCLogic {
 
     // quality
     const pts=k=>QSER.map((p,i)=>`${(i/(QSER.length-1)*1000).toFixed(1)},${(200-p[k]*2).toFixed(1)}`).join(' ');
-    const quality={metrics:[{label:'Усього фільмів',value:'1 403',sub:'у довіднику з 1991 року',pct:'100'},{label:'З режисером',value:'68%',sub:'959 з 1 403',pct:'68'},{label:'З акторами',value:'47%',sub:'662 з 1 403',pct:'47'},{label:'З жанром',value:'81%',sub:'1 137 з 1 403',pct:'81'},{label:'З постером',value:'39%',sub:'547 з 1 403',pct:'39'}],
+    const quality={metrics:[{label:'Усього фільмів',value:'1 404',sub:'у довіднику з 1991 року',pct:'100'},{label:'З режисером',value:'68%',sub:'959 з 1 404',pct:'68'},{label:'З акторами',value:'47%',sub:'662 з 1 404',pct:'47'},{label:'З жанром',value:'49%',sub:'692 з 1 404',pct:'49'},{label:'З постером',value:'1%',sub:'21 з 1 404',pct:'1.5'}],
       pd:pts('d'),pa:pts('a'),xl:QSER.filter(p=>(p.y-1991)%5===0||p.y===2026).map(p=>({y:p.y,x:((p.y-1991)/35*100).toFixed(2)})),updated:`Дані оновлено: ${dt(st.updated)}`,isAdmin:admin,openLog:()=>this.go('admin')};
 
     // sparql
@@ -986,7 +986,7 @@ class Component extends DCLogic {
         note:k==='cur'&&i===1&&u.attempt>0?`спроба ${u.attempt + 1} з 3`:k==='fail'?'зупинено':k==='done'?'готово':k==='cur'?'виконується':''}; });
     const logs=(st.ui==='empty'&&st.screen==='admin'?[]:st.log).slice().sort((a,b)=>st.sortDesc?b.ms-a.ms:a.ms-b.ms);
     const det=st.detail?st.log.find(r=>r.id===st.detail):null;
-    const adm={films:'1 403',people:'2 797',updated:dt(st.updated),
+    const adm={films:'1 404',people:'2 797',updated:dt(st.updated),
       start:()=>this.setState({upd:{...u,phase:'confirm'}}),cancel:()=>this.setState({upd:{phase:'idle',stage:0,attempt:0}}),confirm:()=>this.startUpdate(),
       confirmOpen:u.phase==='confirm',busy:u.phase==='running',btnOp:u.phase==='running'?0.45:1,
       showProg:['running','done','failed'].includes(u.phase),running:u.phase==='running',done:u.phase==='done',failed:u.phase==='failed',

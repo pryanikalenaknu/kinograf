@@ -7,7 +7,7 @@ skinparam class {
 skinparam packageStyle rectangle
 skinparam linetype ortho
 skinparam nodesep 50
-skinparam ranksep 70
+skinparam ranksep 60
 hide empty members
 title Діаграма класів: сервіс оновлення даних
 
@@ -31,6 +31,7 @@ package "opendata" {
     +fetch_participations(): LoadedParticipations
     +fetch_genres(): dict[str, list[Genre]]
     +fetch_awards(): dict[str, list[Award]]
+    +fetch_links(): dict[str, ExternalLinks]
   }
   class WikidataClient {
     +run(query: str): list[dict]
@@ -56,12 +57,25 @@ package "repositories" {
     +recent(limit: int): list[UpdateLog]
     +fail_running(message: str): int
   }
+  class LinkRepository {
+    +replace_all(links: dict[str, ExternalLinks])
+  }
+  class QualityRepository {
+    +replace_all(issues: list[QualityIssue])
+  }
 }
 
 package "rdf" {
   class RdfStore {
     +load()
-    +rebuild(films, people, participations, genres, awards)
+    +rebuild(films, people, participations, genres, awards, links)
+    +graph(): Graph
+  }
+  class LinkedDataStore {
+    +publish(films, people, participations, genres, awards, links)
+  }
+  class ShaclValidator {
+    +validate(graph: Graph): list[QualityIssue]
   }
 }
 
@@ -72,9 +86,16 @@ UpdateService -down-> Database
 UpdateService -down-> FilmRepository
 UpdateService -down-> PersonRepository
 UpdateService -down-> LogRepository
-UpdateService -down-> RdfStore
-Database -[hidden]right- FilmRepository
+UpdateService --> RdfStore
+UpdateService -down-> LinkRepository
+UpdateService -down-> QualityRepository
+UpdateService --> LinkedDataStore
+UpdateService --> ShaclValidator
 FilmRepository -[hidden]right- PersonRepository
 PersonRepository -[hidden]right- LogRepository
-LogRepository -[hidden]right- RdfStore
+FilmRepository -[hidden]down- Database
+PersonRepository -[hidden]down- LinkRepository
+LogRepository -[hidden]down- QualityRepository
+RdfStore -[hidden]down- LinkedDataStore
+LinkedDataStore -[hidden]down- ShaclValidator
 @enduml

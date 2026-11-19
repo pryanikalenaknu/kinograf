@@ -9,10 +9,11 @@ skinparam actorBorderColor #1F4E79
 skinparam rectangle {
   BorderColor #1F4E79
 }
-skinparam nodesep 25
+skinparam nodesep 22
 skinparam ranksep 90
 actor "Користувач" as U
 actor "Адміністратор" as A
+actor "Програма-клієнт" as P
 rectangle "КіноГраф" {
   usecase "Переглянути каталог фільмів" as UC1
   usecase "Шукати фільм за назвою" as UC2
@@ -21,12 +22,20 @@ rectangle "КіноГраф" {
   usecase "Виконати SPARQL-запит" as UC10
   usecase "Переглянути картку фільму" as UC4
   usecase "Переглянути пов'язані фільми" as UC5
-  usecase "Перейти до запису у Wikidata" as UC12
+  usecase "Перейти до запису\nв іншому наборі даних" as UC12
   usecase "Переглянути сторінку персоналії" as UC6
   usecase "Досліджувати граф зв'язків" as UC7
   usecase "Переглянути статистику" as UC8
   usecase "Переглянути якість даних" as UC9
+  usecase "Переглянути зауваження\nза правилами" as UC17
+  usecase "Перейти до виправлення\nу Wikidata" as UC18
+  usecase "Переглянути опис\nвідкритих даних" as UC16
+  usecase "Отримати дані сутності\nу форматі RDF" as UC19
+  usecase "Отримати опис набору (VoID)" as UC20
+  usecase "Виконати запит\nдо точки SPARQL" as UC21
+  usecase "Завантажити весь набір" as UC22
   usecase "Оновити дані з Wikidata" as UC13
+  usecase "Перевірити дані за правилами" as UC23
   usecase "Підтвердити ключ доступу" as UC15
   usecase "Переглянути журнал оновлень" as UC14
 }
@@ -37,9 +46,15 @@ U --> UC6
 U --> UC7
 U --> UC8
 U --> UC9
+U --> UC16
+U --> UC22
 A --> UC13
 A --> UC14
 U <|-- A
+P --> UC19
+P --> UC20
+P --> UC21
+P --> UC22
 UC1 <.. UC2 : <<extend>>
 UC1 <.. UC3 : <<extend>>
 UC1 <.. UC11 : <<extend>>
@@ -47,6 +62,9 @@ UC10 <.. UC11 : <<extend>>
 UC4 ..> UC5 : <<include>>
 UC4 <.. UC12 : <<extend>>
 UC6 <.. UC12 : <<extend>>
+UC9 <.. UC17 : <<extend>>
+UC17 <.. UC18 : <<extend>>
 UC13 ..> UC15 : <<include>>
+UC13 ..> UC23 : <<include>>
 UC14 ..> UC15 : <<include>>
 @enduml

@@ -25,6 +25,7 @@ package "opendata" {
     +fetch_participations(): LoadedParticipations
     +fetch_genres(): dict[str, list[Genre]]
     +fetch_awards(): dict[str, list[Award]]
+    +fetch_links(): dict[str, ExternalLinks]
   }
   class LoadedParticipations {
     +people: dict[str, Person]
@@ -64,6 +65,29 @@ package "models" as models {
     +qid: str
     +name: str
   }
+  class ExternalLinks {
+    +qid: str
+    +imdb_id: str [0..1]
+    +ukwiki: str [0..1]
+    +enwiki: str [0..1]
+    +imdb_url: str [0..1] {readOnly}
+    +ukwiki_url: str [0..1] {readOnly}
+    +dbpedia_uri: str [0..1] {readOnly}
+  }
+  class QualityIssue {
+    +film_qid: str
+    +rule: str
+    +severity: Severity
+    +message: str
+    +property: str [0..1]
+    +value: str [0..1]
+    +fix_url: str {readOnly}
+  }
+  enum Severity <<enumeration>> {
+    VIOLATION
+    WARNING
+    INFO
+  }
   class UpdateLog {
     +id: int [0..1]
     +started_at: datetime
@@ -88,4 +112,8 @@ Participation ..> Role
 Film "0..*" -down- "0..*" Genre
 Film "0..*" -down- "0..*" Award
 Person -[hidden]right- UpdateLog
+Film "1" -up- "0..1" ExternalLinks
+Person "1" -up- "0..1" ExternalLinks
+Film "1" -down- "0..*" QualityIssue
+QualityIssue ..> Severity
 @enduml

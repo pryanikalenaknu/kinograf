@@ -1,0 +1,110 @@
+@startuml
+!include common.iuml
+skinparam class {
+  BackgroundColor #F5F8FC
+  BorderColor #1F4E79
+}
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 70
+hide empty members
+title Діаграма класів: перевірка якості за правилами SHACL
+
+package "services" {
+  class QualityService {
+    +report(): QualityReport
+    +issues(rule: str [0..1], severity: Severity [0..1], page: int): QualityPage
+    +rule_ids(): list[str]
+    +shapes_turtle(): bytes
+    +report_turtle(): bytes [0..1]
+  }
+}
+
+package "rdf" {
+  class ShaclValidator {
+    -shapes: Graph
+    -report_path: Path
+    +rules(): list[QualityRule]
+    +validate(graph: Graph): list[QualityIssue]
+    +shapes_turtle(): str
+  }
+  class QualityRule <<dataclass>> {
+    +rule: str
+    +name: str
+    +severity: Severity
+    +message: str
+    +property: str [0..1]
+    +order: int
+  }
+}
+
+package "repositories" {
+  class QualityRepository {
+    +replace_all(issues: list[QualityIssue])
+    +films_by_rule(): dict[str, int]
+    +films_with_issues(): int
+    +films_by_severity(): dict[str, int]
+    +issues(rule, severity, page, page_size): tuple[list[tuple[Film, list[QualityIssue]]], int]
+  }
+  class LogRepository {
+    +last_success(): UpdateLog [0..1]
+  }
+}
+
+package "models" {
+  class QualityIssue <<dataclass>> {
+    +film_qid: str
+    +rule: str
+    +severity: Severity
+    +message: str
+    +property: str [0..1]
+    +value: str [0..1]
+    +fix_url: str {readOnly}
+  }
+  enum Severity <<enumeration>> {
+    VIOLATION
+    WARNING
+    INFO
+  }
+}
+
+package "Об'єкти передачі даних" as dto {
+  class QualityReport <<dataclass>> {
+    +checked_at: datetime [0..1]
+    +films_checked: int
+    +films_with_issues: int
+    +by_severity: dict[str, int]
+    +rules: list[RuleSummary]
+  }
+  class RuleSummary <<dataclass>> {
+    +rule: QualityRule
+    +films: int
+  }
+  class QualityPage <<dataclass>> {
+    +items: list[FilmIssues]
+    +total: int
+    +page: int
+  }
+  class FilmIssues <<dataclass>> {
+    +film: Film
+    +issues: list[QualityIssue]
+  }
+}
+
+QualityService -down-> ShaclValidator
+QualityService -down-> QualityRepository
+QualityService -down-> LogRepository
+ShaclValidator .right.> QualityRule : <<create>>
+ShaclValidator ..> QualityIssue : <<create>>
+QualityService ..> FilmIssues : <<create>>
+QualityService .down.> QualityReport : <<create>>
+QualityService .down.> QualityPage : <<create>>
+QualityReport *-down- "0..*" RuleSummary
+QualityPage *-down- "0..*" FilmIssues
+RuleSummary -right-> "1" QualityRule
+LogRepository -[hidden]right- QualityRepository
+FilmIssues --> "1..*" QualityIssue
+QualityIssue ..> Severity
+QualityRule ..> Severity
+@enduml
