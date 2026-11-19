@@ -1,0 +1,292 @@
+.od {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.od-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+}
+
+.od-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 760px;
+}
+
+.od-intro p {
+  margin: 0;
+}
+
+.od-actions {
+  display: flex;
+  flex: none;
+  gap: 8px;
+}
+
+.od-actions .btn {
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.od-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+}
+
+.od-panel {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.od-panel-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.od-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.od-strong {
+  font-weight: 500;
+}
+
+.od-star-row {
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.od-stars {
+  display: inline-flex;
+  gap: 2px;
+  font: 600 16px/20px 'Inter', sans-serif;
+  color: var(--color-border);
+}
+
+.od-star-on {
+  color: var(--color-accent);
+}
+
+.od-star-text,
+.od-access-row,
+.od-link-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.od-check {
+  display: flex;
+  color: var(--color-success);
+}
+
+.od-facts {
+  margin: 0;
+}
+
+.od-fact {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.od-fact dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.od-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.od-table th,
+.od-table td {
+  padding: 12px 16px 12px 0;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.od-table thead th {
+  padding-top: 0;
+  font: var(--text-label);
+  color: var(--color-text-muted);
+}
+
+.od-table tbody tr:last-child th,
+.od-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.od-table tbody th {
+  font-weight: 500;
+}
+
+.od-table tbody th a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.od-table tbody th a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.od-count {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+}
+
+.od-count-value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.od-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--color-hover);
+}
+
+.od-bar {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--color-primary);
+}
+
+.od-code,
+.od-code-muted {
+  font: var(--text-code);
+  overflow-wrap: anywhere;
+}
+
+.od-code {
+  color: var(--color-primary);
+}
+
+.od-code-muted {
+  color: var(--color-text-muted);
+}
+
+.od-link-row,
+.od-access-row {
+  padding: 12px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.od-link-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.od-access {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+}
+
+.od-example {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.od-pre {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+  font: var(--text-code);
+  white-space: pre;
+}
+
+.od-iri {
+  color: #7a4fa3;
+}
+
+.od-literal {
+  color: var(--color-success);
+}
+
+.od-kw {
+  color: var(--color-role-director);
+}
+
+.od-more {
+  align-self: flex-start;
+  font: var(--text-label);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.od-more:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1023px) {
+  .od-columns,
+  .od-access {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 767px) {
+  .od-heading {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .od-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .od-actions .btn {
+    justify-content: center;
+  }
+
+  .od-panel {
+    padding: 16px;
+  }
+
+  .od-star-row {
+    grid-template-columns: minmax(0, 1fr) 24px;
+  }
+
+  .od-star-row .od-stars {
+    grid-column: 1 / -1;
+  }
+
+  .od-fact {
+    grid-template-columns: 104px minmax(0, 1fr);
+  }
+}

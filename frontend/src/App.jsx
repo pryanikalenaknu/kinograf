@@ -10,6 +10,7 @@ import { AdminPage } from './pages/AdminPage.jsx';
 import { CatalogPage } from './pages/CatalogPage.jsx';
 import { FilmPage } from './pages/FilmPage.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
+import { OpenDataPage } from './pages/OpenDataPage.jsx';
 import { PersonPage } from './pages/PersonPage.jsx';
 import { SparqlPage } from './pages/SparqlPage.jsx';
 
@@ -54,6 +55,7 @@ export function App() {
         <Route path="stats" element={<Lazy><StatsPage /></Lazy>} />
         <Route path="quality" element={<Lazy><QualityPage /></Lazy>} />
         <Route path="sparql" element={<SparqlPage />} />
+        <Route path="open-data" element={<OpenDataPage />} />
         <Route path="admin/login" element={<AdminLoginPage />} />
         <Route
           path="admin"

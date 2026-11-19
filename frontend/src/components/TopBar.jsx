@@ -1,4 +1,4 @@
-/** Верхня панель: логотип, головне меню, вхід і вихід адміністратора; на телефоні — бокова шторка. */
+/** Верхня панель: логотип, головне меню, вхід і вихід адміністратора; на вузькому екрані — бокова шторка. */
 
 import { startTransition, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
@@ -13,6 +13,7 @@ const NAV = [
   { to: '/stats', label: 'Статистика', match: ['/stats'] },
   { to: '/quality', label: 'Якість даних', match: ['/quality'] },
   { to: '/sparql', label: 'SPARQL', match: ['/sparql'] },
+  { to: '/open-data', label: 'Відкриті дані', match: ['/open-data'] },
 ];
 
 const ADMIN_ITEM = { to: '/admin', label: 'Адміністрування', match: ['/admin'] };
@@ -81,26 +82,26 @@ export function TopBar() {
         <Icon name="film" size={24} className="topbar-logo" />
         КіноГраф
       </Link>
-      <nav className="topbar-nav desktop-only" aria-label="Головне меню">
+      <nav className="topbar-nav topbar-wide" aria-label="Головне меню">
         {navLinks('topbar-link')}
       </nav>
       <div className="topbar-side">
         {isAdmin ? (
           <>
             <span className="topbar-badge">Адміністратор</span>
-            <button type="button" className="topbar-logout desktop-only" onClick={handleLogout}>
+            <button type="button" className="topbar-logout topbar-wide" onClick={handleLogout}>
               <Icon name="logout" />
               Вийти
             </button>
           </>
         ) : (
-          <Link to="/admin/login" className="topbar-login desktop-only">
+          <Link to="/admin/login" className="topbar-login topbar-wide">
             Вхід для адміністратора
           </Link>
         )}
         <button
           type="button"
-          className="topbar-menu phone-only"
+          className="topbar-menu topbar-narrow"
           aria-label="Відкрити меню"
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen(true)}
@@ -109,7 +110,7 @@ export function TopBar() {
         </button>
       </div>
       {menuOpen && (
-        <div className="overlay phone-only" onClick={() => setMenuOpen(false)}>
+        <div className="overlay topbar-narrow" onClick={() => setMenuOpen(false)}>
           <Drawer>
             <div className="drawer-head">
               <span className="drawer-brand">КіноГраф</span>
