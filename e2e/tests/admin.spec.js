@@ -46,7 +46,16 @@ test('14. Переглянути журнал оновлень (UC14, UC15)', as
   await initialLoad.click();
   const details = page.getByRole('dialog');
   await expect(details.getByRole('heading', { name: /^Оновлення / })).toBeVisible();
-  await expect(details.getByRole('listitem')).toHaveText([/Фільми\s*готово/, /Учасники\s*готово/, /Жанри\s*готово/, /Нагороди\s*готово/, /Запис у сховище\s*готово/]);
+  await expect(details.getByRole('listitem')).toHaveText([
+    /Фільми\s*готово/,
+    /Учасники\s*готово/,
+    /Жанри\s*готово/,
+    /Нагороди\s*готово/,
+    /Посилання\s*готово/,
+    /Запис у сховище\s*готово/,
+    /Публікація\s*готово/,
+    /Перевірка якості\s*готово/,
+  ]);
   await details.getByRole('button', { name: 'Закрити' }).click();
 
   await page.getByRole('button', { name: 'Вийти' }).click();

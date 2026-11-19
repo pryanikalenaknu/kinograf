@@ -18,7 +18,10 @@ const STAGES = [
   { key: 'participations', label: 'Учасники' },
   { key: 'genres', label: 'Жанри' },
   { key: 'awards', label: 'Нагороди' },
+  { key: 'links', label: 'Посилання' },
   { key: 'storage', label: 'Запис у сховище' },
+  { key: 'publication', label: 'Публікація' },
+  { key: 'validation', label: 'Перевірка якості' },
 ];
 
 function stageStates(log) {

@@ -1,4 +1,4 @@
-/** Сторінка 4.6 «Якість даних»: частка заповнених полів і повнота за роками. */
+/** Сторінка 4.6 «Якість даних»: частка заповнених полів, повнота за роками й перевірка за правилами. */
 
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
@@ -8,6 +8,7 @@ import { useApi } from '../api/useApi.js';
 import { ChartCanvas } from '../components/ChartCanvas.jsx';
 import { baseOptions, chartTheme } from '../components/chartTheme.js';
 import { formatDateTime, formatNumber, formatPercent } from '../components/format.js';
+import { QualityRules } from '../components/QualityRules.jsx';
 import { EmptyState, RequestState } from '../components/States.jsx';
 import './QualityPage.css';
 
@@ -145,6 +146,7 @@ export function QualityPage() {
               label="Лінійна діаграма частки фільмів із режисером і з акторами за роками"
             />
           </section>
+          <QualityRules />
         </>
       )}
     </div>
