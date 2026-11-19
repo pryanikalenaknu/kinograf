@@ -4,6 +4,7 @@ import csv
 import io
 import json
 from datetime import UTC, date, datetime
+from urllib.parse import unquote
 
 import pytest
 from rdflib import Graph
@@ -11,12 +12,14 @@ from rdflib import Graph
 from kinograf.models import Film, Person, Role
 from kinograf.repositories import (
     FilmRepository,
+    LinkRepository,
     LogRepository,
     PersonRepository,
     StatsRepository,
 )
 from kinograf.services import (
     CatalogService,
+    EntityLinks,
     ExportService,
     FilmFilters,
     FilmService,
@@ -28,6 +31,9 @@ from kinograf.services import (
     StatsService,
 )
 from kinograf.services.export import safe_cell
+from tests import sample_data
+
+BASE = "http://kino.test"
 
 
 @pytest.fixture
@@ -38,6 +44,13 @@ def films(filled_database) -> FilmRepository:
 @pytest.fixture
 def people(filled_database) -> PersonRepository:
     return PersonRepository(filled_database)
+
+
+@pytest.fixture
+def links(filled_database) -> LinkRepository:
+    repository = LinkRepository(filled_database)
+    repository.replace_all(sample_data.LINKS)
+    return repository
 
 
 def test_catalog_search_returns_page_of_twelve(films, people):
@@ -67,8 +80,8 @@ def test_catalog_lists_for_filters(films, people):
     assert [person.qid for person in catalog.directors()] == ["Q12", "Q15", "Q10", "Q11"]
 
 
-def test_film_details_collect_everything(films, people):
-    details = FilmService(films, people).details("Q4")
+def test_film_details_collect_everything(films, people, links):
+    details = FilmService(films, people, links, BASE).details("Q4")
     assert details.film.title == "Поводир"
     assert details.participants[Role.DIRECTOR] == [Person("Q11", "Олесь Санін")]
     assert details.participants[Role.CAST] == []
@@ -77,24 +90,38 @@ def test_film_details_collect_everything(films, people):
     first = details.related[0]
     assert (first.film.qid, first.shared_people, first.shared_genres) == ("Q3", 2, 2)
     assert len(details.related) == 4
+    assert details.links.uri == "http://kino.test/id/film/Q4"
+    assert details.links.imdb == "https://www.imdb.com/title/tt3699354/"
+    assert unquote(details.links.wikipedia) == "https://uk.wikipedia.org/wiki/Поводир_(фільм)"
+    assert details.links.dbpedia is None
+    assert details.links.turtle == "http://kino.test/data/film/Q4.ttl"
 
 
-def test_film_details_of_unknown_film(films, people):
-    assert FilmService(films, people).details("Q999") is None
+def test_entity_links_without_other_datasets():
+    links = EntityLinks.build("http://kino.test/", "film", "Q2", None)
+    assert links.uri == "http://kino.test/id/film/Q2"
+    assert links.wikidata == "https://www.wikidata.org/wiki/Q2"
+    assert (links.imdb, links.wikipedia, links.dbpedia) == (None, None, None)
 
 
-def test_person_profile_merges_roles_per_film(people):
-    profile = PersonService(people).profile("Q11")
+def test_film_details_of_unknown_film(films, people, links):
+    assert FilmService(films, people, links, BASE).details("Q999") is None
+
+
+def test_person_profile_merges_roles_per_film(people, links):
+    profile = PersonService(people, links, BASE).profile("Q11")
     assert profile.person.name == "Олесь Санін"
     assert [(entry.film.qid, entry.roles) for entry in profile.filmography] == [
         ("Q4", [Role.DIRECTOR, Role.SCREENWRITER]),
         ("Q3", [Role.DIRECTOR, Role.SCREENWRITER]),
     ]
     assert profile.collaborators == [RankedPerson(Person("Q14", "Алла Загайкевич"), 2)]
+    assert profile.links.dbpedia == "http://dbpedia.org/resource/Oles_Sanin"
+    assert profile.links.jsonld == "http://kino.test/data/person/Q11.jsonld"
 
 
-def test_person_profile_of_unknown_person(people):
-    assert PersonService(people).profile("Q999") is None
+def test_person_profile_of_unknown_person(people, links):
+    assert PersonService(people, links, BASE).profile("Q999") is None
 
 
 def test_stats_overview(filled_database):

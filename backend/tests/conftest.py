@@ -3,7 +3,7 @@
 import pytest
 
 from kinograf.opendata import queries
-from kinograf.rdf import RdfStore
+from kinograf.rdf import LinkedDataStore, RdfStore
 from kinograf.repositories import Database, FilmRepository, PersonRepository
 from tests import sample_data
 
@@ -83,6 +83,24 @@ def fake_client() -> FakeClient:
             "?awardLabel": [
                 {"film": FILM + "Q2", "award": FILM + "Q100", "awardLabel": "Премія «Сандерс»"},
             ],
+            "GROUP BY ?person": [
+                {
+                    "person": FILM + "Q10",
+                    "imdb": "nm5752123",
+                    "ukwiki": "Мирослав Слабошпицький",
+                    "enwiki": "Myroslav Slaboshpytskyi",
+                },
+                {"person": FILM + "Q20"},
+            ],
+            "AS ?ukwiki": [
+                {
+                    "film": FILM + "Q1",
+                    "imdb": "tt3904770",
+                    "ukwiki": "Плем'я (фільм)",
+                    "enwiki": "The Tribe (2014 film)",
+                },
+                {"film": FILM + "Q2", "ukwiki": "Земля блакитна, ніби апельсин"},
+            ],
         }
     )
 
@@ -126,5 +144,20 @@ def rdf_store(tmp_path) -> RdfStore:
         sample_data.PARTICIPATIONS,
         sample_data.GENRES,
         sample_data.AWARDS,
+    )
+    return store
+
+
+@pytest.fixture
+def linked_store(tmp_path) -> LinkedDataStore:
+    """Опублікований граф тестового набору з базовою адресою ``http://kino.test``."""
+    store = LinkedDataStore(tmp_path / "linked.ttl", "http://kino.test/")
+    store.publish(
+        sample_data.FILMS,
+        list(sample_data.PEOPLE.values()),
+        sample_data.PARTICIPATIONS,
+        sample_data.GENRES,
+        sample_data.AWARDS,
+        sample_data.LINKS,
     )
     return store

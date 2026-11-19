@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
 from kinograf import __version__
-from kinograf.api.routers import admin, analysis, catalog, export
+from kinograf.api.routers import admin, analysis, catalog, export, linkeddata, quality
 from kinograf.config import load_settings
 from kinograf.services import Services, SparqlBusyError, SparqlError, SparqlTimeoutError
 
@@ -39,7 +39,7 @@ async def sparql_error(request: Request, error: SparqlError) -> JSONResponse:
 
 
 def create_app(services: Services | None = None) -> FastAPI:
-    """Створює застосунок з усіма маршрутами під префіксом ``/api``.
+    """Створює застосунок з маршрутами REST API під префіксом ``/api`` і маршрутами зв'язаних даних.
 
     Args:
         services: Сервіси застосунку; за замовчуванням створюються з налаштувань середовища.
@@ -57,6 +57,15 @@ def create_app(services: Services | None = None) -> FastAPI:
     )
     app.state.services = services or Services.create(load_settings())
     app.add_exception_handler(SparqlError, sparql_error)
-    for router in (catalog.router, analysis.router, export.router, admin.router):
+    routers = (
+        catalog.router,
+        analysis.router,
+        quality.router,
+        export.router,
+        admin.router,
+        linkeddata.api,
+    )
+    for router in routers:
         app.include_router(router, prefix="/api")
+    app.include_router(linkeddata.router)
     return app

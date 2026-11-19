@@ -19,6 +19,8 @@ def services(filled_database, rdf_store, fake_client) -> Services:
     settings = Settings(
         database_path=str(filled_database.path),
         graph_path=str(rdf_store.path),
+        linked_path=str(rdf_store.path.with_name("linked.ttl")),
+        report_path=str(rdf_store.path.with_name("shacl-report.ttl")),
         admin_key="secret",
     )
     return Services.create(settings, WikidataLoader(fake_client, 1991))
@@ -221,7 +223,12 @@ def test_admin_routes_require_key(client, method, path, headers):
 
 
 def test_admin_disabled_without_configured_key(filled_database, rdf_store):
-    settings = Settings(database_path=str(filled_database.path), graph_path=str(rdf_store.path))
+    settings = Settings(
+        database_path=str(filled_database.path),
+        graph_path=str(rdf_store.path),
+        linked_path=str(rdf_store.path.with_name("linked.ttl")),
+        report_path=str(rdf_store.path.with_name("shacl-report.ttl")),
+    )
     client = TestClient(create_app(Services.create(settings)))
     assert client.get("/api/admin/log", headers={"X-Admin-Key": ""}).status_code == 401
 
@@ -233,7 +240,7 @@ def test_admin_update_runs_in_background_and_is_logged(client):
     started = response.json()
     assert (started["status"], started["finished_at"]) == ("running", None)
     progress = client.get(f"/api/admin/update/{started['id']}", headers=ADMIN).json()
-    assert (progress["status"], progress["stage"]) == ("success", "storage")
+    assert (progress["status"], progress["stage"]) == ("success", "validation")
     assert (progress["films_added"], progress["films_changed"]) == (0, 0)
     assert [log["id"] for log in client.get("/api/admin/log", headers=ADMIN).json()] == [1]
     assert client.get("/api/films").json()["total"] == 2
@@ -261,6 +268,7 @@ def test_openapi_documentation(client):
 def test_create_app_reads_settings_from_environment(tmp_path, monkeypatch):
     monkeypatch.setenv("KINOGRAF_DATABASE_PATH", str(tmp_path / "env.db"))
     monkeypatch.setenv("KINOGRAF_GRAPH_PATH", str(tmp_path / "env.ttl"))
+    monkeypatch.setenv("KINOGRAF_LINKED_PATH", str(tmp_path / "env-linked.ttl"))
     client = TestClient(create_app())
     assert client.get("/api/films").json() == {"items": [], "total": 0, "page": 1}
     assert (tmp_path / "env.db").exists()

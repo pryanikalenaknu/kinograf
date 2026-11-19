@@ -1,4 +1,4 @@
-"""Оновлення даних з Wikidata: завантаження, запис у SQLite й RDF-граф, журнал."""
+"""Оновлення даних з Wikidata: завантаження, запис у SQLite й RDF-графи, перевірка, журнал."""
 
 import fcntl
 import threading
@@ -7,10 +7,26 @@ from typing import TextIO
 
 from kinograf.models import UpdateLog
 from kinograf.opendata import WikidataLoader
-from kinograf.rdf import RdfStore
-from kinograf.repositories import Database, FilmRepository, LogRepository, PersonRepository
+from kinograf.rdf import LinkedDataStore, RdfStore, ShaclValidator
+from kinograf.repositories import (
+    Database,
+    FilmRepository,
+    LinkRepository,
+    LogRepository,
+    PersonRepository,
+    QualityRepository,
+)
 
-STAGES = ("films", "participations", "genres", "awards", "storage")
+STAGES = (
+    "films",
+    "participations",
+    "genres",
+    "awards",
+    "links",
+    "storage",
+    "publication",
+    "validation",
+)
 
 
 class UpdateInProgressError(Exception):
@@ -31,8 +47,12 @@ class UpdateService:
         database: База даних, у транзакції якої замінюються дані.
         films: Сховище фільмів.
         people: Сховище персоналій.
+        links: Сховище посилань на інші набори.
         logs: Журнал оновлень.
         rdf: Локальний RDF-граф.
+        linked: Опублікований граф зв'язаних даних.
+        quality: Сховище зауважень перевірки якості.
+        validator: Перевірка локального графа за правилами SHACL.
         lock_path: Файл блокування оновлень між процесами.
     """
 
@@ -42,16 +62,24 @@ class UpdateService:
         database: Database,
         films: FilmRepository,
         people: PersonRepository,
+        links: LinkRepository,
         logs: LogRepository,
         rdf: RdfStore,
+        linked: LinkedDataStore,
+        quality: QualityRepository,
+        validator: ShaclValidator,
         lock_path: Path | None = None,
     ) -> None:
         self._loader = loader
         self._database = database
         self._films = films
         self._people = people
+        self._links = links
         self._logs = logs
         self._rdf = rdf
+        self._linked = linked
+        self._quality = quality
+        self._validator = validator
         self._lock = threading.Lock()
         self._lock_path = lock_path
         self._lock_file: TextIO | None = None
@@ -119,7 +147,8 @@ class UpdateService:
         """Виконує оновлення за етапами ``STAGES`` і записує підсумок у журнал.
 
         Дані в SQLite замінюються в одній транзакції разом із перебудовою RDF-графа;
-        після помилки на будь-якому етапі попередні дані залишаються без змін.
+        після помилки до запису у сховище попередні дані залишаються без змін. Далі
+        публікується граф зв'язаних даних, і локальний граф перевіряється за правилами SHACL.
 
         Args:
             log: Запис журналу, отриманий від :meth:`start`.
@@ -136,12 +165,19 @@ class UpdateService:
             genres = self._loader.fetch_genres()
             self._logs.set_stage(log, "awards")
             awards = self._loader.fetch_awards()
+            self._logs.set_stage(log, "links")
+            links = self._loader.fetch_links()
             self._logs.set_stage(log, "storage")
             people = list(loaded.people.values())
             with self._database.transaction():
                 log.films_added, log.films_changed = self._films.replace_all(films, genres, awards)
                 self._people.replace_all(people, loaded.participations)
-                self._rdf.rebuild(films, people, loaded.participations, genres, awards)
+                self._links.replace_all(links)
+                self._rdf.rebuild(films, people, loaded.participations, genres, awards, links)
+            self._logs.set_stage(log, "publication")
+            self._linked.publish(films, people, loaded.participations, genres, awards, links)
+            self._logs.set_stage(log, "validation")
+            self._quality.replace_all(self._validator.validate(self._rdf.graph()))
             log.status = "success"
         except Exception as error:
             log.status = "error"

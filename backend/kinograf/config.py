@@ -15,6 +15,9 @@ class Settings:
         retry_delay: Пауза в секундах перед повторним запитом до Wikidata.
         database_path: Шлях до файлу бази даних SQLite.
         graph_path: Шлях до файлу локального RDF-графа у форматі Turtle.
+        linked_path: Шлях до файлу опублікованого графа зв'язаних даних.
+        report_path: Шлях до звіту останньої перевірки SHACL у форматі Turtle.
+        base_url: Базова адреса застосунку, від якої будуються постійні адреси сутностей.
         admin_key: Ключ доступу до адміністративних дій.
     """
 
@@ -24,6 +27,9 @@ class Settings:
     retry_delay: float = 60.0
     database_path: str = "data/kinograf.db"
     graph_path: str = "data/graph.ttl"
+    linked_path: str = "data/linked.ttl"
+    report_path: str = "data/shacl-report.ttl"
+    base_url: str = "http://localhost:8080"
     admin_key: str = ""
 
 
@@ -43,5 +49,8 @@ def load_settings() -> Settings:
         retry_delay=float(os.getenv("KINOGRAF_RETRY_DELAY", defaults.retry_delay)),
         database_path=os.getenv("KINOGRAF_DATABASE_PATH", defaults.database_path),
         graph_path=os.getenv("KINOGRAF_GRAPH_PATH", defaults.graph_path),
+        linked_path=os.getenv("KINOGRAF_LINKED_PATH", defaults.linked_path),
+        report_path=os.getenv("KINOGRAF_REPORT_PATH", defaults.report_path),
+        base_url=os.getenv("KINOGRAF_BASE_URL", defaults.base_url),
         admin_key=os.getenv("KINOGRAF_ADMIN_KEY", defaults.admin_key),
     )
